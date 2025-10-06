@@ -1,0 +1,72 @@
+Black background (space) with scattered white dots (stars)
+Large, Medium or Small drifting asteroids
+A large asteroid breaks into two medium asteroids after a beam or torpedo hit or colliding with a ship (and causing 3 damage to the ship)
+A medium asteroid breaks into two small asteroids after a beam or torpedo hit or colliding with a ship (and causing 2 damage to the ship)
+A small asteroid is destroyed by a beam or torpedo hit or colliding with a ship (and causing 1 damage to the ship).
+Small asteroids are the fastest moving, largest the slowest moving.
+
+Dust clouds: a cloud of dust which blocks beam weapons.
+Collapsar: a black circle surrounded by a x4 diameter gravity well. A ship moving through the gravity well is drawn towards the centre at a fixed rate/second. Anything which touches the collapsar is destroyed (sucked into it and destroyed).
+Collapsars and dust clouds don't move.
+Planets and Moons: very large circles. Immune to attacks.
+
+Player ship in centre screen
+Player ships has one or more weapons. Each weapon covers a certain arc.
+Ship has four shields represented by a circle in 4 segments, fore 90 degrees, port, starboard and aft
+Once a shield is reduced to 0 additional damage hits the ships internal systems.
+If a shield takes no damage for a 5 second period it starts to automatically recharge, regaining lost shield points at 1/second until it reaches full again. If hit whilst recharging it stops recharging and doesn't start until the minimum 5 second "no damage" period elapses.
+
+WSAD moves ship forward/backward/turns left/turns right respectively
+Ship type determines maximum forward and backward speeds, acceleration and decceleration and turn rate.
+
+You can switch between newtonian and non-newtonian movement.
+In newtonian movement the ship has a movement vector independent of facing.
+In non-newtonian movement the ship has a movement vector which is always aligned with the ships facing.
+
+Mouse controls a reticle
+Left click fires all beam weapons which have the reticle in their firing arc at the reticle
+Each beam weapon has a charging bar, it fires once/second and reduces the bar, when the bar runs out it ceases firing until it the bar charges fully back up again. If you stop firing before the bar empties it recharges and you can still fire whilst it is recharging.
+
+Right click fires all torpedo weapons which have the reticle in their firing arc at the reticle
+Torpedoes are "bullets" which fly towards the reticles location when they were fired
+Each launcher has a loaded number of torpedoes and stored number of torpedoes. Each right click fires on torp until the loaded number hits 0, at which point the launcher is automatically reloaded from the stored torpedo supply, taking 4 seconds/torpedo. Once loaded it activates again. If a torpedo is not fired for 4 seconds it automatically loads back to full value.
+
+Charging Bar for each Beam weapon, Torpedo Loaded/Stored for each Launcher, Each of the four shields current strength, ships HP are displayed in a tactical panel on the top left of the screen. A text  box below records critical effects, removing then after they time out.
+
+A medium beam battery does 1 damage/hit.
+A medium torpedo launcher holds 4 torpedoes and has 20 stored.
+A medium torpedoes does 1 damage to each system under the blast area.
+A medium ships Forward shield can absorb 20 damage before failing, Port and Starboard shields 15 each and Aft shield 10 pts.
+
+If you hold the reticle over a target (asteroid or ship) it spins and after a few seconds locks-on, making a noise. Once locked on the reticle can drift off the target a little without breaking lock, but not by too much. When you fire torpedoes at a locked-on target the bullets home in on it. Once the bullets get past the half-way point to the target they switch to terminal homing and continue to home even if you break the lock.
+
+Space bar drops decoys which stay in place and last for 10 seconds, they have a chance/second of confusing torpedoes (the nearer the torp gets the more likely it is to be confused and hit the decoy, destroying it in the process) or blocking beams that pass through them (and destroy the decoy in the process).
+The standard player ship has 10 decoys.
+
+A long space bar press drops a mine (the ship has 5 mines by default). Mines cannot be seen by enemy ships, only by you. If a ship runs in to a mine it takes 10 damage on the facing side and the mine is removed.
+
+Beams and Torpedoes hit the shield line and stop. Once shield are down beams continue onto the reticle and torpedos continue in to the hit the ships outer hull with a small blast circle. Each system under the blast circle takes 1 damage, so a single torpedo can damage multiple systems. The system under the reticle for a beam takes 1 damage.
+
+Ships are represented by 2D vector top-down vector graphics. They comprise an outline, the ships hull, with a number of systems within it.
+
+Weapons reduce the HP of the system they hits. At 0 HP the system turns red and is out of action.
+
+The players medium cruiser has the following critical icons:
+All these systems are close enough to the outer edge of the ship to be hit by torpedo blast areas.
+Forward Beam Battery: 270 degrees centred on line ahead.
+Aft Beam Battery: 20 degrees centred on line astern.
+Forward Torpedo Launcher: 90 degrees centred on line ahead.
+Aft Torpedo Launcher: 90 degrees centred on line astern.
+Aft Bay (no decoys or mines whilst offline)
+Fore Shield Generator
+Aft Shield Generator
+Port Shield Generator
+Starboard Shield Generator
+Impulse Engines (rear saucer section, side by side)
+Left Warp Drive Nacelles (critical icons are on the front end of them)
+Right Warp Drive Nacelles (critical icons are on the front end of them)
+Main Power (deep in engineering hull)
+
+
+
+

@@ -1,0 +1,251 @@
+# STAR SEA - SHIP STATISTICS
+Generated: 2025-10-04
+
+=============================================================================
+FEDERATION SHIPS (PLAYER)
+=============================================================================
+
+HEAVY CRUISER (CA) - USS Enterprise
+-----------------------------------
+Class: Galaxy-class
+Length: 50 units
+HP: 100
+Max Speed: 200 units/s
+Acceleration: 100 units/s²
+Turn Rate: 100 deg/s
+Detection Radius: 1500 units
+
+Weapons:
+- Forward Beam Battery (270° arc forward)
+  * Damage: 1 HP per hit
+  * Range: 2000 units
+  * Cooldown: 1 second
+  * HP: 4/4
+
+- Aft Beam Weapon (270° arc aft)
+  * Damage: 1 HP per hit
+  * Range: 2000 units
+  * Cooldown: 1 second
+  * HP: 4/4
+
+- Forward Torpedo Launcher (270° arc forward)
+  * Damage: 1 HP
+  * Speed: 400 units/s (2x ship speed)
+  * Lifetime: 4 seconds
+  * Blast Radius: 8 units
+  * Loaded: 4 torpedoes
+  * Stored: 20 torpedoes
+  * Reload Time: 5 seconds (all 4 at once)
+  * HP: 4/4
+
+- Aft Torpedo Launcher (270° arc aft)
+  * Damage: 1 HP
+  * Speed: 400 units/s
+  * Lifetime: 4 seconds
+  * Blast Radius: 8 units
+  * Loaded: 4 torpedoes
+  * Stored: 20 torpedoes
+  * Reload Time: 5 seconds
+  * HP: 4/4
+
+Shields:
+- Total Capacity: 800 (200 per quadrant)
+- Regeneration: 5 HP/second (starts after 3s delay)
+- Quadrants: Fore, Aft, Port, Starboard
+
+Internal Systems:
+- Impulse Engines: 16 HP
+- Warp Drive: 20 HP
+- Sensors: 6 HP
+- Command & Control: 6 HP
+- Shuttle Bay: 6 HP
+- Power Systems: 12 HP
+
+Countermeasures:
+- Decoys: 6
+- Mines: 6
+
+=============================================================================
+FRIGATE (FG)
+=============================================================================
+Length: 25 units
+HP: 40
+Max Speed: 300 units/s
+Acceleration: 150 units/s²
+Turn Rate: 150 deg/s
+
+Notes: Fast, agile, fragile. Glass cannon escorts.
+
+=============================================================================
+DESTROYER (DD)
+=============================================================================
+Length: 35 units
+HP: 60
+Max Speed: 260 units/s
+Acceleration: 110 units/s²
+Turn Rate: 120 deg/s
+
+Notes: Balanced escort ship with good speed/HP ratio.
+
+=============================================================================
+LIGHT CRUISER (CL)
+=============================================================================
+Length: 40 units
+HP: 80
+Max Speed: 220 units/s
+Acceleration: 105 units/s²
+Turn Rate: 110 deg/s
+
+Notes: Mid-tier threat with decent all-around capabilities.
+
+=============================================================================
+BATTLECRUISER (BC)
+=============================================================================
+Length: 70 units
+HP: 140
+Max Speed: 160 units/s
+Acceleration: 80 units/s²
+Turn Rate: 80 deg/s
+
+Notes: Slow but very tough heavy hitter.
+
+=============================================================================
+TRIGON EMPIRE SHIPS
+=============================================================================
+
+Design: D-7 Class Bird-of-Prey inspired
+Color: Red (#f00)
+Turn Rate Bonus: +20% (1.2x multiplier)
+
+Weapons (varies by class):
+- Disruptor Cannons
+  * Damage: 2 HP per hit
+  * Speed: 2x torpedo speed
+  * Range: Same as beams
+  * No lock-on capability
+  * Wave effect visual
+
+Stats: Same HP/Speed/Size as Federation equivalents
+
+=============================================================================
+SCINTILIAN COALITION SHIPS
+=============================================================================
+
+Design: Warbird-class inspired
+Color: Cyan (#0ff)
+
+Weapons (varies by class):
+- Pulse Beams
+  * Damage: 0.5 HP per hit
+  * Cooldown: 0.5 seconds (rapid fire)
+  * Range: Same as standard beams
+
+- Plasma Torpedoes
+  * Damage Potential (DP): 30 (decays at 5/second)
+  * Speed: 2/3 of standard torpedo
+  * Blast Radius: Dynamic (50% to 150% of target size based on DP)
+  * Can be shot down (DP reduced by weapon damage)
+  * Homing: Auto-locks to nearest target to reticle
+
+Stats: Same HP/Speed/Size as Federation equivalents
+
+Special: Some ships have cloaking devices
+- Cloak charge time: 3 seconds
+- Cloak duration: 10 seconds
+- Cannot fire while cloaked
+- 1 second decloak delay before firing
+
+=============================================================================
+PIRATE VESSELS
+=============================================================================
+
+Design: Tholian-class inspired (asymmetrical)
+Color: Orange (#ffa500)
+
+Composition:
+- Mostly Frigates (FG)
+- Occasional Light Cruiser (CL) as squadron leader
+- Rarely use larger vessels
+
+Stats: Same HP/Speed/Size as Federation equivalents
+
+Weapons: Mix of all faction types (stolen/salvaged technology)
+
+=============================================================================
+MISSION ENTITIES (NON-COMBAT)
+=============================================================================
+
+CIVILIAN TRANSPORT
+------------------
+Type: Unarmed cargo/passenger ship
+HP: 50
+Radius: 40 units
+Color: Blue-gray (#4488aa)
+Shape: Square with engine glow
+
+SPACE STATION
+-------------
+Type: Stationary installation
+HP: 200
+Radius: 100 units (configurable)
+Color: Gray (#666)
+Shape: Rotating wheel with spokes
+Rotation Speed: 0.1 rad/s
+
+DERELICT
+--------
+Type: Abandoned wreck
+HP: 500
+Radius: 70 units (configurable)
+Color: Dark gray (#444)
+Shape: Damaged ship hull (diamond)
+Rotation: Slow tumble
+
+=============================================================================
+ASTEROIDS
+=============================================================================
+
+Status: IMPLEMENTED but NOT in missions currently
+- Small: radius varies
+- Medium: radius varies
+- Large: radius varies
+
+Can be destroyed by weapons
+Physics: Full collision detection
+Damage on impact: Based on relative velocity
+
+Note: Asteroids exist in game code but are not spawned in any missions
+
+=============================================================================
+GAME MECHANICS
+=============================================================================
+
+Auto-Repair:
+- All systems repair at 0.03 HP/second
+- Repair stops if system reaches 0 HP
+- Must be manually repaired (future feature) if destroyed
+
+Shield Regeneration:
+- 5 HP/second per quadrant
+- 3 second delay after taking damage
+- Quadrant-based damage distribution
+
+Weapons Energy:
+- Beams: Cooldown-based (time between shots)
+- Torpedoes: Ammunition-based (reload time for full magazine)
+
+Lock-On System (Torpedoes):
+- Adaptive lock time: 3-5 seconds
+  * 3 seconds with stable aim (< 20px/s reticle movement)
+  * 5 seconds with unstable aim (> 100px/s movement)
+- Lock loss: 2-3 seconds after reticle moves away
+  * Faster loss the further away from target
+- Visual: Green reticle (locking) → Red reticle (locked)
+
+Movement:
+- Forward/Reverse: W/S keys
+- Turn: A/D keys
+- 6 degrees of freedom in space
+- Newtonian physics with thrust
+
+=============================================================================

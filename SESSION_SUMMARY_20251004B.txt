@@ -1,0 +1,226 @@
+# STAR SEA - SESSION SUMMARY
+Date: 2025-10-04 (Afternoon Session)
+Status: Critical Issues Addressed, Major Features Scoped
+
+=============================================================================
+COMPLETED THIS SESSION
+=============================================================================
+
+1. ✅ MINIMAP CIRCLES FIXED
+   Problem: Circles appearing as ellipses
+   Cause: Canvas element defaulting to 300x150 instead of 200x200
+   Fix: Added width="200" height="200" to canvas element
+   File: index.html line 145
+
+2. ✅ WEAPON ALIGNMENT DEBUG LOGGING ADDED
+   Problem: Weapons not hitting reticle center
+   Solution: Added comprehensive debug logging (requires DEBUG_MODE: true)
+   Shows: Mouse coords, world coords, ship position, beam endpoints
+   File: js/core/Engine.js lines 542-565
+   Next: User needs to test and provide console output
+
+3. ✅ PRIORITY PLAN CREATED
+   File: PRIORITY_PLAN.txt
+   Breaks down all requested features by complexity and time
+
+4. ✅ DEBUG GUIDE CREATED
+   File: WEAPON_ALIGNMENT_DEBUG.txt
+   Step-by-step instructions for debugging weapon alignment
+
+=============================================================================
+ISSUES REQUIRING USER ACTION
+=============================================================================
+
+1. ⚠️ WEAPON ALIGNMENT - NEEDS TESTING
+   Action Required:
+   - Open js/config.js
+   - Set DEBUG_MODE: true
+   - Start game and fire beams
+   - Open browser console (F12)
+   - Copy console output and send to me
+
+   This will reveal the EXACT nature of the misalignment
+
+2. ⚠️ SHIP GRAPHIC - NEED IMAGE ACCESS
+   You mentioned: "Why are you finding it so hard to use the outline of the 1701D graphic I uploaded?"
+   Problem: I cannot access uploaded images through the file paths shown
+
+   Solutions:
+   a) Describe specific changes needed to current Galaxy-class shape
+   b) Provide accessible file path (e.g., in project directory)
+   c) Describe desired outline in text:
+      - Saucer diameter relative to engineering hull
+      - Nacelle length/width/position
+      - Overall proportions
+
+   Current Galaxy-class has:
+   - Large elliptical saucer (75% ship width)
+   - Smaller engineering hull
+   - Wide nacelles positioned low
+
+   What specifically needs to change?
+
+=============================================================================
+FEATURE REQUESTS RECEIVED
+=============================================================================
+
+### IMMEDIATE (Can do quickly - 1-2 hours each)
+--------------------------------------------------
+
+□ All ship class weapons (from system charts)
+  - FG: Forward Beam
+  - DD: Forward Beam + Dual Torpedo
+  - CL: Forward Beam + Dual Torpedo
+  - BC: 2x Forward Beam + Aft Beam + Torpedoes
+  - Trigon: Disruptors (120° forward arc, BC has aft)
+  - Scintilian: Pulse Beams + Plasma Torpedoes
+  - Pirates: Mixed weapons (limited to 1 left-click + 1 right-click type)
+
+□ Space Station Weapons
+  - Federation: Fwd Beam + Fwd Torpedo + Aft Beam + Aft Torpedo
+  - Trigon: 4 Disruptors (2 fwd 180°, 2 aft 180°)
+  - Scintilian: 3 Pulse Beams (360°) + 1 Plasma Torpedo (360°)
+  - Pirate: Fwd + Aft mounts (mixed weapons)
+
+□ HUD Reorganization
+  - Move weapon charge/loading info to systems block
+  - Show only HP bars
+
+### MEDIUM COMPLEXITY (2-4 hours)
+--------------------------------------------------
+
+□ Bay System Overhaul
+  Space limits:
+  - FG: 2 spaces
+  - CL: 4 spaces
+  - CA: 6 spaces
+  - BC: 8 spaces
+
+  Default loadouts:
+  - FG: 1 Shuttle, 1 Decoy
+  - CL: 2 Shuttles, 1 Decoy, 1 Mine
+  - CA: 2 Shuttles, 2 Decoys, 2 Mines
+  - BC: 3 Shuttles, 3 Decoys, 2 Mines
+
+□ Tractor Beam System
+  - Q key toggle
+  - Locks mines/shuttles/torpedoes first
+  - Then ships (size restricted - BC > CA > CL > FG)
+  - 20% penalty to shields, beams, speed while active
+  - Pins target in place relative to ship
+  - Short range
+
+### MAJOR FEATURES (8-12 hours each)
+--------------------------------------------------
+
+□ Shuttle System (LARGEST FEATURE)
+  Components needed:
+  - Shuttle entity class
+  - Shields (3pt, recharge 1pt/s after 2s)
+  - HP (2, explodes at 0)
+  - Beam weapon (120° forward arc, 20% ship beam range)
+  - Speed (50% of CA)
+  - M key to cycle mission types
+  - Long-press M to launch
+
+  Mission Types (5 AIs needed):
+  1. Attack - Move toward nearest enemy, engage
+  2. Defense - Loiter near player, intercept torpedoes/shuttles, attack ships in range
+  3. Wild Weasel - Fly away emitting torpedo-attracting signal
+  4. Suicide - Ram nearest enemy, explode as 2 heavy torpedoes
+  5. Transport - Scenario-specific (move to location, pause, return)
+
+=============================================================================
+QUESTIONS FOR YOU
+=============================================================================
+
+1. **Weapon Alignment:**
+   Can you test with DEBUG_MODE and send console output?
+   This is the quickest path to fixing it.
+
+2. **Ship Graphic:**
+   What specific changes do you want to the current Galaxy-class outline?
+
+3. **Systems Implementation:**
+   You asked: "Can you explain how you have implemented the systems chart?"
+
+   Answer: Systems are damage boxes positioned based on grid layout in SystemDamageBoxes.js
+   - Grid positions converted to pixel coordinates
+   - Torpedo blast damage checks which boxes are hit
+   - Each system has HP and can be disabled
+   - Auto-repair at 0.03 HP/s
+
+   Is there a specific aspect you want me to explain?
+
+4. **Feature Priority:**
+   Given the large scope, what should I prioritize?
+
+   Recommended order:
+   a) Fix weapon alignment (with your help via debug output)
+   b) Add all ship class weapons
+   c) Space station weapons
+   d) Bay system overhaul
+   e) Tractor beam
+   f) Shuttle system (biggest, most complex)
+
+5. **Shuttle System Scope:**
+   Do you need all 5 mission types immediately, or can I implement Attack/Defense first?
+   This would reduce initial dev time from 12 hours to ~6 hours.
+
+=============================================================================
+CURRENT GAME STATE
+=============================================================================
+
+Working:
+✓ Yellow line removed
+✓ Ship outline (Galaxy-class, may need refinement)
+✓ Pirate ship classes fixed
+✓ Lock-on system (adaptive timer, lock loss)
+✓ Weapon energy bands (color coded)
+✓ Reticle colors (green→red)
+✓ Minimap circles (just fixed)
+
+Needs Testing:
+⚠️ Weapon alignment (debug logging ready)
+⚠️ Enemy spawning (code correct, may be user flow issue)
+
+Not Yet Implemented:
+❌ Weapons for FG/DD/CL/BC/Stations
+❌ Shuttle system
+❌ Tractor beam
+❌ Bay system update
+❌ HUD reorganization
+
+=============================================================================
+NEXT STEPS
+=============================================================================
+
+Immediate (waiting on you):
+1. Test weapon alignment with debug mode
+2. Clarify ship graphic requirements
+3. Confirm feature priority
+
+Then I can:
+1. Fix weapon alignment based on debug data
+2. Add weapons to all ship classes (2-3 hours)
+3. Implement space station weapons (1 hour)
+4. Begin shuttle system or other prioritized feature
+
+=============================================================================
+TIME ESTIMATES
+=============================================================================
+
+Remaining Work:
+- Weapon alignment fix: 1-2 hours (once debugged)
+- All ship weapons: 2-3 hours
+- Space station weapons: 1 hour
+- HUD reorganization: 1 hour
+- Bay system: 2-3 hours
+- Tractor beam: 4-6 hours
+- Shuttle system: 8-12 hours
+
+Total: ~20-30 hours of development time
+
+This is a significant expansion of the game's features. I can absolutely do it, but it will take time. Let me know what you'd like me to prioritize.
+
+=============================================================================

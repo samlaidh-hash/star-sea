@@ -1,0 +1,530 @@
+/* Star Sea - HUD Styles */
+
+#hud {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* Tactical Panel - Top Left */
+#tactical-panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 150px;
+    background: rgba(0, 20, 0, 0.8);
+    border: 2px solid #0f0;
+    padding: 5px;
+    font-size: 10px;
+    pointer-events: auto;
+}
+
+.panel-header {
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #0f0;
+    padding-bottom: 3px;
+}
+
+.system-group {
+    margin-bottom: 8px;
+}
+
+.system-label {
+    font-weight: bold;
+    margin-bottom: 3px;
+    color: #0ff;
+    font-size: 9px;
+}
+
+/* Shield Display */
+.shield-display {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.shield-bar {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.shield-label {
+    width: 20px;
+    font-size: 8px;
+}
+
+.shield-bar .bar-fill {
+    flex: 1;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid #0f0;
+    position: relative;
+    overflow: hidden;
+}
+
+.shield-bar .bar-fill {
+    background: linear-gradient(90deg, #0ff, #0af) !important;
+}
+
+/* Weapon Status */
+#weapon-status {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.weapon-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.weapon-item.damaged .weapon-hp {
+    color: #f00;
+    font-weight: bold;
+}
+
+.weapon-item.damaged .weapon-label {
+    color: #f00;
+}
+
+.weapon-item.warning .weapon-hp {
+    color: #ff0;
+}
+
+.weapon-item.warning .weapon-label {
+    color: #ff0;
+}
+
+.weapon-bar {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    position: relative;
+}
+
+.weapon-label {
+    width: 35px;
+    font-size: 8px;
+}
+
+.weapon-bar .bar-fill {
+    flex: 1;
+    height: 6px;
+    border: 1px solid #0f0;
+    position: relative;
+    overflow: hidden;
+    transition: width 0.2s, background 0.3s;
+    background: linear-gradient(90deg, #f00, #f00); /* Default: bright red (charged) */
+}
+
+/* Weapon bar states */
+.weapon-bar .bar-fill.recharging {
+    background: linear-gradient(90deg, #800, #600); /* Dull red */
+}
+
+.weapon-bar .bar-fill.charged {
+    background: linear-gradient(90deg, #f00, #f00); /* Bright red */
+}
+
+.weapon-hp {
+    font-size: 7px;
+    text-align: right;
+    padding-right: 2px;
+    opacity: 0.8;
+}
+
+.torp-count {
+    width: 20px;
+    font-size: 8px;
+    text-align: right;
+}
+
+/* Systems Status */
+#systems-status {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.system-item {
+    font-size: 8px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.system-name {
+    width: 40px;
+    flex-shrink: 0;
+}
+
+.system-hp-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid #0f0;
+    position: relative;
+    overflow: hidden;
+}
+
+.system-hp-bar .hp-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #0a0, #0f0);
+    transition: width 0.2s;
+}
+
+.system-item.damaged .system-hp-bar {
+    border-color: #f00;
+}
+
+.system-item.damaged .hp-fill {
+    background: linear-gradient(90deg, #a00, #f00);
+}
+
+.system-item.warning .system-hp-bar {
+    border-color: #ff0;
+}
+
+.system-item.warning .hp-fill {
+    background: linear-gradient(90deg, #aa0, #ff0);
+}
+
+/* Countermeasures */
+#countermeasures {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    font-size: 8px;
+}
+
+/* Critical Log */
+#critical-log {
+    margin-top: 5px;
+    max-height: 50px;
+    overflow-y: auto;
+}
+
+.log-header {
+    font-weight: bold;
+    margin-bottom: 3px;
+    color: #f00;
+    font-size: 8px;
+}
+
+#log-messages {
+    font-size: 7px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.log-message {
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+
+.log-message.fading {
+    opacity: 0;
+}
+
+/* Minimap - Top Right */
+#minimap-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 200px;
+    height: 200px;
+    border: 2px solid #0f0;
+    background: rgba(0, 20, 0, 0.8);
+}
+
+#minimap {
+    width: 100%;
+    height: 100%;
+}
+
+/* Targeting Reticle */
+#reticle {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 2px solid #0f0;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: border-color 0.1s;
+}
+
+#reticle::before {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 10px;
+    background: #0f0;
+    left: 50%;
+    top: -5px;
+    transform: translateX(-50%);
+}
+
+#reticle::after {
+    content: '';
+    position: absolute;
+    width: 2px;
+    height: 10px;
+    background: #0f0;
+    left: 50%;
+    bottom: -5px;
+    transform: translateX(-50%);
+}
+
+/* Wrapper for additional radial lines - add this with JS */
+.reticle-line {
+    position: absolute;
+    background: #0f0;
+}
+
+.reticle-line.left {
+    width: 10px;
+    height: 2px;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.reticle-line.right {
+    width: 10px;
+    height: 2px;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#reticle.locked {
+    border-color: #f00;
+    /* No animation - locked reticle should not spin */
+}
+
+#reticle.locked::before,
+#reticle.locked::after,
+#reticle.locked .reticle-line {
+    background: #f00;
+}
+
+#reticle.locking {
+    border-color: #0f0;
+    animation: spin 2s linear infinite;
+}
+
+#reticle.locking::before,
+#reticle.locking::after,
+#reticle.locking .reticle-line {
+    background: #0f0;
+}
+
+@keyframes spin {
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Speed Bar */
+#speed-bar-container {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    background: rgba(0, 20, 0, 0.8);
+    border: 2px solid #0f0;
+    padding: 8px;
+    text-align: center;
+}
+
+#speed-bar {
+    position: relative;
+    width: 100%;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid #0f0;
+    display: flex;
+    overflow: hidden;
+}
+
+#speed-bar-reverse {
+    position: absolute;
+    right: 50%;
+    top: 0;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #00a, #00f);
+    transition: width 0.1s;
+}
+
+#speed-bar-forward {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #0a0, #0f0);
+    transition: width 0.1s;
+}
+
+/* Center line indicator */
+#speed-bar::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: #fff;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+/* Warp Charge Bar (in tactical panel) */
+#warp-charge-bar {
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid #0f0;
+    position: relative;
+    overflow: hidden;
+}
+
+#warp-charge-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #00f, #00a);
+    transition: width 0.2s;
+}
+
+/* Mission Objectives Panel - Right Side */
+#objectives-panel {
+    position: absolute;
+    top: 240px;
+    right: 20px;
+    width: 300px;
+    max-height: 400px;
+    background: rgba(0, 20, 0, 0.9);
+    border: 2px solid #0f0;
+    padding: 10px;
+    pointer-events: auto;
+    display: none; /* Hidden when no mission active */
+}
+
+#objectives-panel.active {
+    display: block;
+}
+
+#objectives-display {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.objective-item {
+    padding: 8px;
+    background: rgba(0, 40, 0, 0.6);
+    border-left: 3px solid #0a0;
+    font-size: 11px;
+    transition: all 0.3s;
+}
+
+.objective-item.primary {
+    border-left-color: #0f0;
+    background: rgba(0, 50, 0, 0.7);
+}
+
+.objective-item.completed {
+    border-left-color: #0f0;
+    background: rgba(0, 100, 0, 0.3);
+    opacity: 0.6;
+}
+
+.objective-item.failed {
+    border-left-color: #f00;
+    background: rgba(100, 0, 0, 0.3);
+    opacity: 0.6;
+}
+
+.objective-description {
+    margin-bottom: 4px;
+    color: #0f0;
+    font-weight: bold;
+}
+
+.objective-item.completed .objective-description::before {
+    content: '✓ ';
+    color: #0f0;
+}
+
+.objective-item.failed .objective-description::before {
+    content: '✗ ';
+    color: #f00;
+}
+
+.objective-item.failed .objective-description {
+    color: #f88;
+}
+
+.objective-progress {
+    font-size: 10px;
+    color: #0a0;
+    margin-top: 4px;
+}
+
+.objective-progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid #0a0;
+    margin-top: 4px;
+    overflow: hidden;
+}
+
+.objective-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0f0, #0a0);
+    transition: width 0.3s;
+}
+
+/* Scrollbar for objectives */
+#objectives-display::-webkit-scrollbar {
+    width: 6px;
+}
+
+#objectives-display::-webkit-scrollbar-track {
+    background: rgba(0, 20, 0, 0.5);
+}
+
+#objectives-display::-webkit-scrollbar-thumb {
+    background: #0a0;
+    border-radius: 3px;
+}
+
+#objectives-display::-webkit-scrollbar-thumb:hover {
+    background: #0f0;
+}

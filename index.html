@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Sea</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/ui.css">
+    <link rel="stylesheet" href="css/hud.css">
+    <link rel="stylesheet" href="css/menus.css">
+</head>
+<body>
+    <!-- Main game canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- HUD Overlay -->
+    <div id="hud">
+        <!-- Tactical Panel (Top Left) -->
+        <div id="tactical-panel">
+            <div class="panel-header" id="player-ship-panel-title">Player Ship</div>
+
+            <!-- Shields -->
+            <div class="system-group">
+                <div class="system-label">Shields</div>
+                <div class="shield-display">
+                    <div class="shield-bar" id="shield-fore">
+                        <span class="shield-label">FWD</span>
+                        <div class="bar-fill" data-quadrant="fore"></div>
+                    </div>
+                    <div class="shield-bar" id="shield-port">
+                        <span class="shield-label">PRT</span>
+                        <div class="bar-fill" data-quadrant="port"></div>
+                    </div>
+                    <div class="shield-bar" id="shield-starboard">
+                        <span class="shield-label">STB</span>
+                        <div class="bar-fill" data-quadrant="starboard"></div>
+                    </div>
+                    <div class="shield-bar" id="shield-aft">
+                        <span class="shield-label">AFT</span>
+                        <div class="bar-fill" data-quadrant="aft"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weapons -->
+            <div class="system-group">
+                <div class="system-label">Weapons</div>
+                <div id="weapon-status">
+                    <div class="weapon-item" data-weapon="beam-forward">
+                        <div class="weapon-bar" id="beam-forward">
+                            <span class="weapon-label">FWD BEAM</span>
+                            <div class="bar-fill"></div>
+                        </div>
+                        <div class="weapon-hp">HP: <span class="hp">4/4</span></div>
+                    </div>
+                    <div class="weapon-item" data-weapon="beam-aft">
+                        <div class="weapon-bar" id="beam-aft">
+                            <span class="weapon-label">AFT BEAM</span>
+                            <div class="bar-fill"></div>
+                        </div>
+                        <div class="weapon-hp">HP: <span class="hp">4/4</span></div>
+                    </div>
+                    <div class="weapon-item" data-weapon="torp-forward">
+                        <div class="weapon-bar" id="torp-forward">
+                            <span class="weapon-label">FWD TORP</span>
+                            <span class="torp-count">4/20</span>
+                        </div>
+                        <div class="weapon-hp">HP: <span class="hp">4/4</span></div>
+                    </div>
+                    <div class="weapon-item" data-weapon="torp-aft">
+                        <div class="weapon-bar" id="torp-aft">
+                            <span class="weapon-label">AFT TORP</span>
+                            <span class="torp-count">4/20</span>
+                        </div>
+                        <div class="weapon-hp">HP: <span class="hp">4/4</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hull Integrity -->
+            <div class="system-group">
+                <div class="system-label">Hull Integrity</div>
+                <div id="hull-status">
+                    <div class="system-item" data-system="hull">HP: <span class="hp" id="ship-hp">100/100</span></div>
+                </div>
+            </div>
+
+            <!-- Systems -->
+            <div class="system-group">
+                <div class="system-label">Systems</div>
+                <div id="systems-status">
+                    <div class="system-item" data-system="impulse">
+                        <span class="system-name">Impulse</span>
+                        <div class="system-hp-bar"><div class="hp-fill"></div></div>
+                    </div>
+                    <div class="system-item" data-system="warp">
+                        <span class="system-name">Warp</span>
+                        <div class="system-hp-bar"><div class="hp-fill"></div></div>
+                    </div>
+                    <div class="system-item" data-system="sensors">
+                        <span class="system-name">Sensors</span>
+                        <div class="system-hp-bar"><div class="hp-fill"></div></div>
+                    </div>
+                    <div class="system-item" data-system="cnc">
+                        <span class="system-name">C&C</span>
+                        <div class="system-hp-bar"><div class="hp-fill"></div></div>
+                    </div>
+                    <div class="system-item" data-system="bay">
+                        <span class="system-name">Bay</span>
+                        <div class="system-hp-bar"><div class="hp-fill"></div></div>
+                    </div>
+                    <div class="system-item" data-system="power">
+                        <span class="system-name">Power</span>
+                        <div class="system-hp-bar"><div class="hp-fill"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decoys/Mines -->
+            <div class="system-group">
+                <div class="system-label">Countermeasures</div>
+                <div id="countermeasures">
+                    <div>Decoys: <span id="decoy-count">6</span></div>
+                    <div>Mines: <span id="mine-count">6</span></div>
+                </div>
+            </div>
+
+            <!-- Critical Messages -->
+            <div id="critical-log">
+                <div class="log-header">Critical Events</div>
+                <div id="log-messages"></div>
+            </div>
+
+            <!-- Warp Drive -->
+            <div class="system-group">
+                <div class="system-label">Warp Drive</div>
+                <div id="warp-charge-bar">
+                    <div id="warp-charge-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Minimap (Top Right) -->
+        <div id="minimap-container">
+            <canvas id="minimap" width="200" height="200"></canvas>
+        </div>
+
+        <!-- Mission Objectives Panel (Right Side) -->
+        <div id="objectives-panel">
+            <div class="panel-header">Mission Objectives</div>
+            <div id="objectives-display">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Targeting Reticle -->
+        <div id="reticle"></div>
+
+        <!-- Speed Bar -->
+        <div id="speed-bar-container">
+            <div class="system-label">Speed</div>
+            <div id="speed-bar">
+                <div id="speed-bar-reverse"></div>
+                <div id="speed-bar-forward"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Screens -->
+    <div id="main-menu" class="menu-screen">
+        <h1>STAR SEA</h1>
+        <div id="ship-selection-panel">
+            <div class="panel-title">Player Ship</div>
+            <label for="player-ship-select">Choose your ship:</label>
+            <select id="player-ship-select"></select>
+            <div id="player-ship-summary">
+                <p class="summary-line" id="ship-summary-role"></p>
+                <p class="summary-line" id="ship-summary-description"></p>
+                <p class="summary-line" id="ship-summary-stats"></p>
+                <p class="summary-line" id="ship-summary-torpedoes"></p>
+                <p class="summary-line" id="ship-summary-special"></p>
+            </div>
+        </div>
+        <div class="menu-buttons">
+            <button id="btn-new-game">New Game</button>
+            <button id="btn-load-game">Load Game</button>
+            <button id="btn-options">Options</button>
+        </div>
+    </div>
+
+    <div id="pause-menu" class="menu-screen hidden">
+        <h2>PAUSED</h2>
+        <div class="menu-buttons">
+            <button id="btn-resume">Resume</button>
+            <button id="btn-save">Save Game</button>
+            <button id="btn-load">Load Game</button>
+            <button id="btn-options-pause">Options</button>
+            <button id="btn-main-menu">Main Menu</button>
+        </div>
+    </div>
+
+    <!-- Mission Briefing Screen -->
+    <div id="briefing-screen" class="menu-screen hidden">
+        <div class="briefing-container">
+            <div class="briefing-header">
+                <h2 id="briefing-title">MISSION BRIEFING</h2>
+                <div class="mission-info">
+                    <span id="mission-sector">Sector: Unknown</span>
+                    <span id="mission-number">Mission 1</span>
+                </div>
+            </div>
+
+            <div class="briefing-content">
+                <div class="briefing-officer">
+                    <div class="officer-portrait"></div>
+                    <div id="briefing-officer-name">Admiral Chen</div>
+                </div>
+
+                <div class="briefing-text">
+                    <h3 id="briefing-subtitle">Mission Title</h3>
+                    <p id="briefing-description">
+                        Mission description goes here...
+                    </p>
+                </div>
+            </div>
+
+            <div class="briefing-objectives">
+                <h3>MISSION OBJECTIVES</h3>
+                <ul id="objectives-list">
+                    <!-- Objectives populated by JavaScript -->
+                </ul>
+            </div>
+
+            <div class="briefing-footer">
+                <button id="btn-accept-mission" class="mission-btn">ACCEPT MISSION</button>
+                <button id="btn-decline-mission" class="mission-btn secondary">DECLINE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mission Debriefing Screen -->
+    <div id="debriefing-screen" class="menu-screen hidden">
+        <div class="debriefing-container">
+            <div class="debriefing-header">
+                <h2 id="debriefing-result">MISSION COMPLETE</h2>
+                <div id="debriefing-mission-title">Mission Title</div>
+            </div>
+
+            <div class="debriefing-content">
+                <div class="debriefing-stats">
+                    <h3>MISSION STATISTICS</h3>
+                    <div class="stat-row">
+                        <span class="stat-label">Mission Time:</span>
+                        <span id="stat-time" class="stat-value">00:00</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Enemies Destroyed:</span>
+                        <span id="stat-enemies" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Hull Integrity:</span>
+                        <span id="stat-hull" class="stat-value">100%</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Objectives:</span>
+                        <span id="stat-objectives" class="stat-value">0/0</span>
+                    </div>
+                </div>
+
+                <div class="debriefing-text">
+                    <h3>MISSION REPORT</h3>
+                    <p id="debriefing-description">
+                        Debriefing text goes here...
+                    </p>
+                </div>
+
+                <div class="debriefing-objectives">
+                    <h3>OBJECTIVES COMPLETED</h3>
+                    <ul id="debriefing-objectives-list">
+                        <!-- Objectives populated by JavaScript -->
+                    </ul>
+                </div>
+            </div>
+
+            <div class="debriefing-footer">
+                <button id="btn-next-mission" class="mission-btn">NEXT MISSION</button>
+                <button id="btn-return-base" class="mission-btn secondary">RETURN TO BASE</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Third-party Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/planck-js@0.3.31/dist/planck.min.js"></script>
+
+    <!-- Core Engine -->
+    <script src="js/config.js"></script>
+    <script src="js/config/SystemDamageBoxes.js"></script>
+    <script src="js/config/AudioConfig.js"></script>
+    <script src="js/utils/MathUtils.js"></script>
+    <script src="js/core/EventBus.js"></script>
+    <script src="js/core/InputManager.js"></script>
+    <script src="js/core/Camera.js"></script>
+    <script src="js/core/StateManager.js"></script>
+    <script src="js/core/GameLoop.js"></script>
+    <script src="js/core/Engine.js"></script>
+
+    <!-- Physics -->
+    <script src="js/physics/PhysicsWorld.js"></script>
+    <script src="js/physics/CollisionHandler.js"></script>
+    <script src="js/physics/GravityWell.js"></script>
+
+    <!-- Rendering -->
+    <script src="js/rendering/Renderer.js"></script>
+    <script src="js/rendering/ShipRenderer.js"></script>
+    <script src="js/rendering/EnvironmentRenderer.js"></script>
+    <script src="js/rendering/UIRenderer.js"></script>
+    <script src="js/rendering/ParticleSystem.js"></script>
+
+    <!-- Systems -->
+    <script src="js/systems/TargetingSystem.js"></script>
+    <script src="js/systems/AIController.js"></script>
+    <script src="js/data/Missions.js"></script>
+    <script src="js/systems/MissionManager.js"></script>
+    <script src="js/systems/SaveManager.js"></script>
+    <script src="js/systems/ProgressionManager.js"></script>
+    <script src="js/systems/AudioManager.js"></script>
+
+    <!-- Components -->
+    <script src="js/components/Transform.js"></script>
+    <script src="js/components/Physics.js"></script>
+
+    <!-- Weapon Components -->
+    <script src="js/components/weapons/Weapon.js"></script>
+    <script src="js/components/weapons/BeamWeapon.js"></script>
+    <script src="js/components/weapons/PulseBeam.js"></script>
+    <script src="js/components/weapons/TorpedoLauncher.js"></script>
+    <script src="js/components/weapons/Disruptor.js"></script>
+    <script src="js/components/weapons/PlasmaTorpedo.js"></script>
+
+    <!-- Shield & Systems Components -->
+    <script src="js/components/Shield.js"></script>
+    <script src="js/components/InternalSystems.js"></script>
+
+    <!-- Entities -->
+    <script src="js/entities/Entity.js"></script>
+    <script src="js/entities/Projectile.js"></script>
+    <script src="js/entities/Decoy.js"></script>
+    <script src="js/entities/Mine.js"></script>
+    <script src="js/entities/Ship.js"></script>
+    <script src="js/entities/Asteroid.js"></script>
+    <script src="js/entities/Environmental.js"></script>
+    <script src="js/entities/MissionEntity.js"></script>
+
+    <!-- UI -->
+    <script src="js/ui/HUD.js"></script>
+    <script src="js/ui/MissionUI.js"></script>
+
+    <!-- Main Entry Point -->
+    <script src="js/main.js"></script>
+</body>
+</html>
+
+

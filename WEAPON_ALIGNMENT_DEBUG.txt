@@ -1,0 +1,102 @@
+# WEAPON ALIGNMENT DEBUGGING GUIDE
+
+## Problem Statement
+User reports: "Beams and Torpedoes are still not being fired at the centre of the reticle!!!"
+
+## Debugging Steps Required
+
+### Step 1: Enable Debug Mode
+Open js/config.js and set:
+```javascript
+DEBUG_MODE: true
+```
+
+### Step 2: Test Weapon Fire
+1. Start game
+2. Accept mission
+3. Left-click (hold) to fire beams
+4. Open browser console (F12)
+5. Look for "WEAPON FIRE DEBUG" logs
+
+### Step 3: Expected Debug Output
+Console should show:
+- Mouse (screen): {x: ###, y: ###}
+- Target (world): {x: ###, y: ###}
+- Ship (world): {x: ###, y: ###, rotation: ###}
+- Camera: {x: ###, y: ###, zoom: ###}
+- Beam 0: firingPoint, endPoint, target
+
+### Step 4: Analyze Data
+Check:
+1. Is Target (world) where you expect the reticle to be?
+2. Is Beam endPoint close to Target?
+3. Is there a consistent offset?
+
+### Step 5: Report Findings
+Please provide:
+1. Screenshot of game with reticle position marked
+2. Console log output
+3. Description: "Beam hits X pixels to the left/right/up/down of reticle"
+
+## Possible Root Causes
+
+### Theory 1: Coordinate Transform Issue
+- screenToWorld() might be using wrong camera values
+- Test: Does misalignment change when zoomed?
+
+### Theory 2: Firing Point Calculation
+- calculateFiringPoint() might be wrong for weapon bands
+- Test: Do beams start from correct position on ship?
+
+### Theory 3: Visual vs Actual Reticle
+- Reticle DOM element might not match mouse position
+- Test: Does console log match where you think you clicked?
+
+### Theory 4: Beam Range Limit
+- Beams capped at max range (2000 units)
+- Test: Does alignment improve when targeting closer?
+
+## Quick Visual Test
+
+To add visual debugging:
+1. Open js/rendering/Renderer.js
+2. In renderProjectile(), add BEFORE beam drawing:
+
+```javascript
+// DEBUG: Draw target point
+this.ctx.fillStyle = '#0f0';
+this.ctx.beginPath();
+this.ctx.arc(projectile.targetX, projectile.targetY, 20, 0, Math.PI * 2);
+this.ctx.fill();
+```
+
+This will draw a green circle where the game thinks the reticle was pointing.
+
+If green circle is NOT where reticle was, the issue is in coordinate conversion.
+If green circle IS where reticle was, but beam doesn't hit it, the issue is in firing point or endpoint calculation.
+
+## Current Implementation
+
+### Beam Firing Flow:
+1. User clicks → InputManager gets screen coords
+2. Engine.beamFiring → gets mouse position
+3. camera.screenToWorld(mouseX, mouseY) → converts to world coords
+4. ship.fireBeams(worldX, worldY) → fires beams at world position
+5. BeamWeapon.fire() → calculates firing point from weapon band
+6. BeamProjectile → calculates beam line from firingPoint to target
+7. Renderer draws beam from firingPointX/Y to endX/endY
+
+### Coordinate Systems:
+- Screen: 0,0 = top-left of canvas
+- World: Player ship at variable position, camera follows
+- Camera transform: Translates world → screen for rendering
+
+## Next Steps After Debug
+
+Once we have console output, we can:
+1. Identify exact nature of misalignment
+2. Fix specific coordinate transform
+3. Or fix firing point calculation
+4. Or fix beam endpoint calculation
+
+The debug logs will tell us EXACTLY where the problem is.

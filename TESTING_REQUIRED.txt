@@ -1,0 +1,204 @@
+# STAR SEA - TESTING REQUIRED
+Date: 2025-10-04
+Session: Multi-Bug Fix
+
+=============================================================================
+FIXES COMPLETED - REQUIRES TESTING
+=============================================================================
+
+## 1. ✅ Yellow Line REMOVED
+**What was fixed:**
+- Removed yellow velocity vector line that was sticking out from ships
+
+**How to test:**
+- Start game, move ship
+- Confirm NO yellow line appears from ship center
+
+## 2. ✅ Ship Outline FIXED (Galaxy-class)
+**What was fixed:**
+- Updated Federation Heavy Cruiser to proper Galaxy-class silhouette
+- Large elliptical saucer, smaller engineering hull, wide nacelles
+
+**How to test:**
+- Start game, observe player ship shape
+- Should look like USS Enterprise-D (Galaxy-class)
+
+## 3. ✅ Pirate Ship Classes UPDATED
+**What was fixed:**
+- Mission 1: Changed DD to CL (squadron leader)
+- Mission 9: Changed 2× DD to FG (all frigates now except 1 CL leader)
+
+**How to test:**
+- Play Mission 1: Should see 2 Frigates + 1 Light Cruiser
+- Play Mission 9: Should see 1 Light Cruiser + 7 Frigates
+
+## 4. ⚠️ Weapon Alignment - NEEDS VERIFICATION
+**What was fixed:**
+- Beam weapons now fire from weapon emitter bands on ship hull
+- Forward beams fire from forward beam band (ellipse on saucer)
+- Aft beams fire from aft beam point
+
+**How to test:**
+- Fire beams at reticle
+- Beams should originate from red ellipse/point on ship hull
+- Beam END point should hit exactly where reticle is pointing
+- If still misaligned, report EXACT behavior
+
+**Known issue:**
+- User reported beams/torpedoes still not hitting reticle center
+- Code appears correct, may be visual perception or other issue
+- CRITICAL: Please test and report results
+
+## 5. ❌ Waypoint Arrow - NOT IMPLEMENTED
+**Status:** Not added due to time constraints
+
+**What's needed:**
+- Arrow on screen edge pointing toward waypoint objectives
+- Only for "reach" type objectives
+- Arrow should rotate to point toward objective
+
+**Temporary workaround:**
+- Use minimap to navigate to objectives
+- Objective coordinates shown in briefing
+
+=============================================================================
+KNOWN ISSUES - STATUS CHECK NEEDED
+=============================================================================
+
+## Enemy Ships Not Spawning?
+**Status:** Code verified as correct
+
+**What was checked:**
+- Mission enemy spawning code EXISTS and is correct
+- Enemy ships SHOULD spawn when mission starts
+- Spawning happens in Engine.startMission()
+
+**Possible causes:**
+1. User hasn't clicked "New Game" → "Accept Mission" yet
+2. Enemies are spawning but far away (check mission coordinates)
+3. Enemies are off-screen (use minimap to locate)
+
+**How to test:**
+1. Click "New Game"
+2. Click "Accept Mission" in briefing
+3. Check minimap (top-right) for red dots (enemies)
+4. Mission 1 enemies spawn at x=2500-3000, y=-500 to +500
+5. Fly toward those coordinates
+
+**Minimap Colors:**
+- Green dot = Player (USS Enterprise)
+- Red dots = Enemies
+- Other colors = Mission entities
+
+## Asteroids
+**Status:** NOT in any missions
+
+**Answer:** Asteroids exist in game code but are NOT spawned in missions
+- Code: js/entities/Asteroid.js
+- Can be destroyed by weapons
+- Have physics/collision
+- Simply not included in mission designs
+
+**To add asteroids:**
+- Would need to edit mission data in js/data/Missions.js
+- Add asteroid entities to mission spawn lists
+
+=============================================================================
+WEAPON ALIGNMENT DEBUG CHECKLIST
+=============================================================================
+
+If weapons still don't hit reticle, please check:
+
+1. **Beam Alignment:**
+   - Does beam START from ship center or from weapon bands?
+   - Does beam END at reticle or somewhere else?
+   - Is misalignment constant or does it vary with ship rotation?
+
+2. **Torpedo Alignment:**
+   - Do torpedoes fire toward reticle?
+   - Do they curve/home toward locked targets?
+   - Or do they fly in wrong direction entirely?
+
+3. **Coordinate Issues:**
+   - Does misalignment change when zoomed in/out?
+   - Does it change based on where ship is on screen?
+
+4. **Expected vs Actual:**
+   - Where does reticle point? (world coordinates)
+   - Where does weapon hit? (world coordinates)
+   - Difference in pixels/units?
+
+=============================================================================
+FILES MODIFIED THIS SESSION
+=============================================================================
+
+1. js/rendering/ShipRenderer.js
+   - Removed yellow velocity vector
+
+2. js/entities/Ship.js
+   - Updated generateGalaxyClass() for proper silhouette
+
+3. js/data/Missions.js
+   - Updated pirate ship classes (Mission 1, Mission 9)
+
+4. js/components/weapons/BeamWeapon.js
+   - Restored calculateFiringPoint() to use weapon bands
+   - Previously was firing from ship center (commented as TODO)
+
+5. js/systems/TargetingSystem.js
+   - (From earlier session) Adaptive lock time, lock loss system
+
+6. css/hud.css
+   - (From earlier session) Reticle colors, weapon band colors
+
+7. ship_statistics.txt
+   - NEW FILE: Complete ship stats reference
+
+=============================================================================
+NEXT STEPS
+=============================================================================
+
+1. **TEST GAME:**
+   - Start new game
+   - Accept Mission 1
+   - Verify enemies spawn (check minimap)
+   - Fire weapons at enemies
+   - Report weapon alignment results
+
+2. **IF ENEMIES DON'T SPAWN:**
+   - Check browser console for errors (F12)
+   - Verify you clicked "Accept Mission"
+   - Check minimap for red dots
+   - Fly to coordinates x=2500, y=0
+
+3. **IF WEAPONS STILL MISALIGNED:**
+   - Describe exact behavior
+   - Include screenshots if possible
+   - Note: Is it off by a constant amount or varies?
+
+4. **WAYPOINT ARROW:**
+   - Do you want me to implement this?
+   - It will add UI arrow pointing to objectives
+
+5. **OTHER ISSUES:**
+   - Report any other bugs/problems found
+
+=============================================================================
+PROGRESS: 80%
+=============================================================================
+
+Completed:
+✅ Yellow line removed
+✅ Ship outline fixed
+✅ Pirate classes updated
+✅ Weapon firing points restored
+✅ Ship statistics documented
+
+Needs Testing:
+⚠️ Weapon alignment (code looks correct, needs verification)
+⚠️ Enemy spawning (code correct, may be user flow issue)
+
+Not Implemented:
+❌ Waypoint arrow (can add if desired)
+
+=============================================================================

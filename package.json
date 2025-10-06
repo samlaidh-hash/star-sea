@@ -1,0 +1,15 @@
+{
+  "name": "star-sea",
+  "version": "1.0.0",
+  "description": "## Phase 1 Implementation - Complete! ✓",
+  "main": "test-game.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "playwright": "^1.55.1"
+  }
+}

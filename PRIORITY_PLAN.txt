@@ -1,0 +1,175 @@
+# STAR SEA - DEVELOPMENT PRIORITY PLAN
+Date: 2025-10-04
+
+=============================================================================
+CRITICAL ISSUES (FIX IMMEDIATELY)
+=============================================================================
+
+1. ⚠️ WEAPON ALIGNMENT BUG
+   Status: Debugging in progress
+   Complexity: Medium - requires systematic debugging
+   Time: 1-2 hours
+
+   Action: Adding console logging to trace:
+   - Mouse screen coordinates
+   - World coordinates from screenToWorld()
+   - Ship position and rotation
+   - Firing point calculation
+   - Beam endpoint calculation
+
+   Next: User test with debug logging to identify exact issue
+
+2. ⚠️ MINIMAP CIRCLES ARE ELLIPSES
+   Status: Ready to fix
+   Complexity: Low
+   Time: 15 minutes
+
+   Issue: Minimap rendering using non-circular aspect ratio
+
+3. ⚠️ SHIP GRAPHIC - GALAXY CLASS
+   Status: Need image reference
+   Complexity: Low (once image provided)
+   Time: 30 minutes
+
+   Note: Cannot read uploaded image - need accessible file path
+
+=============================================================================
+HIGH PRIORITY (MEDIUM COMPLEXITY)
+=============================================================================
+
+4. ADD WEAPONS TO ALL SHIP CLASSES
+   Status: System chart read
+   Complexity: Medium
+   Time: 2-3 hours
+
+   Required:
+   - FG: Forward Beam (systems chart shows this)
+   - DD: Forward Beam + Forward/Aft Torpedo
+   - CL: Forward Beam + Dual Torpedo
+   - BC: 2x Forward Beam + Forward/Aft Torpedo + Aft Beam
+   - Trigon ships: Disruptors per system chart
+   - Scintilian ships: Pulse Beams + Plasma Torpedoes
+   - Pirate ships: Mixed weapons
+   - Space Stations: Per faction specifications
+
+5. UPDATE WEAPON ARCS
+   Status: Specifications received
+   Complexity: Low
+   Time: 1 hour
+
+   - Trigon: Forward disruptors 120° arc, Aft disruptor (BC only) 120° aft
+   - Space stations: Different arcs per faction
+
+6. HUD REORGANIZATION
+   Status: Specifications received
+   Complexity: Low
+   Time: 1 hour
+
+   - Move weapon charge/loading info to systems block
+   - Show only HP bars for weapons
+
+=============================================================================
+MAJOR NEW FEATURES (HIGH COMPLEXITY)
+=============================================================================
+
+7. SHUTTLE SYSTEM
+   Status: Specifications received
+   Complexity: VERY HIGH
+   Time: 8-12 hours
+
+   Components:
+   - Shuttle entity class (shields, HP, beam weapon)
+   - 5 mission types (Attack, Defense, Wild Weasel, Suicide, Transport)
+   - AI for each mission type
+   - Launch/recall system (M key)
+   - Bay space management
+   - UI for shuttle status
+
+   This is essentially a mini-game system within the game.
+
+8. TRACTOR BEAM SYSTEM
+   Status: Specifications received
+   Complexity: HIGH
+   Time: 4-6 hours
+
+   Components:
+   - Target acquisition logic
+   - Pin-in-place physics
+   - Size-based targeting rules
+   - Performance penalties (speed, shields, beams)
+   - Q key toggle
+   - Visual beam effect
+
+9. BAY SYSTEM OVERHAUL
+   Status: Specifications received
+   Complexity: MEDIUM
+   Time: 2-3 hours
+
+   Required:
+   - Space limits per ship class
+   - Default loadouts
+   - Space management UI
+
+=============================================================================
+IMPLEMENTATION PLAN
+=============================================================================
+
+PHASE 1: Critical Bugs (Today)
+-------------------------------
+✓ Yellow line removed
+✓ Ship outline updated (Galaxy-class)
+✓ Pirate ship classes fixed
+⚠️ Weapon alignment - DEBUG MODE (needs testing)
+□ Minimap circles fix
+□ Ship graphic refinement (pending image)
+
+PHASE 2: Weapons & Balance (1-2 days)
+--------------------------------------
+□ Add weapons to all ship classes
+□ Update weapon arcs
+□ Space station weapons
+□ HUD reorganization
+
+PHASE 3: Major Features (3-5 days)
+-----------------------------------
+□ Bay system overhaul
+□ Shuttle system (largest feature)
+□ Tractor beam system
+
+=============================================================================
+RECOMMENDATIONS
+=============================================================================
+
+1. **Test weapon alignment with debug logging first**
+   - This will help me identify the exact issue
+   - Console will show all coordinates
+   - We can then fix it properly
+
+2. **Prioritize Phase 1 & 2 before Phase 3**
+   - Get core game working perfectly first
+   - Shuttles/tractor are major additions
+   - Should be separate features, not bug fixes
+
+3. **Shuttle system scope**
+   - This is effectively adding a second game layer
+   - Each mission type needs unique AI
+   - Consider if all 5 mission types are needed initially
+   - Could implement Attack/Defense first, add others later
+
+4. **Ship graphic**
+   - Need accessible image file
+   - Or detailed description of desired changes
+   - Current Galaxy-class has large saucer, nacelles, engineering hull
+
+=============================================================================
+IMMEDIATE NEXT STEPS
+=============================================================================
+
+1. Add weapon alignment debugging
+2. Fix minimap circles
+3. Test with user and get debug output
+4. Fix weapon alignment based on findings
+5. Add weapons to all ship classes
+6. Then decide on shuttle system scope
+
+=============================================================================

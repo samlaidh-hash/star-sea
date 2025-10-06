@@ -1,0 +1,552 @@
+# STAR SEA - COMPLETE IMPLEMENTATION PLAN
+Date: 2025-10-04
+Status: Ready to Execute
+
+=============================================================================
+PRIORITY: QUICK FIXES (1-2 hours each) - DO FIRST
+=============================================================================
+
+## PHASE 1A: Ship Class Weapons (2 hours)
+-------------------------------------------
+
+### Federation Ships:
+**FG (Frigate)**
+- Forward Beam Battery (270° arc)
+- Bay (2 spaces)
+
+**DD (Destroyer)** - NOT IN SYSTEM CHARTS YET
+- Forward Beam Battery (270° arc)
+- Forward/Aft Torpedo Launcher (dual mount, 270° each)
+- Bay (size TBD)
+
+**CL (Light Cruiser)**
+- Forward Beam Battery (270° arc)
+- Forward/Aft Torpedo Launcher (dual mount, 270° each)
+- Bay (4 spaces)
+
+**BC (Battlecruiser)**
+- 2x Forward Beam Batteries (270° arc)
+- Forward Torpedo Launcher (270° arc)
+- Aft Torpedo Launcher (270° arc)
+- Aft Beam Battery (270° arc)
+- Bay (8 spaces)
+
+### Trigon Ships:
+**All Classes:**
+- Disruptors fire into forward 120° arc
+- BC only: 1 Aft Disruptor (120° aft arc)
+
+**FG:** 1 Forward Disruptor
+**CL:** 2 Forward Disruptors
+**CA:** 3 Forward Disruptors
+**BC:** 3 Forward Disruptors + 1 Aft Disruptor
+
+### Scintilian Ships:
+**All Classes:**
+- Pulse Beams (same arcs as Federation beams)
+- Plasma Torpedoes (same arcs as Federation torpedoes)
+
+**FG:** Forward Pulse Beam
+**CL:** Forward Pulse Beam + Dual Plasma Torpedo
+**CA:** Forward Pulse Beam + Fwd/Aft Plasma Torpedoes
+**BC:** 2x Forward Pulse Beam + Fwd/Aft Plasma Torpedoes + Aft Pulse Beam
+
+### Pirate Ships:
+**Rules:**
+- Can have any weapon types (mixed/stolen)
+- Cannot have more than 1 left-click weapon type
+- Cannot have more than 1 right-click weapon type
+- Follow same mount points as Federation ships
+
+**Implementation:**
+- Randomize weapon types within rules
+- Use same class layouts as Federation
+
+**Files to Modify:**
+- js/entities/Ship.js - createWeapons() method
+- Add weapon creation for each class
+- Update weapon arcs in config.js
+
+**Time: 2 hours**
+
+---
+
+## PHASE 1B: Space Station Weapons (1 hour)
+--------------------------------------------
+
+### Create SpaceStation class weapons
+
+**Federation Station:**
+- 1x Forward Beam Battery (270° forward)
+- 1x Forward Torpedo Launcher (270° forward)
+- 1x Aft Beam Battery (270° aft)
+- 1x Aft Torpedo Launcher (270° aft)
+
+**Trigon Station:**
+- 4x Disruptors
+  * 2 Forward (covering 180° centered on 0°)
+  * 2 Aft (covering 180° centered on 180°)
+
+**Scintilian Station:**
+- 3x Pulse Beam Batteries (each covering 360°)
+- 1x Plasma Torpedo Launcher (360°)
+
+**Pirate Station:**
+- Forward Mount: 1 weapon (any type)
+- Aft Mount: 1 weapon (any type)
+
+**Files to Modify:**
+- js/entities/MissionEntity.js - Add weapons to SpaceStation class
+- Create weapon instances in constructor
+- Add fire() method to SpaceStation
+
+**Time: 1 hour**
+
+---
+
+## PHASE 1C: HUD Reorganization (1 hour)
+-----------------------------------------
+
+### Changes:
+1. Remove weapon charge/loading display lines from weapon info panel
+2. Move weapon HP bars to systems block
+3. Show only HP bars (4 boxes) for each weapon
+4. Charging/loading status shown by graphics on ship model only
+
+### Visual Layout:
+```
+SYSTEMS BLOCK:
+  Impulse    [====    ] 16/20
+  Warp       [========] 20/20
+  Sensors    [===     ] 6/8
+  C&C        [======  ] 6/8
+  Bay        [========] 6/6
+  Power      [======= ] 12/15
+
+  Fwd Beam   [====] 4/4
+  Aft Beam   [====] 4/4
+  Fwd Torp   [====] 4/4
+  Aft Torp   [====] 4/4
+```
+
+**Files to Modify:**
+- js/ui/HUD.js - updateWeapons() method
+- css/hud.css - Adjust systems panel layout
+
+**Time: 1 hour**
+
+---
+
+## PHASE 1D: Ship Graphic Update (30 minutes)
+----------------------------------------------
+
+### Galaxy-Class Nacelles on Struts
+
+**Current:** Nacelles connected directly to engineering hull
+**Required:** Nacelles on flat struts standing off from hull
+
+**Changes to generateGalaxyClass():**
+1. Add nacelle strut sections (flat horizontal sections)
+2. Nacelles positioned further out from hull
+3. Struts connect hull to nacelles
+4. Maintain proper proportions per reference image
+
+**Files to Modify:**
+- js/entities/Ship.js - generateGalaxyClass() method
+
+**Time: 30 minutes**
+
+=============================================================================
+PRIORITY: MEDIUM COMPLEXITY (2-6 hours)
+=============================================================================
+
+## PHASE 2A: Bay System Overhaul (2-3 hours)
+----------------------------------------------
+
+### Space Limits:
+- FG: 2 spaces total
+- CL: 4 spaces total
+- CA: 6 spaces total
+- BC: 8 spaces total
+
+### Default Loadouts:
+- FG: 1 Shuttle + 1 Decoy
+- CL: 2 Shuttles + 1 Decoy + 1 Mine
+- CA: 2 Shuttles + 2 Decoys + 2 Mines
+- BC: 3 Shuttles + 3 Decoys + 2 Mines
+
+### Space Usage:
+- 1 Shuttle = 1 space
+- 1 Decoy = 1 space
+- 1 Mine = 1 space
+
+### Implementation:
+1. Add `bayCapacity` property to Ship
+2. Add `bayContents` array tracking what's in bay
+3. Update deployment methods to check bay space
+4. Add UI to show bay contents
+5. Prevent deployment if bay empty
+
+**Files to Modify:**
+- js/entities/Ship.js - Add bay system
+- js/config.js - Add bay capacity constants
+- js/ui/HUD.js - Add bay display
+
+**Time: 2-3 hours**
+
+---
+
+## PHASE 2B: Tractor Beam System (4-6 hours)
+----------------------------------------------
+
+### Mechanics:
+- Toggle: Q key
+- Range: Short (CONFIG.TRACTOR_BEAM_RANGE)
+- Performance penalty while active:
+  * -20% max speed
+  * -20% shield recharge rate
+  * -20% beam recharge rate
+
+### Targeting Priority:
+1. Nearest mine homing on player
+2. Nearest shuttle homing on player
+3. Nearest torpedo homing on player
+4. Nearest ship (size restricted)
+
+### Size Restrictions (ships):
+- BC can tractor: CA, CL, FG
+- CA can tractor: CL, FG
+- CL can tractor: FG
+- FG cannot tractor ships
+
+### Behavior:
+**When tractoring mine/shuttle/torpedo:**
+- Target pinned in place relative to ship
+- Target moves with ship
+- Torpedo: Explodes when endurance expires
+- Shuttle: Held until released
+- Mine: Held until released
+
+**When tractoring ship:**
+- Target pinned in place relative to ship
+- Target moves with ship
+- Target cannot maneuver
+- Target CAN fire weapons facing player
+- Target cannot turn
+
+### Visual:
+- Blue beam from player to target
+- Pulsing effect
+
+### Implementation:
+1. Add TractorBeam class
+2. Add to player ship systems
+3. Input handling (Q key toggle)
+4. Target acquisition logic
+5. Physics constraint system
+6. Performance modifiers
+7. Visual beam rendering
+
+**Files to Modify:**
+- js/components/systems/TractorBeam.js (NEW)
+- js/entities/Ship.js - Add tractor system
+- js/core/Engine.js - Handle Q key, update tractored entities
+- js/rendering/Renderer.js - Draw tractor beam visual
+- js/config.js - Add tractor constants
+
+**Time: 4-6 hours**
+
+=============================================================================
+PRIORITY: MAJOR FEATURES (8-12 hours)
+=============================================================================
+
+## PHASE 3: SHUTTLE SYSTEM (Full Implementation Plan)
+=======================================================
+
+### Component Breakdown:
+
+#### 3.1 Shuttle Entity Class (2 hours)
+----------------------------------------
+
+**Properties:**
+```javascript
+class Shuttle extends Entity {
+    type = 'shuttle';
+    shields = 3;        // 3pt total
+    maxShields = 3;
+    shieldRecharge = 1; // 1pt/second
+    shieldDelay = 2;    // 2 second delay after hit
+    hp = 2;
+    maxHp = 2;
+    speed = CA_SPEED * 0.5;
+
+    weapon = BeamWeapon({
+        arc: 120,
+        arcCenter: 0,  // forward
+        range: BEAM_RANGE * 0.2, // 20% of ship beam range
+        damage: 1,
+        cooldown: 1.0
+    });
+
+    missionType = null; // 'attack', 'defense', 'weasel', 'suicide', 'transport'
+    missionData = null; // Mission-specific data
+    parentShip = null;  // Ship that launched this shuttle
+    active = true;
+}
+```
+
+**Methods:**
+- update(deltaTime) - Movement, shields, weapon
+- takeDamage(damage) - Shield absorption, HP damage
+- destroy() - Explosion effect
+- fireWeapon(targetX, targetY) - Beam firing
+- ai_update() - Call appropriate AI based on missionType
+
+**Files:**
+- js/entities/Shuttle.js (NEW)
+
+---
+
+#### 3.2 Shuttle AI System (4-5 hours)
+---------------------------------------
+
+**AI State Machine:**
+Each mission type has its own AI logic.
+
+**ATTACK MISSION:**
+```
+State: SEEK_TARGET
+- Find nearest enemy ship
+- Move toward it
+- When in weapon range: STATE = ENGAGE
+
+State: ENGAGE
+- Maintain range (stay at 80% of weapon range)
+- Circle strafe target
+- Fire weapon when in arc
+- If target destroyed: STATE = SEEK_TARGET
+```
+
+**DEFENSE MISSION:**
+```
+State: LOITER
+- Stay within 200 units of parent ship
+- Scan for threats
+
+Threat Priority:
+1. Torpedoes homing on parent (intercept)
+2. Enemy shuttles near parent (intercept)
+3. Enemy ships in weapon range (engage)
+
+State: INTERCEPT_TORPEDO
+- Move to intercept course
+- Fire weapon to destroy torpedo
+- When torpedo destroyed: STATE = LOITER
+
+State: INTERCEPT_SHUTTLE
+- Chase enemy shuttle
+- Fire weapon
+- When destroyed: STATE = LOITER
+
+State: ENGAGE_SHIP
+- Attack if within range
+- Don't chase beyond 300 units from parent
+- When out of range: STATE = LOITER
+```
+
+**WILD WEASEL MISSION:**
+```
+State: FLEE
+- Calculate vector away from parent ship
+- Fly at maximum speed in that direction
+- Emit torpedo attraction signal (all torpedoes retarget to shuttle)
+- Continue until destroyed or mission aborted
+
+Special:
+- All enemy torpedoes target this shuttle instead of parent
+- Shuttle has no weapons in this mode
+- Purely defensive sacrifice
+```
+
+**SUICIDE MISSION:**
+```
+State: SEEK_TARGET
+- Find nearest enemy ship
+- Plot intercept course
+- Accelerate to maximum speed
+
+State: RAM
+- When within 50 units: Detonate
+- Explosion damage = 2 heavy torpedoes
+- Large blast radius
+- Destroys shuttle
+```
+
+**TRANSPORT MISSION:**
+```
+State: MOVE_TO_TARGET
+- targetLocation from missionData
+- Fly to location
+- When arrived: STATE = PAUSE
+
+State: PAUSE
+- Stay at location for X seconds (missionData.pauseDuration)
+- When timer expires: STATE = RETURN
+
+State: RETURN
+- Fly back to parent ship
+- When within 100 units: STATE = DOCKING
+
+State: DOCKING
+- Slow approach to parent
+- When within 10 units: Mission complete, shuttle returns to bay
+```
+
+**Files:**
+- js/ai/ShuttleAI.js (NEW)
+- Separate methods for each mission type
+
+---
+
+#### 3.3 Launch/Control System (1 hour)
+----------------------------------------
+
+**M Key Behavior:**
+- **Tap M:** Cycle through mission types
+  * Visual indicator shows current selected mission
+  * Order: Attack → Defense → Wild Weasel → Suicide → Transport → (repeat)
+
+- **Long Press M (hold 0.5s):** Launch shuttle on selected mission
+  * Deduct 1 shuttle from bay
+  * Create Shuttle entity
+  * Spawn at parent ship position
+  * Initialize AI with mission type
+  * Add to entities list
+
+**Shuttle Recall:**
+- R key: Recall all shuttles
+- Shuttles switch to RETURN state
+- Fly back to parent
+- Re-enter bay when close
+
+**Files to Modify:**
+- js/core/InputManager.js - M key detection (tap vs hold)
+- js/core/Engine.js - Launch/recall logic
+- js/entities/Ship.js - launchShuttle() method
+
+---
+
+#### 3.4 UI Elements (1 hour)
+------------------------------
+
+**HUD Shuttle Panel:**
+```
+SHUTTLES: 2/3
+Mission: [ATTACK]  (M to cycle)
+         [Hold M to launch]
+
+Active:
+  Shuttle-1: DEFENSE (HP: 2/2, Shields: 3/3)
+  Shuttle-2: ATTACK  (HP: 1/2, Shields: 0/3)
+```
+
+**Visual Indicators:**
+- Shuttle icons on minimap (blue triangles)
+- Mission type tag
+- Health bars
+
+**Files:**
+- js/ui/HUD.js - Add shuttle panel
+- css/hud.css - Shuttle panel styling
+
+---
+
+#### 3.5 Integration (1 hour)
+------------------------------
+
+**Connect all components:**
+1. Add shuttles to Ship.bayContents
+2. Launch system creates Shuttle entities
+3. Engine.update() calls shuttle.update()
+4. Renderer draws shuttles
+5. Collision detection for shuttles
+6. Damage handling
+7. Explosion effects
+
+**Files to Modify:**
+- js/core/Engine.js - Shuttle update loop
+- js/rendering/ShipRenderer.js - Shuttle rendering
+- js/systems/CollisionDetection.js - Shuttle collisions
+
+---
+
+### SHUTTLE SYSTEM TOTAL TIME: 9-11 hours
+
+**Breakdown:**
+- Shuttle entity: 2 hours
+- 5 AI systems: 4-5 hours
+- Launch/control: 1 hour
+- UI: 1 hour
+- Integration: 1-2 hours
+
+=============================================================================
+IMPLEMENTATION SEQUENCE
+=============================================================================
+
+### Week 1: Quick Wins
+-----------------------
+Day 1: Ship weapons (all classes)
+Day 2: Space stations + HUD reorganization
+Day 3: Ship graphic + Bay system
+
+### Week 2: Medium Features
+----------------------------
+Day 4-5: Tractor beam system
+
+### Week 3: Major Feature
+--------------------------
+Day 6: Shuttle entity + basic AI (Attack)
+Day 7: Defense + Wild Weasel AI
+Day 8: Suicide + Transport AI
+Day 9: Launch system + UI
+Day 10: Integration + testing
+
+=============================================================================
+DEPENDENCIES
+=============================================================================
+
+- Shuttle system REQUIRES bay system to be complete first
+- Tractor beam is independent (can do before or after shuttles)
+- Ship weapons should be done before stations (test on ships first)
+- HUD reorganization should wait until weapons are finalized
+
+=============================================================================
+TESTING CHECKLIST
+=============================================================================
+
+### After Quick Fixes:
+□ All ship classes have correct weapons
+□ Weapon arcs are correct (120° for Trigon, 270° for Federation)
+□ Space stations can fire weapons
+□ HUD shows weapon HP in systems block
+□ Ship graphic has nacelles on struts
+
+### After Medium Features:
+□ Bay space limits enforced
+□ Default loadouts correct
+□ Tractor beam toggles with Q
+□ Tractor beam targets correctly
+□ Tractor beam applies penalties
+□ Tractored entities move with ship
+
+### After Shuttle System:
+□ M key cycles missions
+□ Long press M launches
+□ All 5 mission AIs work correctly
+□ Shuttles take damage properly
+□ Shuttle shields recharge
+□ Shuttle weapons fire correctly
+□ R key recalls shuttles
+□ HUD shows shuttle status
+
+=============================================================================

@@ -1,0 +1,154 @@
+Lock-On isn't working, reticle shouldn't rotate and should be green. When it's over a target it should rotate then turn red when locked-on (3-5 seconds depending on how well you keep it over the target). Keep the reticle over the target and the torpedoes will chase the locked on target. If they miss and go past they carry on amd fade out, they don't turn around again.
+Move the red reticle away from the locked-on ship and it will lose lock-on and revert to green colour in 2-3 seconds, quicker the further away you move it. And, bands have stopped changing colour after shooting and when recharged. Shots are still not lined up on the reticle!!!
+
+More Features
+
+Sensor Ping
+Press P to send out an active sensor pulse, tripling sensor range for a few seconds but automatically alerts enemy ships to your presence.
+
+More Ships
+Federation FG is Oberth class, CL is Miranda class, CA is Galaxy class, BC is Excelsior class
+Trigon FG is F5, CL is D5, CA is D7, BC is ?
+
+Standard Systems
+Represented by standard width boxes inside ship silhouette.
+Federation Ships:
+
+
+Updated Weapons
+Change beam battery's to fire on left click with a 1 second cooldown between shots (1 damage per shot), holding left mouse down keeps firing as soon as each cooldown elapses. Torpedoes have 4 torps loaded which fire as fast as you can click, then take 5 seconds to reload back to 4 again, each torp does 1 damage to shields or 1 damage to each system caught in its blast radius (which is enough to cover 4 standard systems). Disruptors fire a burst of 3 shots (2 damage/shot) in one second then have a two second cool down. Plasma torpedoes (quarter torpedo move speed) charge 1-4 damage/second right mouse held down (1 FG, 2 CL, 3 CA, 4 BC), max 5 second charge up, fire on right mouse release and automatically home on nearest target to reticle. Full damage to shield, penetrating damage explodes, divide remaining damage as evenly as possible amongst all ship systems. Each beam hit on plasma torpedo reduces damage potental by 1 and each second of movement reduces damage potential by 1. Plasma torpedo fades away at 0 HP.
+
+System Damage Charts
+I've also created system damage charts for each ship type. These sit entirely within the outline of the ship and are used to determine which systems take damage on torpedo or other area weapon hits. If a box lies fully within a blast circle it loses 2 HP or 1 HP if only partially within the blast circle. Use the Analysis tool to look at the System Chart.xls file to see the boxes.
+
+Glowing Beam Bands
+Make the CA, player ships, red band glow brighter when the beam, is ready to fire. Put 4 small orangey-yellow dots behind the forward beam battery band, this is the forward torpedo launcher, and 4 small orangey-yellow dots just above the aft beam battery band, this is the aft torpedo launcher. When you fire a torpedo remove one dot from the relevant launcher. When the launcher reloads put all the dots back. 
+
+Miranda class Dual Directional Torpedo Launcher
+The Federation CL has a dual direction launcher, this behaves as a normal torpedo launcher and has 4 torpedoes loaded. It can fire forward or backward.
+
+Tactical Sensors
+Get within 1/2 Detection radius of a target to see all their internal systems, between 1/2 and full range you can only see their name and outline. Between full and twice detection radius they are just a green blip.
+
+Power Management Mode
+TAB to cycle through modes, 2 seconds after last TAB press no mode initiates. Double tap TAB to rreset to All Systems Balanced
+
+All Systems Balanced
+Half maximum Speed and turn rate, Double Shield Recharge Rate
+Half maximum Speed and turn rate, Double Beam recharge rate
+Half Beam recharge rate, Double Shield Recharge Rate
+Half Beam recharge rate, +50% maximum speed and turn rate
+Half Shield recharge rate, Double beam recharge rate
+Half Shield recharge rate, +50% maximum speed and turn rate
+
+Boost Mode
+Double tap WSAD for a burst of forward/backward acceleration, rapid turn left/right as long as you keep the key down after the second tap. Whilst in boost mode beams and shields cannot recharge and torpedo launchers can't reload.
+
+Tractor Beam
+Locks onto nearest drone, shuttle or torpedo homing on you and pins it in place relative to you. When torpedo endurance expires the torpedo blows up.
+If no drones the tractor beam locks onto nearest ship and pins it in place relative to you. 
+You can only tractor ships smaller than you (e.g. BC can tractor CA which can tractor CL which can tractor FG).
+As long as tractor is on, the target is moved along with your ship and cannot do anything else except fire weapons which are already facing you.
+
+Transporter
+Can be used when target has facing shields down, sparkling "rainbow" connects two ships if you have reticle over enemy ship. The shield facing that direction is reduced to zero when you do this, and then has to recharge normally. Each ship has 1-4 combat teams (FG 1, CL 2, CA 3, BC 4). Roll 1d6 for a transporter attack:
+Attacker rolls 1d6
+
+1 attacking team lost
+2 no Effect
+3 Enemy system nearest to reticle centre reduced to 0 HP and 1 attacking team lost
+4 Enemy system nearest to reticle centre reduced to 0 HP and 1 defending & 1 attacking team lost
+5 Enemy system nearest to reticle centre reduced to 0 HP and 1 defending team lost
+6 Enemy system nearest to reticle centre reduced to 0 HP
+
+Cross reference attacker to target for a modifier to the roll above;
+	FG	CL	CA	BC
+FG	+0	-1	-2	-3
+CL	+1	+0	-1	-2
+CA	+2	+1	+0	-1
+BC	+3	+2	+1	+0
+
+Transporter Mine
+Rather than dropping a mine behind the ship double click the space bar to transport a mine to the target reticles location. The shield facing that direction is reduced to zero when you do this, and then has to recharge normally.
+
+Captor Mines
+Large detection radius. When activated they fire off two torpedoes at the activating ship.
+
+Phaser Mines
+Medium detection radius. When activated they fire off four beam shots at the activating ship, once per second.
+
+Heavy Torpedoes
+3/4 speed of normal torpedoes, x1.5 endurance, x2 blast size (2 damage vs. shields).
+
+Interceptor Missiles
+x2 speed of normal torpedoes, x1 endurance. When fired automatically homes in on the nearest torpedo, drone, shuttle in that order and tries to intercept it. If it intercepts the target is destroyed along with the Interceptor Missile.
+
+Bay Spaces
+The player CA ship has 6 bay spaces (CL 4 spaces, FG 2 spaces, BC 8 spaces). A Decoy, Drone, Mine or Shuttle takes up 1 space each.
+
+Shuttles (player CA can have three)
+Launched from bay, tap M to cycle through mission types (see below). Long press M to launch shuttle on that mission. Shuttles have maximum speed 1/2 that of the players CA. A shuttle has a 3pt shield (recharges 1 pt/second after a 2 second non-hit period) and 2 HP, exploding at 0 HP. It has a single beam which can fire into the forward 120 degree arc but has a maximum range of 20% of that of a ships beam battery. Select shuttle mission on launch; Attack (will move towards nearest enemy and engage with beam fire), Defense (will loiter near player ship and try to intercept torpedoes and other shuttles, attacking ships within range if neither of those targets is available), Wild Weasel (flies directly away from ship emitting a signal which attracts all torpedoes towards it), Suicide (attempts to ram nearest enemy and explode as two heavy torpedoes), Transport (undertakes scenario specific action, such as moving to a target location, pausing then returning, representing taking or dropping off passengers or cargo), Scan (move to a target location, loiter and gathering scientific data or intelligence then return)
+Player ship can launch 1 shuttle then there is a 30 second cool-down before the next one can go. Shuttles will break off and return to the owning ship if reduced to 1 HP. Once landed they recover 1 HP per minute.
+
+Drones
+Drones are basically unmanned shuttles with 4 HP but no shields and max speed twice the players CA. They can be assigned any mission that shuttle can perform except Transport.
+
+Shields Up/Down
+Space bar toggles all shields on and off. When shields are off they recharge 3pts/second.
+
+Dhojans
+Bio ships. Each ship has a single Energy bar, length depends on ship type.
+At <50% maximum speed (forward or reverse) energy bar constantly fills with energy.
+At >50% maximum speed (forward or reverse) energy bar constantly loses energy.
+Slower speed > recharge and vice versa
+No facing, instead WSAD moves then forward, backward, left and right respectively.
+Left click fires the Energy Beam (360 arc), this is a continous beam as long as the mouse button is held down. It deals 1 damage/second and drains energy.
+Right click toggles shields on or off. In On mode any hits reduce the energy bar. If Off mode hits reduces the length of the energy bar by a lesser amount, but permanently.
+
+Andromedans
+Power absorbers convert damage into energy, +1 energy to the current power bak for each damage received. Each power absorber can convert 1 damage/second. Andromedan ships have 1+ power absorbers (1 for a FG, 2 CL, 3 CA, 4 BC).
+Andromedan ships have power banks (1 for a FG, 2 CL, 3 CA, 4 BC) where energy is directed.
+T/R beams
+Displaceent Device
+
+Reticulans
+Can overheat reactor (overheat mode), double energy bank recharge rates but energy banks take a small amount of irrepairable damage every second as long as overheat mode is on.
+Pulse beams which do 0.5 damage per shot but have a 0.5 second cool down between shots and the same max range as normal beam batteries.
+Pulse Torpedoes which travel at the same speed as normal torpedoes but have 6 in a launcher and do half damage with 1/2 blast circle radius.
+
+Killaharsh
+Ablative armour
+Gatling Beams: when fired, fires 1 beam shot ( 1 damage) every 0.3 seconds for 0.9 seconds then takes 2 seconds to recharge before being ready to fire again.
+Fighters: as shuttles but twice as fast, double the shields and HP and extended range on beam. Also mount two single use standard torpedoes (used against ships, fighters will always lock torpedoes on before firing).
+Launch Tubes: Ships can launch 1 (FG), 2 (CL), 3 C or 4 BC Fighters simultaneously, there is then a 30 second cool-down before launching more.
+
+Gravitinos
+Power and Energy Bank
+Each ship has 1 (FG), 2 (CL), 3 (CA) or 4 (BC) energy banks. Each energy bank is drained in turn from top to bottom.
+Absorbers are switched on and off using space bar. Whilst shields are On damage reduces the energy banks but energy banks do not recharge.
+When shields are switched off damage strikes the ship but energy banks recharge continuously. 
+Energy banks are a subsystem and damage reduces their capacity.
+When a ship is moving it continuously drains power, the rate of drain is a function of the current speed. At low speeds drain is lower than recharge, at high speeds drain exceeds recharge.
+
+Graviton Beam batteries (left click) fire continuously when left mouse is down, drawing 1 energy/0.3 seconds (instant movement to target) doing 1 damage/0.3 seconds.
+
+Right click charges the ships gravity sphere generator (1 energy/1 second, max 3 energy for FG, 4 for CL, 5 for CA and 6 for BC). Releasing it sends out a 360 pulse which weakens with distance travelled (exponential fall off wth range), damaging anything hit by it (damage = energy x2 at point blank range, reducing rapidly)
+
+Commonwealth
+Ships are big and slow. Replace standard shields with Flicker Shields. Flicker shield has a % chance to block any given attack. FG 45% DD 50% CL 55% CA 60% BC 65% BB 70%. They then have 4 armour blocks one for each 90 degrees which ablate under attack. Each time a Flicker shield blocks an attack is % chance drops by 1%. It isn't hit by any attacks for 5 seconds it regenerates lost % points at 10/second. They have forward 45 degree arc mass drivers, right mouse button, long recharge time between shots. Single fast moving projectile, massive damage.
+They have 90 degree port and 90 degree starboard Laser batteries, left mouse button. Each laser battery has 10 firing points which fire in turn, each shot does 1 damage. There is a 0.2 second interval between each shot if the left button is held down and each firing point requires 4 seconds to recharge. Laser batteries are not as accurate as beams with each shot deviating around the centre of the reticle, the degree of deviation increases with range. WHen laser batteries are fired it is in a ripple pattern.
+They have missile launchers (MMB) which require a lock-on, then rapidly fire a swarm of missiles that home in on the locked target. Each launcher has a 360 firing arc, can fire a missile every 0.3 seconds and has 50 missiles. FG has 1 launcher, DD 2, CL 3, CA 4, BC 5, BB 6. Ships also have point defense guns which fire automatically in response to the presence of missiles, bombers, fighters, drones and shuttles within 4 ship lengths of the ship, choosing targets in that order of preference. They fire a bullet every 0.1 second for 0.1 damage (missiles have 0.3 HP). They have a heat bar which fills up when firing and empties when not firing. If the bar fills the gun stops firing until the heat bar has completely emptied. FG & DD have one point defense gun which covers 360 degrees. CL & CA have 2, BC and BB 3.
+Ships can use power allocation rules as listed above.
+
+Fighters
+Bombers
+
+Terran Overlord Government
+
+
+
+Qleppo
+WS as standard, AD strafes left right, ship turns to face reticle. Forward 90 degrees continuous beam
+
+
+

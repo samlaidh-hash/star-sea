@@ -1,0 +1,940 @@
+{
+  "ships": {
+    "Federation BC": {
+      "name": "Federation BC",
+      "boxes": [
+        {
+          "system": "Forward Beam",
+          "grid_row": 1,
+          "grid_col": 0,
+          "excel_cell": "A4"
+        },
+        {
+          "system": "Forward Torpedo",
+          "grid_row": 1,
+          "grid_col": 1,
+          "excel_cell": "B4"
+        },
+        {
+          "system": "Forward Beam",
+          "grid_row": 1,
+          "grid_col": 2,
+          "excel_cell": "C4"
+        },
+        {
+          "system": "Sensors",
+          "grid_row": 2,
+          "grid_col": 1,
+          "excel_cell": "B5"
+        },
+        {
+          "system": "C&C",
+          "grid_row": 3,
+          "grid_col": 1,
+          "excel_cell": "B6"
+        },
+        {
+          "system": "Impulse",
+          "grid_row": 4,
+          "grid_col": 1,
+          "excel_cell": "B7"
+        },
+        {
+          "system": "Aft Torpedo",
+          "grid_row": 5,
+          "grid_col": 1,
+          "excel_cell": "B8"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 6,
+          "grid_col": 0,
+          "excel_cell": "A9"
+        },
+        {
+          "system": "Power",
+          "grid_row": 6,
+          "grid_col": 1,
+          "excel_cell": "B9"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 6,
+          "grid_col": 2,
+          "excel_cell": "C9"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 7,
+          "grid_col": 0,
+          "excel_cell": "A10"
+        },
+        {
+          "system": "Bay",
+          "grid_row": 7,
+          "grid_col": 1,
+          "excel_cell": "B10"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 7,
+          "grid_col": 2,
+          "excel_cell": "C10"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 8,
+          "grid_col": 0,
+          "excel_cell": "A11"
+        },
+        {
+          "system": "Aft Beam",
+          "grid_row": 8,
+          "grid_col": 1,
+          "excel_cell": "B11"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 8,
+          "grid_col": 2,
+          "excel_cell": "C11"
+        }
+      ],
+      "grid": {
+        "1": {
+          "0": "Forward Beam",
+          "1": "Forward Torpedo",
+          "2": "Forward Beam"
+        },
+        "2": {
+          "1": "Sensors"
+        },
+        "3": {
+          "1": "C&C"
+        },
+        "4": {
+          "1": "Impulse"
+        },
+        "5": {
+          "1": "Aft Torpedo"
+        },
+        "6": {
+          "0": "Right Warp",
+          "1": "Power",
+          "2": "Right Warp"
+        },
+        "7": {
+          "0": "Left Warp",
+          "1": "Bay",
+          "2": "Right Warp"
+        },
+        "8": {
+          "0": "Left Warp",
+          "1": "Aft Beam",
+          "2": "Right Warp"
+        }
+      }
+    },
+    "Federation CA": {
+      "name": "Federation CA",
+      "boxes": [
+        {
+          "system": "Forward Beam",
+          "grid_row": 1,
+          "grid_col": 1,
+          "excel_cell": "F4"
+        },
+        {
+          "system": "Sensors",
+          "grid_row": 2,
+          "grid_col": 1,
+          "excel_cell": "F5"
+        },
+        {
+          "system": "C&C",
+          "grid_row": 3,
+          "grid_col": 1,
+          "excel_cell": "F6"
+        },
+        {
+          "system": "Impulse",
+          "grid_row": 4,
+          "grid_col": 1,
+          "excel_cell": "F7"
+        },
+        {
+          "system": "Forward Torpedo",
+          "grid_row": 5,
+          "grid_col": 1,
+          "excel_cell": "F8"
+        },
+        {
+          "system": "Aft Torpedo",
+          "grid_row": 6,
+          "grid_col": 1,
+          "excel_cell": "F9"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 7,
+          "grid_col": 0,
+          "excel_cell": "E10"
+        },
+        {
+          "system": "Power",
+          "grid_row": 7,
+          "grid_col": 1,
+          "excel_cell": "F10"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 7,
+          "grid_col": 2,
+          "excel_cell": "G10"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 8,
+          "grid_col": 0,
+          "excel_cell": "E11"
+        },
+        {
+          "system": "Bay",
+          "grid_row": 8,
+          "grid_col": 1,
+          "excel_cell": "F11"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 8,
+          "grid_col": 2,
+          "excel_cell": "G11"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 9,
+          "grid_col": 0,
+          "excel_cell": "E12"
+        },
+        {
+          "system": "Aft Beam",
+          "grid_row": 9,
+          "grid_col": 1,
+          "excel_cell": "F12"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 9,
+          "grid_col": 2,
+          "excel_cell": "G12"
+        }
+      ],
+      "grid": {
+        "1": {
+          "1": "Forward Beam"
+        },
+        "2": {
+          "1": "Sensors"
+        },
+        "3": {
+          "1": "C&C"
+        },
+        "4": {
+          "1": "Impulse"
+        },
+        "5": {
+          "1": "Forward Torpedo"
+        },
+        "6": {
+          "1": "Aft Torpedo"
+        },
+        "7": {
+          "0": "Left Warp",
+          "1": "Power",
+          "2": "Right Warp"
+        },
+        "8": {
+          "0": "Left Warp",
+          "1": "Bay",
+          "2": "Right Warp"
+        },
+        "9": {
+          "0": "Left Warp",
+          "1": "Aft Beam",
+          "2": "Right Warp"
+        }
+      }
+    },
+    "Federation CL": {
+      "name": "Federation CL",
+      "boxes": [
+        {
+          "system": "Forward Beam",
+          "grid_row": 1,
+          "grid_col": 1,
+          "excel_cell": "K4"
+        },
+        {
+          "system": "Sensors",
+          "grid_row": 2,
+          "grid_col": 1,
+          "excel_cell": "K5"
+        },
+        {
+          "system": "C&C",
+          "grid_row": 3,
+          "grid_col": 1,
+          "excel_cell": "K6"
+        },
+        {
+          "system": "Power",
+          "grid_row": 4,
+          "grid_col": 1,
+          "excel_cell": "K7"
+        },
+        {
+          "system": "Impulse",
+          "grid_row": 5,
+          "grid_col": 1,
+          "excel_cell": "K8"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 6,
+          "grid_col": 0,
+          "excel_cell": "J9"
+        },
+        {
+          "system": "Forward/Aft Torpedo",
+          "grid_row": 6,
+          "grid_col": 1,
+          "excel_cell": "K9"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 6,
+          "grid_col": 2,
+          "excel_cell": "L9"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 7,
+          "grid_col": 0,
+          "excel_cell": "J10"
+        },
+        {
+          "system": "Bay",
+          "grid_row": 7,
+          "grid_col": 1,
+          "excel_cell": "K10"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 7,
+          "grid_col": 2,
+          "excel_cell": "L10"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 8,
+          "grid_col": 0,
+          "excel_cell": "J11"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 8,
+          "grid_col": 2,
+          "excel_cell": "L11"
+        }
+      ],
+      "grid": {
+        "1": {
+          "1": "Forward Beam"
+        },
+        "2": {
+          "1": "Sensors"
+        },
+        "3": {
+          "1": "C&C"
+        },
+        "4": {
+          "1": "Power"
+        },
+        "5": {
+          "1": "Impulse"
+        },
+        "6": {
+          "0": "Left Warp",
+          "1": "Forward/Aft Torpedo",
+          "2": "Right Warp"
+        },
+        "7": {
+          "0": "Left Warp",
+          "1": "Bay",
+          "2": "Right Warp"
+        },
+        "8": {
+          "0": "Left Warp",
+          "2": "Right Warp"
+        }
+      }
+    },
+    "Federation FG": {
+      "name": "Federation FG",
+      "boxes": [
+        {
+          "system": "Forward Beam",
+          "grid_row": 1,
+          "grid_col": 1,
+          "excel_cell": "O4"
+        },
+        {
+          "system": "Sensors",
+          "grid_row": 2,
+          "grid_col": 1,
+          "excel_cell": "O5"
+        },
+        {
+          "system": "C&C",
+          "grid_row": 3,
+          "grid_col": 1,
+          "excel_cell": "O6"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 4,
+          "grid_col": 0,
+          "excel_cell": "N7"
+        },
+        {
+          "system": "Impulse",
+          "grid_row": 4,
+          "grid_col": 1,
+          "excel_cell": "O7"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 4,
+          "grid_col": 2,
+          "excel_cell": "P7"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 5,
+          "grid_col": 0,
+          "excel_cell": "N8"
+        },
+        {
+          "system": "Power",
+          "grid_row": 5,
+          "grid_col": 1,
+          "excel_cell": "O8"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 5,
+          "grid_col": 2,
+          "excel_cell": "P8"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 6,
+          "grid_col": 0,
+          "excel_cell": "N9"
+        },
+        {
+          "system": "Bay",
+          "grid_row": 6,
+          "grid_col": 1,
+          "excel_cell": "O9"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 6,
+          "grid_col": 2,
+          "excel_cell": "P9"
+        }
+      ],
+      "grid": {
+        "1": {
+          "1": "Forward Beam"
+        },
+        "2": {
+          "1": "Sensors"
+        },
+        "3": {
+          "1": "C&C"
+        },
+        "4": {
+          "0": "Left Warp",
+          "1": "Impulse",
+          "2": "Right Warp"
+        },
+        "5": {
+          "0": "Left Warp",
+          "1": "Power",
+          "2": "Right Warp"
+        },
+        "6": {
+          "0": "Left Warp",
+          "1": "Bay",
+          "2": "Right Warp"
+        }
+      }
+    },
+    "Trigon BC": {
+      "name": "Trigon BC",
+      "boxes": [
+        {
+          "system": "Forward Disruptor",
+          "grid_row": 1,
+          "grid_col": 1,
+          "excel_cell": "B18"
+        },
+        {
+          "system": "Sensors",
+          "grid_row": 2,
+          "grid_col": 1,
+          "excel_cell": "B19"
+        },
+        {
+          "system": "C&C",
+          "grid_row": 3,
+          "grid_col": 1,
+          "excel_cell": "B20"
+        },
+        {
+          "system": "Forward Disruptor",
+          "grid_row": 4,
+          "grid_col": 0,
+          "excel_cell": "A21"
+        },
+        {
+          "system": "Power",
+          "grid_row": 4,
+          "grid_col": 1,
+          "excel_cell": "B21"
+        },
+        {
+          "system": "Forward Disruptor",
+          "grid_row": 4,
+          "grid_col": 2,
+          "excel_cell": "C21"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 5,
+          "grid_col": 0,
+          "excel_cell": "A22"
+        },
+        {
+          "system": "Bay",
+          "grid_row": 5,
+          "grid_col": 1,
+          "excel_cell": "B22"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 5,
+          "grid_col": 2,
+          "excel_cell": "C22"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 6,
+          "grid_col": 0,
+          "excel_cell": "A23"
+        },
+        {
+          "system": "Impulse",
+          "grid_row": 6,
+          "grid_col": 1,
+          "excel_cell": "B23"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 6,
+          "grid_col": 2,
+          "excel_cell": "C23"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 7,
+          "grid_col": 0,
+          "excel_cell": "A24"
+        },
+        {
+          "system": "Aft Disruptor",
+          "grid_row": 7,
+          "grid_col": 1,
+          "excel_cell": "B24"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 7,
+          "grid_col": 2,
+          "excel_cell": "C24"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 8,
+          "grid_col": 0,
+          "excel_cell": "A25"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 8,
+          "grid_col": 2,
+          "excel_cell": "C25"
+        }
+      ],
+      "grid": {
+        "1": {
+          "1": "Forward Disruptor"
+        },
+        "2": {
+          "1": "Sensors"
+        },
+        "3": {
+          "1": "C&C"
+        },
+        "4": {
+          "0": "Forward Disruptor",
+          "1": "Power",
+          "2": "Forward Disruptor"
+        },
+        "5": {
+          "0": "Left Warp",
+          "1": "Bay",
+          "2": "Right Warp"
+        },
+        "6": {
+          "0": "Left Warp",
+          "1": "Impulse",
+          "2": "Right Warp"
+        },
+        "7": {
+          "0": "Left Warp",
+          "1": "Aft Disruptor",
+          "2": "Right Warp"
+        },
+        "8": {
+          "0": "Left Warp",
+          "2": "Right Warp"
+        }
+      }
+    },
+    "Trigon CA": {
+      "name": "Trigon CA",
+      "boxes": [
+        {
+          "system": "Forward Disruptor",
+          "grid_row": 1,
+          "grid_col": 1,
+          "excel_cell": "F18"
+        },
+        {
+          "system": "Sensors",
+          "grid_row": 2,
+          "grid_col": 1,
+          "excel_cell": "F19"
+        },
+        {
+          "system": "C&C",
+          "grid_row": 3,
+          "grid_col": 1,
+          "excel_cell": "F20"
+        },
+        {
+          "system": "Power",
+          "grid_row": 4,
+          "grid_col": 1,
+          "excel_cell": "F21"
+        },
+        {
+          "system": "Forward Disruptor",
+          "grid_row": 5,
+          "grid_col": 0,
+          "excel_cell": "E22"
+        },
+        {
+          "system": "Bay",
+          "grid_row": 5,
+          "grid_col": 1,
+          "excel_cell": "F22"
+        },
+        {
+          "system": "Forward Disruptor",
+          "grid_row": 5,
+          "grid_col": 2,
+          "excel_cell": "G22"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 6,
+          "grid_col": 0,
+          "excel_cell": "E23"
+        },
+        {
+          "system": "Impulse",
+          "grid_row": 6,
+          "grid_col": 1,
+          "excel_cell": "F23"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 6,
+          "grid_col": 2,
+          "excel_cell": "G23"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 7,
+          "grid_col": 0,
+          "excel_cell": "E24"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 7,
+          "grid_col": 2,
+          "excel_cell": "G24"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 8,
+          "grid_col": 0,
+          "excel_cell": "E25"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 8,
+          "grid_col": 2,
+          "excel_cell": "G25"
+        }
+      ],
+      "grid": {
+        "1": {
+          "1": "Forward Disruptor"
+        },
+        "2": {
+          "1": "Sensors"
+        },
+        "3": {
+          "1": "C&C"
+        },
+        "4": {
+          "1": "Power"
+        },
+        "5": {
+          "0": "Forward Disruptor",
+          "1": "Bay",
+          "2": "Forward Disruptor"
+        },
+        "6": {
+          "0": "Left Warp",
+          "1": "Impulse",
+          "2": "Right Warp"
+        },
+        "7": {
+          "0": "Left Warp",
+          "2": "Right Warp"
+        },
+        "8": {
+          "0": "Left Warp",
+          "2": "Right Warp"
+        }
+      }
+    },
+    "Trigon CL": {
+      "name": "Trigon CL",
+      "boxes": [
+        {
+          "system": "Sensors",
+          "grid_row": 2,
+          "grid_col": 1,
+          "excel_cell": "J19"
+        },
+        {
+          "system": "C&C",
+          "grid_row": 3,
+          "grid_col": 1,
+          "excel_cell": "J20"
+        },
+        {
+          "system": "Power",
+          "grid_row": 4,
+          "grid_col": 1,
+          "excel_cell": "J21"
+        },
+        {
+          "system": "Forward Disruptor",
+          "grid_row": 5,
+          "grid_col": 0,
+          "excel_cell": "I22"
+        },
+        {
+          "system": "Bay",
+          "grid_row": 5,
+          "grid_col": 1,
+          "excel_cell": "J22"
+        },
+        {
+          "system": "Forward Disruptor",
+          "grid_row": 5,
+          "grid_col": 2,
+          "excel_cell": "K22"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 6,
+          "grid_col": 0,
+          "excel_cell": "I23"
+        },
+        {
+          "system": "Impulse",
+          "grid_row": 6,
+          "grid_col": 1,
+          "excel_cell": "J23"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 6,
+          "grid_col": 2,
+          "excel_cell": "K23"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 7,
+          "grid_col": 0,
+          "excel_cell": "I24"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 7,
+          "grid_col": 2,
+          "excel_cell": "K24"
+        }
+      ],
+      "grid": {
+        "2": {
+          "1": "Sensors"
+        },
+        "3": {
+          "1": "C&C"
+        },
+        "4": {
+          "1": "Power"
+        },
+        "5": {
+          "0": "Forward Disruptor",
+          "1": "Bay",
+          "2": "Forward Disruptor"
+        },
+        "6": {
+          "0": "Left Warp",
+          "1": "Impulse",
+          "2": "Right Warp"
+        },
+        "7": {
+          "0": "Left Warp",
+          "2": "Right Warp"
+        }
+      }
+    },
+    "Trigon FG": {
+      "name": "Trigon FG",
+      "boxes": [
+        {
+          "system": "Forward Disruptor",
+          "grid_row": 1,
+          "grid_col": 1,
+          "excel_cell": "N18"
+        },
+        {
+          "system": "Sensors",
+          "grid_row": 2,
+          "grid_col": 1,
+          "excel_cell": "N19"
+        },
+        {
+          "system": "C&C",
+          "grid_row": 3,
+          "grid_col": 1,
+          "excel_cell": "N20"
+        },
+        {
+          "system": "Power",
+          "grid_row": 4,
+          "grid_col": 1,
+          "excel_cell": "N21"
+        },
+        {
+          "system": "Bay",
+          "grid_row": 5,
+          "grid_col": 1,
+          "excel_cell": "N22"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 6,
+          "grid_col": 0,
+          "excel_cell": "M23"
+        },
+        {
+          "system": "Impulse",
+          "grid_row": 6,
+          "grid_col": 1,
+          "excel_cell": "N23"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 6,
+          "grid_col": 2,
+          "excel_cell": "O23"
+        },
+        {
+          "system": "Left Warp",
+          "grid_row": 7,
+          "grid_col": 0,
+          "excel_cell": "M24"
+        },
+        {
+          "system": "Right Warp",
+          "grid_row": 7,
+          "grid_col": 2,
+          "excel_cell": "O24"
+        }
+      ],
+      "grid": {
+        "1": {
+          "1": "Forward Disruptor"
+        },
+        "2": {
+          "1": "Sensors"
+        },
+        "3": {
+          "1": "C&C"
+        },
+        "4": {
+          "1": "Power"
+        },
+        "5": {
+          "1": "Bay"
+        },
+        "6": {
+          "0": "Left Warp",
+          "1": "Impulse",
+          "2": "Right Warp"
+        },
+        "7": {
+          "0": "Left Warp",
+          "2": "Right Warp"
+        }
+      }
+    }
+  },
+  "notes": {
+    "coordinate_system": "Grid positions are 0-indexed from top-left of each ship layout",
+    "damage_rules": "Box fully in blast = 2 HP damage, partially in blast = 1 HP damage"
+  }
+}

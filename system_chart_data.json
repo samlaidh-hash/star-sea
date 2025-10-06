@@ -1,0 +1,1059 @@
+{
+  "Sheet1": {
+    "name": "Sheet1",
+    "max_row": 25,
+    "max_column": 16,
+    "cells": [
+      {
+        "coordinate": "A2",
+        "row": 2,
+        "column": 1,
+        "column_letter": "A",
+        "value": "Federation BC",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "E2",
+        "row": 2,
+        "column": 5,
+        "column_letter": "E",
+        "value": "Federation CA",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "J2",
+        "row": 2,
+        "column": 10,
+        "column_letter": "J",
+        "value": "Federation CL",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "N2",
+        "row": 2,
+        "column": 14,
+        "column_letter": "N",
+        "value": "Federation FG",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "A4",
+        "row": 4,
+        "column": 1,
+        "column_letter": "A",
+        "value": "Forward Beam",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "B4",
+        "row": 4,
+        "column": 2,
+        "column_letter": "B",
+        "value": "Forward Torpedo",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "C4",
+        "row": 4,
+        "column": 3,
+        "column_letter": "C",
+        "value": "Forward Beam",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "F4",
+        "row": 4,
+        "column": 6,
+        "column_letter": "F",
+        "value": "Forward Beam",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "K4",
+        "row": 4,
+        "column": 11,
+        "column_letter": "K",
+        "value": "Forward Beam",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "O4",
+        "row": 4,
+        "column": 15,
+        "column_letter": "O",
+        "value": "Forward Beam",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "B5",
+        "row": 5,
+        "column": 2,
+        "column_letter": "B",
+        "value": "Sensors",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "F5",
+        "row": 5,
+        "column": 6,
+        "column_letter": "F",
+        "value": "Sensors",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "K5",
+        "row": 5,
+        "column": 11,
+        "column_letter": "K",
+        "value": "Sensors",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "O5",
+        "row": 5,
+        "column": 15,
+        "column_letter": "O",
+        "value": "Sensors",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "B6",
+        "row": 6,
+        "column": 2,
+        "column_letter": "B",
+        "value": "C&C",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "F6",
+        "row": 6,
+        "column": 6,
+        "column_letter": "F",
+        "value": "C&C",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "K6",
+        "row": 6,
+        "column": 11,
+        "column_letter": "K",
+        "value": "C&C",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "O6",
+        "row": 6,
+        "column": 15,
+        "column_letter": "O",
+        "value": "C&C",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "B7",
+        "row": 7,
+        "column": 2,
+        "column_letter": "B",
+        "value": "Impulse",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "F7",
+        "row": 7,
+        "column": 6,
+        "column_letter": "F",
+        "value": "Impulse",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "K7",
+        "row": 7,
+        "column": 11,
+        "column_letter": "K",
+        "value": "Power",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "N7",
+        "row": 7,
+        "column": 14,
+        "column_letter": "N",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "O7",
+        "row": 7,
+        "column": 15,
+        "column_letter": "O",
+        "value": "Impulse",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "P7",
+        "row": 7,
+        "column": 16,
+        "column_letter": "P",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "B8",
+        "row": 8,
+        "column": 2,
+        "column_letter": "B",
+        "value": "Aft Torpedo",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "F8",
+        "row": 8,
+        "column": 6,
+        "column_letter": "F",
+        "value": "Forward Torpedo",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "K8",
+        "row": 8,
+        "column": 11,
+        "column_letter": "K",
+        "value": "Impulse",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "N8",
+        "row": 8,
+        "column": 14,
+        "column_letter": "N",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "O8",
+        "row": 8,
+        "column": 15,
+        "column_letter": "O",
+        "value": "Power",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "P8",
+        "row": 8,
+        "column": 16,
+        "column_letter": "P",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "A9",
+        "row": 9,
+        "column": 1,
+        "column_letter": "A",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "B9",
+        "row": 9,
+        "column": 2,
+        "column_letter": "B",
+        "value": "Power",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "C9",
+        "row": 9,
+        "column": 3,
+        "column_letter": "C",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "F9",
+        "row": 9,
+        "column": 6,
+        "column_letter": "F",
+        "value": "Aft Torpedo",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "J9",
+        "row": 9,
+        "column": 10,
+        "column_letter": "J",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "K9",
+        "row": 9,
+        "column": 11,
+        "column_letter": "K",
+        "value": "Forward/Aft Torpedo",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "L9",
+        "row": 9,
+        "column": 12,
+        "column_letter": "L",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "N9",
+        "row": 9,
+        "column": 14,
+        "column_letter": "N",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "O9",
+        "row": 9,
+        "column": 15,
+        "column_letter": "O",
+        "value": "Bay",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "P9",
+        "row": 9,
+        "column": 16,
+        "column_letter": "P",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "A10",
+        "row": 10,
+        "column": 1,
+        "column_letter": "A",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "B10",
+        "row": 10,
+        "column": 2,
+        "column_letter": "B",
+        "value": "Bay",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "C10",
+        "row": 10,
+        "column": 3,
+        "column_letter": "C",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "E10",
+        "row": 10,
+        "column": 5,
+        "column_letter": "E",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "F10",
+        "row": 10,
+        "column": 6,
+        "column_letter": "F",
+        "value": "Power",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "G10",
+        "row": 10,
+        "column": 7,
+        "column_letter": "G",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "J10",
+        "row": 10,
+        "column": 10,
+        "column_letter": "J",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "K10",
+        "row": 10,
+        "column": 11,
+        "column_letter": "K",
+        "value": "Bay",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "L10",
+        "row": 10,
+        "column": 12,
+        "column_letter": "L",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "A11",
+        "row": 11,
+        "column": 1,
+        "column_letter": "A",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "B11",
+        "row": 11,
+        "column": 2,
+        "column_letter": "B",
+        "value": "Aft Beam",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "C11",
+        "row": 11,
+        "column": 3,
+        "column_letter": "C",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "E11",
+        "row": 11,
+        "column": 5,
+        "column_letter": "E",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "F11",
+        "row": 11,
+        "column": 6,
+        "column_letter": "F",
+        "value": "Bay",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "G11",
+        "row": 11,
+        "column": 7,
+        "column_letter": "G",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "J11",
+        "row": 11,
+        "column": 10,
+        "column_letter": "J",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "L11",
+        "row": 11,
+        "column": 12,
+        "column_letter": "L",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "E12",
+        "row": 12,
+        "column": 5,
+        "column_letter": "E",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "F12",
+        "row": 12,
+        "column": 6,
+        "column_letter": "F",
+        "value": "Aft Beam",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "G12",
+        "row": 12,
+        "column": 7,
+        "column_letter": "G",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "B16",
+        "row": 16,
+        "column": 2,
+        "column_letter": "B",
+        "value": "Trigon BC",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "F16",
+        "row": 16,
+        "column": 6,
+        "column_letter": "F",
+        "value": "Trigon CA",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "J16",
+        "row": 16,
+        "column": 10,
+        "column_letter": "J",
+        "value": "Trigon CL",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "N16",
+        "row": 16,
+        "column": 14,
+        "column_letter": "N",
+        "value": "Trigon FG",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "B18",
+        "row": 18,
+        "column": 2,
+        "column_letter": "B",
+        "value": "Forward Disruptor",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "F18",
+        "row": 18,
+        "column": 6,
+        "column_letter": "F",
+        "value": "Forward Disruptor",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "N18",
+        "row": 18,
+        "column": 14,
+        "column_letter": "N",
+        "value": "Forward Disruptor",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "B19",
+        "row": 19,
+        "column": 2,
+        "column_letter": "B",
+        "value": "Sensors",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "F19",
+        "row": 19,
+        "column": 6,
+        "column_letter": "F",
+        "value": "Sensors",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "J19",
+        "row": 19,
+        "column": 10,
+        "column_letter": "J",
+        "value": "Sensors",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "N19",
+        "row": 19,
+        "column": 14,
+        "column_letter": "N",
+        "value": "Sensors",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "B20",
+        "row": 20,
+        "column": 2,
+        "column_letter": "B",
+        "value": "C&C",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "F20",
+        "row": 20,
+        "column": 6,
+        "column_letter": "F",
+        "value": "C&C",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "J20",
+        "row": 20,
+        "column": 10,
+        "column_letter": "J",
+        "value": "C&C",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "N20",
+        "row": 20,
+        "column": 14,
+        "column_letter": "N",
+        "value": "C&C",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "A21",
+        "row": 21,
+        "column": 1,
+        "column_letter": "A",
+        "value": "Forward Disruptor",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "B21",
+        "row": 21,
+        "column": 2,
+        "column_letter": "B",
+        "value": "Power",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "C21",
+        "row": 21,
+        "column": 3,
+        "column_letter": "C",
+        "value": "Forward Disruptor",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "F21",
+        "row": 21,
+        "column": 6,
+        "column_letter": "F",
+        "value": "Power",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "J21",
+        "row": 21,
+        "column": 10,
+        "column_letter": "J",
+        "value": "Power",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "N21",
+        "row": 21,
+        "column": 14,
+        "column_letter": "N",
+        "value": "Power",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "A22",
+        "row": 22,
+        "column": 1,
+        "column_letter": "A",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "B22",
+        "row": 22,
+        "column": 2,
+        "column_letter": "B",
+        "value": "Bay",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "C22",
+        "row": 22,
+        "column": 3,
+        "column_letter": "C",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "E22",
+        "row": 22,
+        "column": 5,
+        "column_letter": "E",
+        "value": "Forward Disruptor",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "F22",
+        "row": 22,
+        "column": 6,
+        "column_letter": "F",
+        "value": "Bay",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "G22",
+        "row": 22,
+        "column": 7,
+        "column_letter": "G",
+        "value": "Forward Disruptor",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "I22",
+        "row": 22,
+        "column": 9,
+        "column_letter": "I",
+        "value": "Forward Disruptor",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "J22",
+        "row": 22,
+        "column": 10,
+        "column_letter": "J",
+        "value": "Bay",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "K22",
+        "row": 22,
+        "column": 11,
+        "column_letter": "K",
+        "value": "Forward Disruptor",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "N22",
+        "row": 22,
+        "column": 14,
+        "column_letter": "N",
+        "value": "Bay",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "A23",
+        "row": 23,
+        "column": 1,
+        "column_letter": "A",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "B23",
+        "row": 23,
+        "column": 2,
+        "column_letter": "B",
+        "value": "Impulse",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "C23",
+        "row": 23,
+        "column": 3,
+        "column_letter": "C",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "E23",
+        "row": 23,
+        "column": 5,
+        "column_letter": "E",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "F23",
+        "row": 23,
+        "column": 6,
+        "column_letter": "F",
+        "value": "Impulse",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "G23",
+        "row": 23,
+        "column": 7,
+        "column_letter": "G",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "I23",
+        "row": 23,
+        "column": 9,
+        "column_letter": "I",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "J23",
+        "row": 23,
+        "column": 10,
+        "column_letter": "J",
+        "value": "Impulse",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "K23",
+        "row": 23,
+        "column": 11,
+        "column_letter": "K",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "M23",
+        "row": 23,
+        "column": 13,
+        "column_letter": "M",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "N23",
+        "row": 23,
+        "column": 14,
+        "column_letter": "N",
+        "value": "Impulse",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "O23",
+        "row": 23,
+        "column": 15,
+        "column_letter": "O",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "A24",
+        "row": 24,
+        "column": 1,
+        "column_letter": "A",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "B24",
+        "row": 24,
+        "column": 2,
+        "column_letter": "B",
+        "value": "Aft Disruptor",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "C24",
+        "row": 24,
+        "column": 3,
+        "column_letter": "C",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "E24",
+        "row": 24,
+        "column": 5,
+        "column_letter": "E",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "G24",
+        "row": 24,
+        "column": 7,
+        "column_letter": "G",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "I24",
+        "row": 24,
+        "column": 9,
+        "column_letter": "I",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "K24",
+        "row": 24,
+        "column": 11,
+        "column_letter": "K",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "M24",
+        "row": 24,
+        "column": 13,
+        "column_letter": "M",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "O24",
+        "row": 24,
+        "column": 15,
+        "column_letter": "O",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "A25",
+        "row": 25,
+        "column": 1,
+        "column_letter": "A",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "C25",
+        "row": 25,
+        "column": 3,
+        "column_letter": "C",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "E25",
+        "row": 25,
+        "column": 5,
+        "column_letter": "E",
+        "value": "Left Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      },
+      {
+        "coordinate": "G25",
+        "row": 25,
+        "column": 7,
+        "column_letter": "G",
+        "value": "Right Warp",
+        "fill": "00000000",
+        "font_color": "Values must be of type <class 'str'>"
+      }
+    ],
+    "merged_cells": [
+      "E2:G2",
+      "J2:L2",
+      "A2:C2",
+      "N2:P2"
+    ]
+  }
+}

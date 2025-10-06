@@ -1,0 +1,399 @@
+/* Star Sea - Menu Styles */
+
+.menu-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+}
+
+.menu-screen h1 {
+    font-size: 72px;
+    color: #0f0;
+    text-shadow: 0 0 20px #0f0;
+    letter-spacing: 10px;
+}
+
+.menu-screen h2 {
+    font-size: 48px;
+    color: #0f0;
+    text-shadow: 0 0 15px #0f0;
+    letter-spacing: 8px;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    min-width: 300px;
+}
+
+.menu-buttons button {
+    padding: 15px 30px;
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    font-weight: bold;
+    color: #0f0;
+    background: rgba(0, 50, 0, 0.5);
+    border: 2px solid #0f0;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 2px;
+}
+
+.menu-buttons button:hover {
+    background: rgba(0, 100, 0, 0.8);
+    box-shadow: 0 0 15px #0f0;
+    transform: scale(1.05);
+}
+
+.menu-buttons button:active {
+    transform: scale(0.98);
+}
+
+.menu-buttons button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.menu-buttons button:disabled:hover {
+    transform: scale(1);
+    box-shadow: none;
+}
+#ship-selection-panel {
+    background: rgba(0, 40, 0, 0.6);
+    border: 2px solid #0a0;
+    padding: 20px 24px;
+    min-width: 320px;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.15);
+}
+
+#ship-selection-panel .panel-title {
+    font-size: 22px;
+    color: #0f0;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+#ship-selection-panel label {
+    font-size: 14px;
+    color: #0c0;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+#player-ship-select {
+    padding: 10px 12px;
+    background: rgba(0, 20, 0, 0.9);
+    color: #0f0;
+    border: 1px solid #0f0;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+}
+
+#player-ship-select:focus {
+    outline: none;
+    border-color: #3f3;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+#player-ship-summary {
+    background: rgba(0, 30, 0, 0.6);
+    border: 1px solid #064;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#player-ship-summary .summary-line {
+    margin: 0;
+    font-size: 14px;
+    color: #0c0;
+    letter-spacing: 1px;
+}
+
+#player-ship-summary .summary-line strong {
+    color: #0f0;
+}
+
+#ship-selection-panel.highlight {
+    box-shadow: 0 0 25px rgba(0, 255, 0, 0.6);
+}
+
+/* Mission Briefing Screen */
+.briefing-container,
+.debriefing-container {
+    width: 90%;
+    max-width: 1200px;
+    height: 90%;
+    max-height: 800px;
+    background: rgba(0, 20, 0, 0.95);
+    border: 3px solid #0f0;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+    gap: 20px;
+}
+
+.briefing-header,
+.debriefing-header {
+    border-bottom: 2px solid #0f0;
+    padding-bottom: 15px;
+}
+
+.briefing-header h2,
+.debriefing-header h2 {
+    margin: 0 0 10px 0;
+    font-size: 36px;
+    color: #0f0;
+    text-shadow: 0 0 15px #0f0;
+    letter-spacing: 6px;
+}
+
+.mission-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    color: #0a0;
+    letter-spacing: 2px;
+}
+
+.briefing-content,
+.debriefing-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.briefing-officer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px;
+    background: rgba(0, 50, 0, 0.3);
+    border-left: 4px solid #0a0;
+}
+
+.officer-portrait {
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 255, 0, 0.2);
+    border: 2px solid #0a0;
+    border-radius: 50%;
+}
+
+#briefing-officer-name {
+    font-size: 18px;
+    color: #0f0;
+    letter-spacing: 2px;
+}
+
+.briefing-text,
+.debriefing-text {
+    padding: 20px;
+    background: rgba(0, 30, 0, 0.5);
+    border: 1px solid #0a0;
+}
+
+.briefing-text h3,
+.debriefing-text h3 {
+    margin: 0 0 15px 0;
+    font-size: 24px;
+    color: #0f0;
+    letter-spacing: 3px;
+}
+
+.briefing-text p,
+.debriefing-text p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.8;
+    color: #0c0;
+    white-space: pre-line;
+}
+
+.briefing-objectives,
+.debriefing-objectives {
+    padding: 15px;
+    background: rgba(0, 40, 0, 0.4);
+    border: 1px solid #0a0;
+}
+
+.briefing-objectives h3,
+.debriefing-objectives h3 {
+    margin: 0 0 15px 0;
+    font-size: 20px;
+    color: #0f0;
+    letter-spacing: 3px;
+}
+
+#objectives-list,
+#debriefing-objectives-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#objectives-list li,
+#debriefing-objectives-list li {
+    padding: 8px 15px;
+    margin-bottom: 8px;
+    background: rgba(0, 50, 0, 0.3);
+    border-left: 3px solid #0a0;
+    color: #0c0;
+    font-size: 15px;
+    letter-spacing: 1px;
+}
+
+#objectives-list li.primary,
+#debriefing-objectives-list li.primary {
+    border-left-color: #0f0;
+    color: #0f0;
+}
+
+#debriefing-objectives-list li.completed {
+    border-left-color: #0f0;
+    background: rgba(0, 100, 0, 0.2);
+}
+
+#debriefing-objectives-list li.failed {
+    border-left-color: #f00;
+    background: rgba(100, 0, 0, 0.2);
+    color: #f88;
+}
+
+.briefing-footer,
+.debriefing-footer {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding-top: 15px;
+    border-top: 2px solid #0f0;
+}
+
+.mission-btn {
+    padding: 15px 40px;
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    font-weight: bold;
+    color: #0f0;
+    background: rgba(0, 50, 0, 0.5);
+    border: 2px solid #0f0;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 3px;
+}
+
+.mission-btn:hover {
+    background: rgba(0, 100, 0, 0.8);
+    box-shadow: 0 0 20px #0f0;
+    transform: scale(1.05);
+}
+
+.mission-btn.secondary {
+    color: #0a0;
+    border-color: #0a0;
+}
+
+.mission-btn.secondary:hover {
+    background: rgba(0, 80, 0, 0.6);
+    box-shadow: 0 0 15px #0a0;
+}
+
+/* Debriefing Stats */
+.debriefing-stats {
+    padding: 20px;
+    background: rgba(0, 30, 0, 0.5);
+    border: 1px solid #0a0;
+}
+
+.debriefing-stats h3 {
+    margin: 0 0 15px 0;
+    font-size: 20px;
+    color: #0f0;
+    letter-spacing: 3px;
+}
+
+.stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.stat-row:last-child {
+    border-bottom: none;
+}
+
+.stat-label {
+    color: #0a0;
+    font-size: 16px;
+    letter-spacing: 1px;
+}
+
+.stat-value {
+    color: #0f0;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+#debriefing-result {
+    color: #0f0;
+}
+
+#debriefing-result.victory {
+    color: #0f0;
+    text-shadow: 0 0 20px #0f0;
+}
+
+#debriefing-result.defeat {
+    color: #f00;
+    text-shadow: 0 0 20px #f00;
+}
+
+#debriefing-mission-title {
+    font-size: 18px;
+    color: #0a0;
+    letter-spacing: 2px;
+}
+
+/* Scrollbar styling for mission screens */
+.briefing-content::-webkit-scrollbar,
+.debriefing-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.briefing-content::-webkit-scrollbar-track,
+.debriefing-content::-webkit-scrollbar-track {
+    background: rgba(0, 20, 0, 0.5);
+}
+
+.briefing-content::-webkit-scrollbar-thumb,
+.debriefing-content::-webkit-scrollbar-thumb {
+    background: #0a0;
+    border-radius: 4px;
+}
+
+.briefing-content::-webkit-scrollbar-thumb:hover,
+.debriefing-content::-webkit-scrollbar-thumb:hover {
+    background: #0f0;
+}
+

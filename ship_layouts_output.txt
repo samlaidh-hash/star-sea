@@ -1,0 +1,587 @@
+================================================================================
+SYSTEM DAMAGE BOX LAYOUTS
+================================================================================
+
+================================================================================
+SHIP: Federation BC
+================================================================================
+Total boxes: 16
+
+Grid Layout (row, col):
+------------------------------------------------------------
+       0   1   2 
+     ------------
+  0 |             
+  1 | FB  FT  FB  
+  2 |     SEN     
+  3 |     C&C     
+  4 |     IMP     
+  5 |     AT      
+  6 | RW  PWR RW  
+  7 | LW  BAY RW  
+  8 | LW  AB  RW  
+
+System Boxes:
+------------------------------------------------------------
+
+  Aft Beam: (1 box)
+    - Position: (8, 1)
+
+  Aft Torpedo: (1 box)
+    - Position: (5, 1)
+
+  Bay: (1 box)
+    - Position: (7, 1)
+
+  C&C: (1 box)
+    - Position: (3, 1)
+
+  Forward Beam: (2 boxes)
+    - Position: (1, 0)
+    - Position: (1, 2)
+
+  Forward Torpedo: (1 box)
+    - Position: (1, 1)
+
+  Impulse: (1 box)
+    - Position: (4, 1)
+
+  Left Warp: (2 boxes)
+    - Position: (7, 0)
+    - Position: (8, 0)
+
+  Power: (1 box)
+    - Position: (6, 1)
+
+  Right Warp: (4 boxes)
+    - Position: (6, 0)
+    - Position: (6, 2)
+    - Position: (7, 2)
+    - Position: (8, 2)
+
+  Sensors: (1 box)
+    - Position: (2, 1)
+
+================================================================================
+SHIP: Federation CA
+================================================================================
+Total boxes: 15
+
+Grid Layout (row, col):
+------------------------------------------------------------
+       0   1   2 
+     ------------
+  0 |             
+  1 |     FB      
+  2 |     SEN     
+  3 |     C&C     
+  4 |     IMP     
+  5 |     FT      
+  6 |     AT      
+  7 | LW  PWR RW  
+  8 | LW  BAY RW  
+  9 | LW  AB  RW  
+
+System Boxes:
+------------------------------------------------------------
+
+  Aft Beam: (1 box)
+    - Position: (9, 1)
+
+  Aft Torpedo: (1 box)
+    - Position: (6, 1)
+
+  Bay: (1 box)
+    - Position: (8, 1)
+
+  C&C: (1 box)
+    - Position: (3, 1)
+
+  Forward Beam: (1 box)
+    - Position: (1, 1)
+
+  Forward Torpedo: (1 box)
+    - Position: (5, 1)
+
+  Impulse: (1 box)
+    - Position: (4, 1)
+
+  Left Warp: (3 boxes)
+    - Position: (7, 0)
+    - Position: (8, 0)
+    - Position: (9, 0)
+
+  Power: (1 box)
+    - Position: (7, 1)
+
+  Right Warp: (3 boxes)
+    - Position: (7, 2)
+    - Position: (8, 2)
+    - Position: (9, 2)
+
+  Sensors: (1 box)
+    - Position: (2, 1)
+
+================================================================================
+SHIP: Federation CL
+================================================================================
+Total boxes: 13
+
+Grid Layout (row, col):
+------------------------------------------------------------
+       0   1   2 
+     ------------
+  0 |             
+  1 |     FB      
+  2 |     SEN     
+  3 |     C&C     
+  4 |     PWR     
+  5 |     IMP     
+  6 | LW  F/AT RW  
+  7 | LW  BAY RW  
+  8 | LW      RW  
+
+System Boxes:
+------------------------------------------------------------
+
+  Bay: (1 box)
+    - Position: (7, 1)
+
+  C&C: (1 box)
+    - Position: (3, 1)
+
+  Forward Beam: (1 box)
+    - Position: (1, 1)
+
+  Forward/Aft Torpedo: (1 box)
+    - Position: (6, 1)
+
+  Impulse: (1 box)
+    - Position: (5, 1)
+
+  Left Warp: (3 boxes)
+    - Position: (6, 0)
+    - Position: (7, 0)
+    - Position: (8, 0)
+
+  Power: (1 box)
+    - Position: (4, 1)
+
+  Right Warp: (3 boxes)
+    - Position: (6, 2)
+    - Position: (7, 2)
+    - Position: (8, 2)
+
+  Sensors: (1 box)
+    - Position: (2, 1)
+
+================================================================================
+SHIP: Federation FG
+================================================================================
+Total boxes: 12
+
+Grid Layout (row, col):
+------------------------------------------------------------
+       0   1   2 
+     ------------
+  0 |             
+  1 |     FB      
+  2 |     SEN     
+  3 |     C&C     
+  4 | LW  IMP RW  
+  5 | LW  PWR RW  
+  6 | LW  BAY RW  
+
+System Boxes:
+------------------------------------------------------------
+
+  Bay: (1 box)
+    - Position: (6, 1)
+
+  C&C: (1 box)
+    - Position: (3, 1)
+
+  Forward Beam: (1 box)
+    - Position: (1, 1)
+
+  Impulse: (1 box)
+    - Position: (4, 1)
+
+  Left Warp: (3 boxes)
+    - Position: (4, 0)
+    - Position: (5, 0)
+    - Position: (6, 0)
+
+  Power: (1 box)
+    - Position: (5, 1)
+
+  Right Warp: (3 boxes)
+    - Position: (4, 2)
+    - Position: (5, 2)
+    - Position: (6, 2)
+
+  Sensors: (1 box)
+    - Position: (2, 1)
+
+================================================================================
+SHIP: Trigon BC
+================================================================================
+Total boxes: 17
+
+Grid Layout (row, col):
+------------------------------------------------------------
+       0   1   2 
+     ------------
+  0 |             
+  1 |     FD      
+  2 |     SEN     
+  3 |     C&C     
+  4 | FD  PWR FD  
+  5 | LW  BAY RW  
+  6 | LW  IMP RW  
+  7 | LW  AD  RW  
+  8 | LW      RW  
+
+System Boxes:
+------------------------------------------------------------
+
+  Aft Disruptor: (1 box)
+    - Position: (7, 1)
+
+  Bay: (1 box)
+    - Position: (5, 1)
+
+  C&C: (1 box)
+    - Position: (3, 1)
+
+  Forward Disruptor: (3 boxes)
+    - Position: (1, 1)
+    - Position: (4, 0)
+    - Position: (4, 2)
+
+  Impulse: (1 box)
+    - Position: (6, 1)
+
+  Left Warp: (4 boxes)
+    - Position: (5, 0)
+    - Position: (6, 0)
+    - Position: (7, 0)
+    - Position: (8, 0)
+
+  Power: (1 box)
+    - Position: (4, 1)
+
+  Right Warp: (4 boxes)
+    - Position: (5, 2)
+    - Position: (6, 2)
+    - Position: (7, 2)
+    - Position: (8, 2)
+
+  Sensors: (1 box)
+    - Position: (2, 1)
+
+================================================================================
+SHIP: Trigon CA
+================================================================================
+Total boxes: 14
+
+Grid Layout (row, col):
+------------------------------------------------------------
+       0   1   2 
+     ------------
+  0 |             
+  1 |     FD      
+  2 |     SEN     
+  3 |     C&C     
+  4 |     PWR     
+  5 | FD  BAY FD  
+  6 | LW  IMP RW  
+  7 | LW      RW  
+  8 | LW      RW  
+
+System Boxes:
+------------------------------------------------------------
+
+  Bay: (1 box)
+    - Position: (5, 1)
+
+  C&C: (1 box)
+    - Position: (3, 1)
+
+  Forward Disruptor: (3 boxes)
+    - Position: (1, 1)
+    - Position: (5, 0)
+    - Position: (5, 2)
+
+  Impulse: (1 box)
+    - Position: (6, 1)
+
+  Left Warp: (3 boxes)
+    - Position: (6, 0)
+    - Position: (7, 0)
+    - Position: (8, 0)
+
+  Power: (1 box)
+    - Position: (4, 1)
+
+  Right Warp: (3 boxes)
+    - Position: (6, 2)
+    - Position: (7, 2)
+    - Position: (8, 2)
+
+  Sensors: (1 box)
+    - Position: (2, 1)
+
+================================================================================
+SHIP: Trigon CL
+================================================================================
+Total boxes: 11
+
+Grid Layout (row, col):
+------------------------------------------------------------
+       0   1   2 
+     ------------
+  0 |             
+  1 |             
+  2 |     SEN     
+  3 |     C&C     
+  4 |     PWR     
+  5 | FD  BAY FD  
+  6 | LW  IMP RW  
+  7 | LW      RW  
+
+System Boxes:
+------------------------------------------------------------
+
+  Bay: (1 box)
+    - Position: (5, 1)
+
+  C&C: (1 box)
+    - Position: (3, 1)
+
+  Forward Disruptor: (2 boxes)
+    - Position: (5, 0)
+    - Position: (5, 2)
+
+  Impulse: (1 box)
+    - Position: (6, 1)
+
+  Left Warp: (2 boxes)
+    - Position: (6, 0)
+    - Position: (7, 0)
+
+  Power: (1 box)
+    - Position: (4, 1)
+
+  Right Warp: (2 boxes)
+    - Position: (6, 2)
+    - Position: (7, 2)
+
+  Sensors: (1 box)
+    - Position: (2, 1)
+
+================================================================================
+SHIP: Trigon FG
+================================================================================
+Total boxes: 10
+
+Grid Layout (row, col):
+------------------------------------------------------------
+       0   1   2 
+     ------------
+  0 |             
+  1 |     FD      
+  2 |     SEN     
+  3 |     C&C     
+  4 |     PWR     
+  5 |     BAY     
+  6 | LW  IMP RW  
+  7 | LW      RW  
+
+System Boxes:
+------------------------------------------------------------
+
+  Bay: (1 box)
+    - Position: (5, 1)
+
+  C&C: (1 box)
+    - Position: (3, 1)
+
+  Forward Disruptor: (1 box)
+    - Position: (1, 1)
+
+  Impulse: (1 box)
+    - Position: (6, 1)
+
+  Left Warp: (2 boxes)
+    - Position: (6, 0)
+    - Position: (7, 0)
+
+  Power: (1 box)
+    - Position: (4, 1)
+
+  Right Warp: (2 boxes)
+    - Position: (6, 2)
+    - Position: (7, 2)
+
+  Sensors: (1 box)
+    - Position: (2, 1)
+
+================================================================================
+Complete data exported to: ship_system_layouts.json
+================================================================================
+
+================================================================================
+JAVASCRIPT IMPLEMENTATION FORMAT
+================================================================================
+
+const SHIP_SYSTEM_LAYOUTS = {
+  'FEDERATION_BC': {
+    name: 'Federation BC',
+    boxes: [
+      { system: 'Forward Beam', row: 1, col: 0 },
+      { system: 'Forward Torpedo', row: 1, col: 1 },
+      { system: 'Forward Beam', row: 1, col: 2 },
+      { system: 'Sensors', row: 2, col: 1 },
+      { system: 'C&C', row: 3, col: 1 },
+      { system: 'Impulse', row: 4, col: 1 },
+      { system: 'Aft Torpedo', row: 5, col: 1 },
+      { system: 'Right Warp', row: 6, col: 0 },
+      { system: 'Power', row: 6, col: 1 },
+      { system: 'Right Warp', row: 6, col: 2 },
+      { system: 'Left Warp', row: 7, col: 0 },
+      { system: 'Bay', row: 7, col: 1 },
+      { system: 'Right Warp', row: 7, col: 2 },
+      { system: 'Left Warp', row: 8, col: 0 },
+      { system: 'Aft Beam', row: 8, col: 1 },
+      { system: 'Right Warp', row: 8, col: 2 },
+    ]
+  },
+  'FEDERATION_CA': {
+    name: 'Federation CA',
+    boxes: [
+      { system: 'Forward Beam', row: 1, col: 1 },
+      { system: 'Sensors', row: 2, col: 1 },
+      { system: 'C&C', row: 3, col: 1 },
+      { system: 'Impulse', row: 4, col: 1 },
+      { system: 'Forward Torpedo', row: 5, col: 1 },
+      { system: 'Aft Torpedo', row: 6, col: 1 },
+      { system: 'Left Warp', row: 7, col: 0 },
+      { system: 'Power', row: 7, col: 1 },
+      { system: 'Right Warp', row: 7, col: 2 },
+      { system: 'Left Warp', row: 8, col: 0 },
+      { system: 'Bay', row: 8, col: 1 },
+      { system: 'Right Warp', row: 8, col: 2 },
+      { system: 'Left Warp', row: 9, col: 0 },
+      { system: 'Aft Beam', row: 9, col: 1 },
+      { system: 'Right Warp', row: 9, col: 2 },
+    ]
+  },
+  'FEDERATION_CL': {
+    name: 'Federation CL',
+    boxes: [
+      { system: 'Forward Beam', row: 1, col: 1 },
+      { system: 'Sensors', row: 2, col: 1 },
+      { system: 'C&C', row: 3, col: 1 },
+      { system: 'Power', row: 4, col: 1 },
+      { system: 'Impulse', row: 5, col: 1 },
+      { system: 'Left Warp', row: 6, col: 0 },
+      { system: 'Forward/Aft Torpedo', row: 6, col: 1 },
+      { system: 'Right Warp', row: 6, col: 2 },
+      { system: 'Left Warp', row: 7, col: 0 },
+      { system: 'Bay', row: 7, col: 1 },
+      { system: 'Right Warp', row: 7, col: 2 },
+      { system: 'Left Warp', row: 8, col: 0 },
+      { system: 'Right Warp', row: 8, col: 2 },
+    ]
+  },
+  'FEDERATION_FG': {
+    name: 'Federation FG',
+    boxes: [
+      { system: 'Forward Beam', row: 1, col: 1 },
+      { system: 'Sensors', row: 2, col: 1 },
+      { system: 'C&C', row: 3, col: 1 },
+      { system: 'Left Warp', row: 4, col: 0 },
+      { system: 'Impulse', row: 4, col: 1 },
+      { system: 'Right Warp', row: 4, col: 2 },
+      { system: 'Left Warp', row: 5, col: 0 },
+      { system: 'Power', row: 5, col: 1 },
+      { system: 'Right Warp', row: 5, col: 2 },
+      { system: 'Left Warp', row: 6, col: 0 },
+      { system: 'Bay', row: 6, col: 1 },
+      { system: 'Right Warp', row: 6, col: 2 },
+    ]
+  },
+  'TRIGON_BC': {
+    name: 'Trigon BC',
+    boxes: [
+      { system: 'Forward Disruptor', row: 1, col: 1 },
+      { system: 'Sensors', row: 2, col: 1 },
+      { system: 'C&C', row: 3, col: 1 },
+      { system: 'Forward Disruptor', row: 4, col: 0 },
+      { system: 'Power', row: 4, col: 1 },
+      { system: 'Forward Disruptor', row: 4, col: 2 },
+      { system: 'Left Warp', row: 5, col: 0 },
+      { system: 'Bay', row: 5, col: 1 },
+      { system: 'Right Warp', row: 5, col: 2 },
+      { system: 'Left Warp', row: 6, col: 0 },
+      { system: 'Impulse', row: 6, col: 1 },
+      { system: 'Right Warp', row: 6, col: 2 },
+      { system: 'Left Warp', row: 7, col: 0 },
+      { system: 'Aft Disruptor', row: 7, col: 1 },
+      { system: 'Right Warp', row: 7, col: 2 },
+      { system: 'Left Warp', row: 8, col: 0 },
+      { system: 'Right Warp', row: 8, col: 2 },
+    ]
+  },
+  'TRIGON_CA': {
+    name: 'Trigon CA',
+    boxes: [
+      { system: 'Forward Disruptor', row: 1, col: 1 },
+      { system: 'Sensors', row: 2, col: 1 },
+      { system: 'C&C', row: 3, col: 1 },
+      { system: 'Power', row: 4, col: 1 },
+      { system: 'Forward Disruptor', row: 5, col: 0 },
+      { system: 'Bay', row: 5, col: 1 },
+      { system: 'Forward Disruptor', row: 5, col: 2 },
+      { system: 'Left Warp', row: 6, col: 0 },
+      { system: 'Impulse', row: 6, col: 1 },
+      { system: 'Right Warp', row: 6, col: 2 },
+      { system: 'Left Warp', row: 7, col: 0 },
+      { system: 'Right Warp', row: 7, col: 2 },
+      { system: 'Left Warp', row: 8, col: 0 },
+      { system: 'Right Warp', row: 8, col: 2 },
+    ]
+  },
+  'TRIGON_CL': {
+    name: 'Trigon CL',
+    boxes: [
+      { system: 'Sensors', row: 2, col: 1 },
+      { system: 'C&C', row: 3, col: 1 },
+      { system: 'Power', row: 4, col: 1 },
+      { system: 'Forward Disruptor', row: 5, col: 0 },
+      { system: 'Bay', row: 5, col: 1 },
+      { system: 'Forward Disruptor', row: 5, col: 2 },
+      { system: 'Left Warp', row: 6, col: 0 },
+      { system: 'Impulse', row: 6, col: 1 },
+      { system: 'Right Warp', row: 6, col: 2 },
+      { system: 'Left Warp', row: 7, col: 0 },
+      { system: 'Right Warp', row: 7, col: 2 },
+    ]
+  },
+  'TRIGON_FG': {
+    name: 'Trigon FG',
+    boxes: [
+      { system: 'Forward Disruptor', row: 1, col: 1 },
+      { system: 'Sensors', row: 2, col: 1 },
+      { system: 'C&C', row: 3, col: 1 },
+      { system: 'Power', row: 4, col: 1 },
+      { system: 'Bay', row: 5, col: 1 },
+      { system: 'Left Warp', row: 6, col: 0 },
+      { system: 'Impulse', row: 6, col: 1 },
+      { system: 'Right Warp', row: 6, col: 2 },
+      { system: 'Left Warp', row: 7, col: 0 },
+      { system: 'Right Warp', row: 7, col: 2 },
+    ]
+  },
+};
