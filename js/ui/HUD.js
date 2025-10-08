@@ -231,11 +231,28 @@ class HUD {
     }
     updateWeaponHP(weaponName, current, max) {
         const element = document.querySelector(`[data-weapon="${weaponName}"] .hp`);
-        if (element) {
-            if (current === null || current === undefined || max === null || max === undefined) {
-                element.textContent = "--";
+        if (!element) return;
+
+        // Handle missing values
+        if (current === null || current === undefined || max === null || max === undefined) {
+            element.textContent = "--";
+            const parentElement = element.closest('.weapon-item');
+            if (parentElement) parentElement.classList.remove('damaged', 'warning');
+            return;
+        }
+
+        element.textContent = `${Math.round(current)}/${Math.round(max)}`;
+
+        const parentElement = element.closest('.weapon-item');
+        if (parentElement) {
+            if (current === 0) {
+                parentElement.classList.add('damaged');
+                parentElement.classList.remove('warning');
+            } else if (current <= max * 0.3) {
+                parentElement.classList.add('warning');
+                parentElement.classList.remove('damaged');
             } else {
-                element.textContent = `${Math.round(current)}/${Math.round(max)}`;
+                parentElement.classList.remove('damaged', 'warning');
             }
         }
     }
@@ -261,26 +278,7 @@ class HUD {
         }
     }
 
-    updateWeaponHP(weaponName, current, max) {
-        const element = document.querySelector(`[data-weapon="${weaponName}"] .hp`);
-        if (element) {
-            element.textContent = `${Math.round(current)}/${max}`;
-
-            const parentElement = element.closest('.weapon-item');
-            if (parentElement) {
-                if (current === 0) {
-                    parentElement.classList.add('damaged');
-                    parentElement.classList.remove('warning');
-                } else if (current <= max * 0.3) {
-                    parentElement.classList.add('warning');
-                    parentElement.classList.remove('damaged');
-                } else {
-                    parentElement.classList.remove('damaged', 'warning');
-                }
-            }
-        }
-    }
-
+    
     addCriticalMessage(message, duration = 5000) {
         const logElement = document.getElementById('log-messages');
         if (!logElement) return;
