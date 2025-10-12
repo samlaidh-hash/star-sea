@@ -41,8 +41,12 @@ class MissionUI {
      * @param {Object} mission - Mission data from MISSIONS
      */
     showBriefing(mission) {
-        if (!mission || !this.briefingScreen) return;
+        if (!mission || !this.briefingScreen) {
+            console.log('MissionUI: Cannot show briefing - mission:', mission, 'screen:', this.briefingScreen);
+            return;
+        }
 
+        console.log('MissionUI: Showing briefing for mission:', mission.id);
         this.currentMission = mission;
 
         // Populate briefing data
@@ -199,6 +203,7 @@ class MissionUI {
      * Handle accept mission button
      */
     onAcceptMission() {
+        console.log('MissionUI: Accept mission clicked for:', this.currentMission?.id);
         this.hideBriefing();
         eventBus.emit('mission-accepted', { mission: this.currentMission });
         eventBus.emit('game-resumed');

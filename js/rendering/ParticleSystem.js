@@ -336,6 +336,101 @@ class ParticleSystem {
     }
 
     /**
+     * Create ship destruction explosion
+     */
+    createShipExplosion(x, y, shipSize, config = {}) {
+        const color = config.color || '#ff6600';
+        const particleCount = Math.floor(100 * (shipSize / 70)); // Scale particles with ship size
+        const speed = 150;
+
+        // Main explosion burst
+        for (let i = 0; i < particleCount; i++) {
+            const angle = (Math.PI * 2 * i) / particleCount + (Math.random() - 0.5) * 0.8;
+            const velocity = speed * (0.6 + Math.random() * 0.4);
+
+            this.addParticle(new Particle({
+                x, y,
+                vx: Math.cos(angle) * velocity,
+                vy: Math.sin(angle) * velocity,
+                size: (3 + Math.random() * 5) * (shipSize / 70),
+                color: i % 4 === 0 ? '#ffffff' :
+                       i % 4 === 1 ? '#ffaa00' :
+                       i % 4 === 2 ? color : '#ff3300',
+                life: 1.0 + Math.random() * 0.8,
+                decay: 0.5 + Math.random() * 0.3,
+                glow: true,
+                type: 'circle'
+            }));
+        }
+
+        // Debris cloud
+        for (let i = 0; i < particleCount / 2; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = speed * 0.4 * Math.random();
+
+            this.addParticle(new Particle({
+                x: x + (Math.random() - 0.5) * shipSize * 0.5,
+                y: y + (Math.random() - 0.5) * shipSize * 0.5,
+                vx: Math.cos(angle) * velocity,
+                vy: Math.sin(angle) * velocity,
+                size: (2 + Math.random() * 4) * (shipSize / 70),
+                color: i % 3 === 0 ? '#999999' : '#555555',
+                life: 1.5 + Math.random() * 1.0,
+                decay: 0.3 + Math.random() * 0.2,
+                glow: false,
+                type: Math.random() > 0.5 ? 'circle' : 'square',
+                rotation: Math.random() * Math.PI * 2,
+                rotationSpeed: (Math.random() - 0.5) * 8
+            }));
+        }
+
+        // Expanding shockwave particles
+        for (let i = 0; i < 20; i++) {
+            const angle = (Math.PI * 2 * i) / 20;
+            const velocity = speed * 1.5;
+
+            this.addParticle(new Particle({
+                x, y,
+                vx: Math.cos(angle) * velocity,
+                vy: Math.sin(angle) * velocity,
+                size: (4 + Math.random() * 3) * (shipSize / 70),
+                color: '#ffffff',
+                life: 0.4 + Math.random() * 0.2,
+                decay: 2.0,
+                glow: true,
+                type: 'circle'
+            }));
+        }
+
+        // Central explosion flash
+        this.addParticle(new Particle({
+            x, y,
+            vx: 0, vy: 0,
+            size: 40 * (shipSize / 70),
+            color: '#ffffff',
+            life: 0.3,
+            decay: 3,
+            glow: true,
+            type: 'circle'
+        }));
+
+        // Secondary flash (orange)
+        this.addParticle(new Particle({
+            x, y,
+            vx: 0, vy: 0,
+            size: 50 * (shipSize / 70),
+            color: '#ff6600',
+            life: 0.5,
+            decay: 1.8,
+            glow: true,
+            type: 'circle'
+        }));
+
+        // Screen shake (scaled with ship size)
+        this.addScreenShake(15 * (shipSize / 70), 0.5);
+    }
+
+    /**
      * Add particle to system
      */
     addParticle(particle) {

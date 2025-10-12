@@ -1,6 +1,6 @@
 // Simple audio mapping for game sounds
 const AUDIO_CONFIG = {
-    enabled: true,
+    enabled: false, // DISABLED - audio files missing, causing massive delays
     volumeMaster: 0.8,
     sounds: {
         'beam-fire':      { src: 'ASSETS/AUDIO/beam_fire.mp3', volume: 0.6 },

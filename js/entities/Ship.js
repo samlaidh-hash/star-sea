@@ -13,106 +13,238 @@ const WEAPON_POSITIONS = {
     aftTorpPort: { x: -3, y: 12 },
     aftTorpStarboard: { x: 3, y: 12 },
     disruptorPort: { x: -7, y: -13 },
-    disruptorStarboard: { x: 7, y: -13 }
+    disruptorStarboard: { x: 7, y: -13 },
+    // Trigon-specific positions (scaled by size, on wings)
+    trigonWingPortFwd: { x: -0.6, y: -0.25, scaled: true },      // Left wing forward
+    trigonWingStarboardFwd: { x: 0.6, y: -0.25, scaled: true },  // Right wing forward
+    trigonWingPortAft: { x: -0.5, y: 0.35, scaled: true },       // Left wing aft
+    trigonWingStarboardAft: { x: 0.5, y: 0.35, scaled: true },   // Right wing aft
+    trigonNose: { x: 0, y: -0.8, scaled: true },                 // Nose position
+    trigonCenterAft: { x: 0, y: 0.9, scaled: true },             // Center aft position
+    // Scintilian-specific positions (scaled by size, on wings and body)
+    scintilianHead: { x: 0, y: -0.75, scaled: true },            // Command head position
+    scintilianNeck: { x: 0, y: -0.2, scaled: true },             // Neck centerline
+    scintilianWingPortOuter: { x: -0.7, y: 0.6, scaled: true },  // Left wing outer
+    scintilianWingStarboardOuter: { x: 0.7, y: 0.6, scaled: true }, // Right wing outer
+    scintilianWingPortInner: { x: -0.3, y: 0.15, scaled: true }, // Left wing inner
+    scintilianWingStarboardInner: { x: 0.3, y: 0.15, scaled: true }, // Right wing inner
+    scintilianCenterAft: { x: 0, y: 0.75, scaled: true },        // Center aft position
+    // Pirate-specific positions (scaled by size, cross-shaped layout)
+    pirateUpperStabilizer: { x: 0, y: -0.8, scaled: true },      // Upper weapon mount
+    pirateLowerStabilizer: { x: 0, y: 0.8, scaled: true },       // Lower weapon mount
+    pirateWingPortTip: { x: -0.85, y: 0, scaled: true },         // Left wing tip
+    pirateWingStarboardTip: { x: 0.85, y: 0, scaled: true },     // Right wing tip
+    pirateWingPortInner: { x: -0.4, y: 0, scaled: true },        // Left wing inner
+    pirateWingStarboardInner: { x: 0.4, y: 0, scaled: true },    // Right wing inner
+    pirateCentralPod: { x: 0, y: 0, scaled: true }               // Central pod
 };
 
 const SHIP_WEAPON_LOADOUTS = {
     FEDERATION: {
         FG: [
             { type: 'beam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
-            { type: 'torpedo', name: 'Dual Torpedo Launcher (FG)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 4, loaded: 2, maxLoaded: 2, stored: 20 }
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (FG)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 4, loaded: 2, maxLoaded: 2, stored: 20 }
         ],
         DD: [
             { type: 'beam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
-            { type: 'torpedo', name: 'Dual Torpedo Launcher (DD)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 6, loaded: 3, maxLoaded: 3, stored: 30 }
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (DD)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 6, loaded: 3, maxLoaded: 3, stored: 30 }
         ],
         CL: [
             { type: 'beam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
-            { type: 'torpedo', name: 'Dual Torpedo Launcher (CL)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 8, loaded: 4, maxLoaded: 4, stored: 40 }
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (CL)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 8, loaded: 4, maxLoaded: 4, stored: 40 }
+        ],
+        CS: [
+            { type: 'streakBeam', name: 'Port Streak Beam', arc: 270, arcCenter: 270, positionKey: 'forwardPort' },
+            { type: 'streakBeam', name: 'Starboard Streak Beam', arc: 270, arcCenter: 90, positionKey: 'forwardStarboard' },
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (CS)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 8, loaded: 4, maxLoaded: 4, stored: 40 }
         ],
         CA: [
             { type: 'beam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
             { type: 'beam', name: 'Aft Beam Battery', arc: 270, arcCenter: 180, positionKey: 'aftCenter' },
-            { type: 'torpedo', name: 'Dual Torpedo Launcher (CA)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 10, loaded: 5, maxLoaded: 5, stored: 50 }
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (CA)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 10, loaded: 5, maxLoaded: 5, stored: 50 }
         ],
         BC: [
             { type: 'beam', name: 'Port Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardPort' },
             { type: 'beam', name: 'Starboard Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardStarboard' },
             { type: 'beam', name: 'Aft Beam Array', arc: 270, arcCenter: 180, positionKey: 'aftCenter' },
-            { type: 'torpedo', name: 'Dual Torpedo Launcher (BC)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 12, loaded: 6, maxLoaded: 6, stored: 60 }
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (BC)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 12, loaded: 6, maxLoaded: 6, stored: 60 }
+        ],
+        BB: [
+            { type: 'beam', name: 'Port Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardPort' },
+            { type: 'beam', name: 'Starboard Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardStarboard' },
+            { type: 'beam', name: 'Aft Beam Array', arc: 270, arcCenter: 180, positionKey: 'aftCenter' },
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (BB)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 14, loaded: 7, maxLoaded: 7, stored: 70 }
+        ],
+        DN: [
+            { type: 'beam', name: 'Port Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardPort' },
+            { type: 'beam', name: 'Starboard Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardStarboard' },
+            { type: 'beam', name: 'Aft Beam Array', arc: 270, arcCenter: 180, positionKey: 'aftCenter' },
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (DN)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 16, loaded: 8, maxLoaded: 8, stored: 80 }
+        ],
+        SD: [
+            { type: 'beam', name: 'Port Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardPort' },
+            { type: 'beam', name: 'Starboard Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardStarboard' },
+            { type: 'beam', name: 'Aft Beam Array', arc: 270, arcCenter: 180, positionKey: 'aftCenter' },
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (SD)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 18, loaded: 9, maxLoaded: 9, stored: 90 }
         ]
     },
     TRIGON: {
         FG: [
-            { type: 'disruptor', name: 'Forward Disruptor Cannons', arc: 120, arcCenter: 0, positionKey: 'forwardCenter' }
+            { type: 'disruptor', name: 'Nose Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'trigonNose' }
         ],
         DD: [
-            { type: 'disruptor', name: 'Port Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'disruptorPort' },
-            { type: 'disruptor', name: 'Starboard Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'disruptorStarboard' }
+            { type: 'disruptor', name: 'Port Wing Disruptor', arc: 120, arcCenter: 0, positionKey: 'trigonWingPortFwd' },
+            { type: 'disruptor', name: 'Starboard Wing Disruptor', arc: 120, arcCenter: 0, positionKey: 'trigonWingStarboardFwd' }
         ],
         CL: [
-            { type: 'disruptor', name: 'Port Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'disruptorPort' },
-            { type: 'disruptor', name: 'Starboard Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'disruptorStarboard' }
+            { type: 'disruptor', name: 'Port Wing Disruptor', arc: 120, arcCenter: 0, positionKey: 'trigonWingPortFwd' },
+            { type: 'disruptor', name: 'Starboard Wing Disruptor', arc: 120, arcCenter: 0, positionKey: 'trigonWingStarboardFwd' }
         ],
         CA: [
-            { type: 'disruptor', name: 'Forward Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'forwardCenter' },
-            { type: 'disruptor', name: 'Port Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'disruptorPort' },
-            { type: 'disruptor', name: 'Starboard Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'disruptorStarboard' }
+            { type: 'disruptor', name: 'Nose Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'trigonNose' },
+            { type: 'disruptor', name: 'Port Wing Disruptor', arc: 120, arcCenter: 0, positionKey: 'trigonWingPortFwd' },
+            { type: 'disruptor', name: 'Starboard Wing Disruptor', arc: 120, arcCenter: 0, positionKey: 'trigonWingStarboardFwd' }
         ],
         BC: [
-            { type: 'disruptor', name: 'Forward Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'forwardCenter' },
-            { type: 'disruptor', name: 'Port Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'disruptorPort' },
-            { type: 'disruptor', name: 'Starboard Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'disruptorStarboard' },
-            { type: 'disruptor', name: 'Aft Disruptor Cannon', arc: 120, arcCenter: 180, positionKey: 'aftCenter' }
+            { type: 'disruptor', name: 'Nose Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'trigonNose' },
+            { type: 'disruptor', name: 'Port Wing Fwd Disruptor', arc: 120, arcCenter: 0, positionKey: 'trigonWingPortFwd' },
+            { type: 'disruptor', name: 'Starboard Wing Fwd Disruptor', arc: 120, arcCenter: 0, positionKey: 'trigonWingStarboardFwd' },
+            { type: 'disruptor', name: 'Center Aft Disruptor', arc: 120, arcCenter: 180, positionKey: 'trigonCenterAft' }
+        ],
+        BB: [
+            { type: 'disruptor', name: 'Nose Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'trigonNose' },
+            { type: 'disruptor', name: 'Port Wing Fwd Disruptor', arc: 120, arcCenter: 0, positionKey: 'trigonWingPortFwd' },
+            { type: 'disruptor', name: 'Starboard Wing Fwd Disruptor', arc: 120, arcCenter: 0, positionKey: 'trigonWingStarboardFwd' },
+            { type: 'disruptor', name: 'Port Wing Aft Disruptor', arc: 120, arcCenter: 180, positionKey: 'trigonWingPortAft' },
+            { type: 'disruptor', name: 'Starboard Wing Aft Disruptor', arc: 120, arcCenter: 180, positionKey: 'trigonWingStarboardAft' }
+        ],
+        DN: [
+            { type: 'disruptor', name: 'Nose Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'trigonNose' },
+            { type: 'disruptor', name: 'Port Wing Fwd Disruptor', arc: 120, arcCenter: 0, positionKey: 'trigonWingPortFwd' },
+            { type: 'disruptor', name: 'Starboard Wing Fwd Disruptor', arc: 120, arcCenter: 0, positionKey: 'trigonWingStarboardFwd' },
+            { type: 'disruptor', name: 'Port Wing Aft Disruptor', arc: 120, arcCenter: 180, positionKey: 'trigonWingPortAft' },
+            { type: 'disruptor', name: 'Starboard Wing Aft Disruptor', arc: 120, arcCenter: 180, positionKey: 'trigonWingStarboardAft' },
+            { type: 'disruptor', name: 'Center Aft Disruptor', arc: 120, arcCenter: 180, positionKey: 'trigonCenterAft' }
+        ],
+        SD: [
+            { type: 'disruptor', name: 'Nose Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'trigonNose' },
+            { type: 'disruptor', name: 'Port Wing Fwd Disruptor', arc: 120, arcCenter: 0, positionKey: 'trigonWingPortFwd' },
+            { type: 'disruptor', name: 'Starboard Wing Fwd Disruptor', arc: 120, arcCenter: 0, positionKey: 'trigonWingStarboardFwd' },
+            { type: 'disruptor', name: 'Port Wing Aft Disruptor', arc: 120, arcCenter: 180, positionKey: 'trigonWingPortAft' },
+            { type: 'disruptor', name: 'Starboard Wing Aft Disruptor', arc: 120, arcCenter: 180, positionKey: 'trigonWingStarboardAft' },
+            { type: 'disruptor', name: 'Center Aft Disruptor', arc: 120, arcCenter: 180, positionKey: 'trigonCenterAft' }
         ]
     },
     SCINTILIAN: {
         FG: [
-            { type: 'pulseBeam', name: 'Forward Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'forwardCenter', cooldown: 0.5, damage: 0.5 }
+            { type: 'pulseBeam', name: 'Head Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'scintilianHead', cooldown: 0.5, damage: 0.5 }
         ],
         DD: [
-            { type: 'pulseBeam', name: 'Forward Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'forwardCenter', cooldown: 0.5, damage: 0.5 },
-            { type: 'plasma', name: 'Forward Plasma Launcher', arc: 90, arcCenter: 0, positionKey: 'forwardTorpPort' }
+            { type: 'pulseBeam', name: 'Head Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'scintilianHead', cooldown: 0.5, damage: 0.5 },
+            { type: 'plasma', name: 'Neck Plasma Launcher', arc: 90, arcCenter: 0, positionKey: 'scintilianNeck' }
         ],
         CL: [
-            { type: 'pulseBeam', name: 'Forward Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'forwardCenter', cooldown: 0.5, damage: 0.5 },
-            { type: 'plasma', name: 'Forward Plasma Launcher', arc: 90, arcCenter: 0, positionKey: 'forwardTorpPort' },
-            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'aftTorpStarboard' }
+            { type: 'pulseBeam', name: 'Head Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'scintilianHead', cooldown: 0.5, damage: 0.5 },
+            { type: 'plasma', name: 'Neck Plasma Launcher', arc: 90, arcCenter: 0, positionKey: 'scintilianNeck' },
+            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'scintilianCenterAft' }
         ],
         CA: [
-            { type: 'pulseBeam', name: 'Forward Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'forwardCenter', cooldown: 0.5, damage: 0.5 },
-            { type: 'pulseBeam', name: 'Aft Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'aftCenter', cooldown: 0.5, damage: 0.5 },
-            { type: 'plasma', name: 'Forward Plasma Launcher', arc: 90, arcCenter: 0, positionKey: 'forwardTorpPort' },
-            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'aftTorpStarboard' }
+            { type: 'pulseBeam', name: 'Head Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'scintilianHead', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Port Wing Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingPortInner', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Starboard Wing Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingStarboardInner', cooldown: 0.5, damage: 0.5 },
+            { type: 'plasma', name: 'Neck Plasma Launcher', arc: 90, arcCenter: 0, positionKey: 'scintilianNeck' },
+            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'scintilianCenterAft' }
         ],
         BC: [
-            { type: 'pulseBeam', name: 'Port Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'forwardPort', cooldown: 0.5, damage: 0.5 },
-            { type: 'pulseBeam', name: 'Starboard Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'forwardStarboard', cooldown: 0.5, damage: 0.5 },
-            { type: 'pulseBeam', name: 'Aft Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'aftCenter', cooldown: 0.5, damage: 0.5 },
-            { type: 'plasma', name: 'Forward Plasma Launcher', arc: 90, arcCenter: 0, positionKey: 'forwardTorpPort' },
-            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'aftTorpStarboard' }
+            { type: 'pulseBeam', name: 'Head Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'scintilianHead', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Port Wing Inner Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingPortInner', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Starboard Wing Inner Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingStarboardInner', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Port Wing Outer Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingPortOuter', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Starboard Wing Outer Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingStarboardOuter', cooldown: 0.5, damage: 0.5 },
+            { type: 'plasma', name: 'Neck Plasma Launcher', arc: 90, arcCenter: 0, positionKey: 'scintilianNeck' },
+            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'scintilianCenterAft' }
+        ],
+        BB: [
+            { type: 'pulseBeam', name: 'Head Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'scintilianHead', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Port Wing Inner Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingPortInner', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Starboard Wing Inner Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingStarboardInner', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Port Wing Outer Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingPortOuter', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Starboard Wing Outer Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingStarboardOuter', cooldown: 0.5, damage: 0.5 },
+            { type: 'plasma', name: 'Neck Plasma Launcher', arc: 90, arcCenter: 0, positionKey: 'scintilianNeck' },
+            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'scintilianCenterAft' }
+        ],
+        DN: [
+            { type: 'pulseBeam', name: 'Head Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'scintilianHead', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Port Wing Inner Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingPortInner', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Starboard Wing Inner Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingStarboardInner', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Port Wing Outer Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingPortOuter', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Starboard Wing Outer Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingStarboardOuter', cooldown: 0.5, damage: 0.5 },
+            { type: 'plasma', name: 'Neck Plasma Launcher', arc: 90, arcCenter: 0, positionKey: 'scintilianNeck' },
+            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'scintilianCenterAft' }
+        ],
+        SD: [
+            { type: 'pulseBeam', name: 'Head Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'scintilianHead', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Port Wing Inner Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingPortInner', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Starboard Wing Inner Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingStarboardInner', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Port Wing Outer Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingPortOuter', cooldown: 0.5, damage: 0.5 },
+            { type: 'pulseBeam', name: 'Starboard Wing Outer Pulse Beam', arc: 270, arcCenter: 180, positionKey: 'scintilianWingStarboardOuter', cooldown: 0.5, damage: 0.5 },
+            { type: 'plasma', name: 'Neck Plasma Launcher', arc: 90, arcCenter: 0, positionKey: 'scintilianNeck' },
+            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'scintilianCenterAft' }
         ]
     },
     PIRATE: {
         FG: [
-            { type: 'beam', name: 'Stolen Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
-            { type: 'torpedo', name: 'Improvised Torpedo Launcher', arc: 90, arcCenter: 0, positionKey: 'forwardTorpPort' }
+            { type: 'beam', name: 'Salvaged Forward Beam', arc: 270, arcCenter: 0, positionKey: 'pirateUpperStabilizer' },
+            { type: 'torpedo', name: 'Jury-Rigged Torpedo', arc: 90, arcCenter: 180, positionKey: 'pirateLowerStabilizer' }
         ],
         DD: [
-            { type: 'disruptor', name: 'Salvaged Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'forwardCenter' },
-            { type: 'torpedo', name: 'Rudder Torpedo Pod', arc: 90, arcCenter: 180, positionKey: 'aftTorpStarboard' }
+            { type: 'disruptor', name: 'Stolen Disruptor', arc: 120, arcCenter: 0, positionKey: 'pirateUpperStabilizer' },
+            { type: 'beam', name: 'Port Wing Beam', arc: 180, arcCenter: 270, positionKey: 'pirateWingPortInner' },
+            { type: 'beam', name: 'Starboard Wing Beam', arc: 180, arcCenter: 90, positionKey: 'pirateWingStarboardInner' }
         ],
         CL: [
-            { type: 'pulseBeam', name: 'Hybrid Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'forwardCenter', cooldown: 0.6, damage: 0.6 },
-            { type: 'torpedo', name: 'Contraband Torpedo Rack', arc: 90, arcCenter: 0, positionKey: 'forwardTorpPort' }
+            { type: 'pulseBeam', name: 'Hybrid Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'pirateUpperStabilizer', cooldown: 0.6, damage: 0.6 },
+            { type: 'torpedo', name: 'Contraband Torpedoes', arc: 90, arcCenter: 180, positionKey: 'pirateLowerStabilizer' },
+            { type: 'disruptor', name: 'Port Wing Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortInner' }
         ],
         CA: [
-            { type: 'beam', name: 'Captured Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardPort' },
-            { type: 'plasma', name: 'Black Market Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'aftTorpStarboard' }
+            { type: 'beam', name: 'Captured Beam Array', arc: 270, arcCenter: 0, positionKey: 'pirateUpperStabilizer' },
+            { type: 'plasma', name: 'Black Market Plasma', arc: 90, arcCenter: 180, positionKey: 'pirateLowerStabilizer' },
+            { type: 'disruptor', name: 'Port Wing Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortInner' },
+            { type: 'disruptor', name: 'Starboard Wing Disruptor', arc: 120, arcCenter: 90, positionKey: 'pirateWingStarboardInner' }
         ],
         BC: [
-            { type: 'disruptor', name: 'Heavy Disruptor Cannon', arc: 120, arcCenter: 0, positionKey: 'disruptorPort' },
-            { type: 'plasma', name: 'Stolen Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'aftCenter' }
+            { type: 'beam', name: 'Heavy Forward Beam', arc: 270, arcCenter: 0, positionKey: 'pirateUpperStabilizer' },
+            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'pirateLowerStabilizer' },
+            { type: 'disruptor', name: 'Port Wing Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortTip' },
+            { type: 'disruptor', name: 'Starboard Wing Disruptor', arc: 120, arcCenter: 90, positionKey: 'pirateWingStarboardTip' },
+            { type: 'beam', name: 'Central Pod Beam', arc: 360, arcCenter: 0, positionKey: 'pirateCentralPod' }
+        ],
+        BB: [
+            { type: 'beam', name: 'Heavy Forward Beam', arc: 270, arcCenter: 0, positionKey: 'pirateUpperStabilizer' },
+            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'pirateLowerStabilizer' },
+            { type: 'disruptor', name: 'Port Wing Outer Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortTip' },
+            { type: 'disruptor', name: 'Starboard Wing Outer Disruptor', arc: 120, arcCenter: 90, positionKey: 'pirateWingStarboardTip' },
+            { type: 'disruptor', name: 'Port Wing Inner Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortInner' },
+            { type: 'disruptor', name: 'Starboard Wing Inner Disruptor', arc: 120, arcCenter: 90, positionKey: 'pirateWingStarboardInner' }
+        ],
+        DN: [
+            { type: 'beam', name: 'Heavy Forward Beam', arc: 270, arcCenter: 0, positionKey: 'pirateUpperStabilizer' },
+            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'pirateLowerStabilizer' },
+            { type: 'disruptor', name: 'Port Wing Outer Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortTip' },
+            { type: 'disruptor', name: 'Starboard Wing Outer Disruptor', arc: 120, arcCenter: 90, positionKey: 'pirateWingStarboardTip' },
+            { type: 'disruptor', name: 'Port Wing Inner Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortInner' },
+            { type: 'disruptor', name: 'Starboard Wing Inner Disruptor', arc: 120, arcCenter: 90, positionKey: 'pirateWingStarboardInner' },
+            { type: 'beam', name: 'Central Pod Beam', arc: 360, arcCenter: 0, positionKey: 'pirateCentralPod' }
+        ],
+        SD: [
+            { type: 'beam', name: 'Heavy Forward Beam', arc: 270, arcCenter: 0, positionKey: 'pirateUpperStabilizer' },
+            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'pirateLowerStabilizer' },
+            { type: 'disruptor', name: 'Port Wing Outer Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortTip' },
+            { type: 'disruptor', name: 'Starboard Wing Outer Disruptor', arc: 120, arcCenter: 90, positionKey: 'pirateWingStarboardTip' },
+            { type: 'disruptor', name: 'Port Wing Inner Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortInner' },
+            { type: 'disruptor', name: 'Starboard Wing Inner Disruptor', arc: 120, arcCenter: 90, positionKey: 'pirateWingStarboardInner' },
+            { type: 'beam', name: 'Central Pod Beam', arc: 360, arcCenter: 0, positionKey: 'pirateCentralPod' }
         ]
     },
     DEFAULT: {
@@ -141,22 +273,28 @@ const WEAPON_BUILDERS = {
     beam: spec => new BeamWeapon(spec),
     pulseBeam: spec => new PulseBeam(spec),
     torpedo: spec => new TorpedoLauncher(spec),
+    dualTorpedo: spec => new DualTorpedoLauncher(spec),
     plasma: spec => new PlasmaTorpedo(spec),
-    disruptor: spec => new Disruptor(spec)
+    disruptor: spec => new Disruptor(spec),
+    streakBeam: spec => new StreakBeam(spec)
 };
 
-function cloneWeaponPosition(positionKey, explicitPosition) {
+function cloneWeaponPosition(positionKey, explicitPosition, shipSize) {
     if (explicitPosition) {
         return { x: explicitPosition.x, y: explicitPosition.y };
     }
     if (positionKey && WEAPON_POSITIONS[positionKey]) {
         const base = WEAPON_POSITIONS[positionKey];
+        // If scaled is true, multiply by ship size (for faction-specific positions)
+        if (base.scaled && shipSize) {
+            return { x: base.x * shipSize, y: base.y * shipSize };
+        }
         return { x: base.x, y: base.y };
     }
     return undefined;
 }
 
-function buildWeaponFromSpec(spec) {
+function buildWeaponFromSpec(spec, shipSize) {
     const builder = WEAPON_BUILDERS[spec.type];
     if (!builder) {
         console.warn(`Unknown weapon type in loadout: ${spec.type}`);
@@ -165,7 +303,7 @@ function buildWeaponFromSpec(spec) {
 
     const { type, positionKey, position, ...rest } = spec;
     const config = { ...rest };
-    const finalPosition = cloneWeaponPosition(positionKey, position);
+    const finalPosition = cloneWeaponPosition(positionKey, position, shipSize);
     if (finalPosition) {
         config.position = finalPosition;
     }
@@ -245,7 +383,24 @@ class Ship extends Entity {
         // Countermeasures
         this.decoys = CONFIG.DECOY_COUNT;
         this.mines = CONFIG.MINE_COUNT;
+        this.captorMines = CONFIG.CAPTOR_MINE_COUNT || 2;  // Variant mine: captures ships
+        this.phaserMines = CONFIG.PHASER_MINE_COUNT || 2;   // Variant mine: area denial
+        this.transporterMines = CONFIG.TRANSPORTER_MINE_COUNT || 2; // Variant mine: teleports ships
+        this.interceptors = CONFIG.INTERCEPTOR_COUNT || 6;  // Anti-torpedo missiles
         this.lastDeploymentTime = 0;
+
+        // Torpedo type selection
+        this.selectedTorpedoType = 'standard'; // 'standard', 'heavy', 'quantum', 'gravity'
+        this.torpedoTypes = ['standard', 'heavy', 'quantum', 'gravity'];
+
+        // Boost system
+        this.boostActive = false;
+        this.boostDuration = 2.0; // 2 seconds
+        this.boostMultiplier = 2.0; // 2x speed
+        this.boostCooldown = 10.0; // 10 seconds cooldown
+        this.boostStartTime = 0;
+        this.lastBoostTime = -this.boostCooldown; // Allow boost immediately
+        this.boostDirection = null; // 'w', 'a', 's', 'd'
 
         // Shields
         this.shields = this.createShields();
@@ -265,9 +420,10 @@ class Ship extends Entity {
     createWeapons() {
         const specs = getShipLoadoutSpecs(this.faction, this.shipClass);
         const weapons = [];
+        const shipSize = this.getShipSize();
 
         for (const spec of specs) {
-            const weapon = buildWeaponFromSpec(spec);
+            const weapon = buildWeaponFromSpec(spec, shipSize);
             if (weapon) {
                 weapons.push(weapon);
             }
@@ -277,6 +433,28 @@ class Ship extends Entity {
     }
 
     createShields() {
+        // Strike Cruiser shield configuration
+        if (this.shipClass === 'CS' && (this.faction === 'PLAYER' || this.faction === 'FEDERATION')) {
+            return new ShieldSystem({
+                fore: {
+                    strength: CONFIG.SHIELD_STRENGTH_FORE_CS,
+                    generatorHP: CONFIG.SYSTEM_HP_SHIELD_GEN
+                },
+                aft: {
+                    strength: CONFIG.SHIELD_STRENGTH_AFT_CS,
+                    generatorHP: CONFIG.SYSTEM_HP_SHIELD_GEN
+                },
+                port: {
+                    strength: CONFIG.SHIELD_STRENGTH_PORT_CS,
+                    generatorHP: CONFIG.SYSTEM_HP_SHIELD_GEN
+                },
+                starboard: {
+                    strength: CONFIG.SHIELD_STRENGTH_STARBOARD_CS,
+                    generatorHP: CONFIG.SYSTEM_HP_SHIELD_GEN
+                }
+            });
+        }
+
         // Heavy Cruiser shield configuration
         if (this.shipClass === 'CA' && (this.faction === 'PLAYER' || this.faction === 'FEDERATION')) {
             return new ShieldSystem({
@@ -370,6 +548,7 @@ class Ship extends Entity {
             case 'FG': return CONFIG.SHIP_HP_FG;
             case 'DD': return CONFIG.SHIP_HP_DD;
             case 'CL': return CONFIG.SHIP_HP_CL;
+            case 'CS': return CONFIG.SHIP_HP_CS;
             case 'CA': return CONFIG.SHIP_HP_CA;
             case 'BC': return CONFIG.SHIP_HP_BC;
             default: return CONFIG.SHIP_HP_CA;
@@ -382,6 +561,7 @@ class Ship extends Entity {
             case 'FG': speed = CONFIG.MAX_SPEED_FG; break;
             case 'DD': speed = CONFIG.MAX_SPEED_DD; break;
             case 'CL': speed = CONFIG.MAX_SPEED_CL; break;
+            case 'CS': speed = CONFIG.MAX_SPEED_CS; break;
             case 'CA': speed = CONFIG.MAX_SPEED_CA; break;
             case 'BC': speed = CONFIG.MAX_SPEED_BC; break;
             default: speed = CONFIG.MAX_SPEED_CA;
@@ -399,6 +579,7 @@ class Ship extends Entity {
             case 'FG': return CONFIG.ACCELERATION_FG;
             case 'DD': return CONFIG.ACCELERATION_DD;
             case 'CL': return CONFIG.ACCELERATION_CL;
+            case 'CS': return CONFIG.ACCELERATION_CS;
             case 'CA': return CONFIG.ACCELERATION_CA;
             case 'BC': return CONFIG.ACCELERATION_BC;
             default: return CONFIG.ACCELERATION_CA;
@@ -411,6 +592,7 @@ class Ship extends Entity {
             case 'FG': rate = CONFIG.TURN_RATE_FG; break;
             case 'DD': rate = CONFIG.TURN_RATE_DD; break;
             case 'CL': rate = CONFIG.TURN_RATE_CL; break;
+            case 'CS': rate = CONFIG.TURN_RATE_CS; break;
             case 'CA': rate = CONFIG.TURN_RATE_CA; break;
             case 'BC': rate = CONFIG.TURN_RATE_BC; break;
             default: rate = CONFIG.TURN_RATE_CA;
@@ -477,6 +659,7 @@ class Ship extends Entity {
             case 'FG': return CONFIG.SHIP_LENGTH_FG;
             case 'DD': return CONFIG.SHIP_LENGTH_DD;
             case 'CL': return CONFIG.SHIP_LENGTH_CL;
+            case 'CS': return CONFIG.SHIP_LENGTH_CS;
             case 'CA': return CONFIG.SHIP_LENGTH_CA;
             case 'BC': return CONFIG.SHIP_LENGTH_BC;
             default: return CONFIG.SHIP_LENGTH_CA;
@@ -561,97 +744,209 @@ class Ship extends Entity {
     }
 
     generateD7Class(size) {
-        // ALL Trigon ships use D7-style bird-of-prey design
+        // Trigon Bird-of-Prey design (based on user-provided silhouette)
+        // Central command section with forward-swept angular wings
         const vertices = [];
 
-        // COMMAND POD (triangle with apex pointing backwards, curved front)
-        // Curved front edge (top of ship in image)
-        const podRadius = size * 0.45;
+        // FRONT TIP (nose of the ship)
+        vertices.push({ x: 0, y: -size * 0.9 });
 
-        // Front curve - right side to left side via top
-        for (let i = 0; i <= 8; i++) {
-            const angle = Math.PI * 0.3 + (i / 8) * Math.PI * 0.4; // 54ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â° to 126ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â° arc
-            vertices.push({
-                x: Math.cos(angle) * podRadius,
-                y: -size * 0.65 + Math.sin(angle) * podRadius * 0.6
-            });
-        }
+        // RIGHT SIDE OF CENTRAL COMMAND SECTION
+        // Bridge/command pod detail (small notch)
+        vertices.push({ x: size * 0.15, y: -size * 0.75 });
+        vertices.push({ x: size * 0.2, y: -size * 0.7 });
+        vertices.push({ x: size * 0.15, y: -size * 0.65 });
 
-        // Apex of triangle (pointing backwards into ship body)
-        vertices.push({ x: 0, y: -size * 0.4 });
+        // Central body continues down
+        vertices.push({ x: size * 0.25, y: -size * 0.5 });
 
-        // NECK (narrow connecting section from pod to wings)
-        vertices.push({ x: size * 0.2, y: -size * 0.2 });
+        // RIGHT WING ROOT (connection point)
+        vertices.push({ x: size * 0.3, y: -size * 0.3 });
 
-        // RIGHT WING (swept back)
-        // Wing root
-        vertices.push({ x: size * 0.25, y: -size * 0.1 });
+        // RIGHT WING - FORWARD SWEPT (distinctive angular shape)
+        // Wing sweeps forward and outward
+        vertices.push({ x: size * 0.5, y: -size * 0.35 }); // Wing extends forward
+        vertices.push({ x: size * 0.7, y: -size * 0.25 }); // Wing tip forward position
 
-        // Wing leading edge (swept forward slightly)
-        vertices.push({ x: size * 0.7, y: 0 });
-        vertices.push({ x: size * 0.85, y: size * 0.15 });
+        // Wing outer edge (angular facets)
+        vertices.push({ x: size * 0.85, y: -size * 0.1 }); // Outer wing tip
+        vertices.push({ x: size * 0.9, y: size * 0.1 });    // Wing maximum extent
 
-        // Wing tip
-        vertices.push({ x: size * 0.9, y: size * 0.35 });
+        // Wing trailing edge (sweeps back to body)
+        vertices.push({ x: size * 0.8, y: size * 0.3 });
+        vertices.push({ x: size * 0.6, y: size * 0.45 });
+        vertices.push({ x: size * 0.4, y: size * 0.55 });
 
-        // Wing trailing edge (swept back sharply)
-        vertices.push({ x: size * 0.8, y: size * 0.55 });
-        vertices.push({ x: size * 0.6, y: size * 0.7 });
-        vertices.push({ x: size * 0.4, y: size * 0.8 });
+        // RIGHT SIDE CENTRAL BODY (aft section)
+        vertices.push({ x: size * 0.3, y: size * 0.65 });
+        vertices.push({ x: size * 0.2, y: size * 0.8 });
 
-        // CENTRAL BODY (rear section between wings)
-        vertices.push({ x: size * 0.2, y: size * 0.9 });
-        vertices.push({ x: 0, y: size * 1.0 });  // Aft point
-        vertices.push({ x: -size * 0.2, y: size * 0.9 });
+        // AFT SECTION (engine/rear of ship)
+        vertices.push({ x: size * 0.15, y: size * 0.95 });
+        vertices.push({ x: 0, y: size * 1.0 }); // Aft centerline point
+        vertices.push({ x: -size * 0.15, y: size * 0.95 });
 
-        // LEFT WING (mirror of right)
+        // LEFT SIDE CENTRAL BODY (aft section) - MIRROR OF RIGHT
+        vertices.push({ x: -size * 0.2, y: size * 0.8 });
+        vertices.push({ x: -size * 0.3, y: size * 0.65 });
+
+        // LEFT WING - FORWARD SWEPT (mirror of right)
         // Wing trailing edge
-        vertices.push({ x: -size * 0.4, y: size * 0.8 });
-        vertices.push({ x: -size * 0.6, y: size * 0.7 });
-        vertices.push({ x: -size * 0.8, y: size * 0.55 });
+        vertices.push({ x: -size * 0.4, y: size * 0.55 });
+        vertices.push({ x: -size * 0.6, y: size * 0.45 });
+        vertices.push({ x: -size * 0.8, y: size * 0.3 });
 
-        // Wing tip
-        vertices.push({ x: -size * 0.9, y: size * 0.35 });
+        // Wing outer edge
+        vertices.push({ x: -size * 0.9, y: size * 0.1 });
+        vertices.push({ x: -size * 0.85, y: -size * 0.1 });
 
-        // Wing leading edge
-        vertices.push({ x: -size * 0.85, y: size * 0.15 });
-        vertices.push({ x: -size * 0.7, y: 0 });
+        // Wing leading edge (forward sweep)
+        vertices.push({ x: -size * 0.7, y: -size * 0.25 });
+        vertices.push({ x: -size * 0.5, y: -size * 0.35 });
 
-        // Wing root
-        vertices.push({ x: -size * 0.25, y: -size * 0.1 });
+        // LEFT WING ROOT
+        vertices.push({ x: -size * 0.3, y: -size * 0.3 });
 
-        // Left neck
-        vertices.push({ x: -size * 0.2, y: -size * 0.2 });
+        // LEFT SIDE OF CENTRAL COMMAND SECTION
+        vertices.push({ x: -size * 0.25, y: -size * 0.5 });
+
+        // Bridge/command pod detail (mirror)
+        vertices.push({ x: -size * 0.15, y: -size * 0.65 });
+        vertices.push({ x: -size * 0.2, y: -size * 0.7 });
+        vertices.push({ x: -size * 0.15, y: -size * 0.75 });
 
         return vertices;
     }
 
     generateWarbirdClass(size) {
-        // Simplified Warbird: saucer with swept wings
+        // Scintilian Warbird design (based on user-provided silhouette)
+        // Circular command section with large downward-swept wings (anchor shape)
         const vertices = [];
 
-        // Main saucer
-        const saucerRadius = size * 0.5;
+        // CIRCULAR COMMAND HEAD (top section)
+        const headRadius = size * 0.3;
+        const headCenterY = -size * 0.6;
+
+        // Draw circular head (top half prominent, bottom connects to neck)
         for (let i = 0; i <= 10; i++) {
-            const angle = (i / 10) * Math.PI * 2 - Math.PI / 2;
+            const angle = Math.PI * 0.2 + (i / 10) * Math.PI * 0.6; // 36° to 144° arc
             vertices.push({
-                x: Math.cos(angle) * saucerRadius,
-                y: Math.sin(angle) * saucerRadius
+                x: Math.cos(angle) * headRadius,
+                y: headCenterY + Math.sin(angle) * headRadius
             });
         }
+
+        // RIGHT SIDE OF NECK (narrow vertical section)
+        vertices.push({ x: size * 0.08, y: -size * 0.4 });
+        vertices.push({ x: size * 0.08, y: -size * 0.1 });
+
+        // RIGHT WING ROOT (where wing connects to body)
+        vertices.push({ x: size * 0.15, y: 0 });
+
+        // RIGHT WING - DOWNWARD SWEPT (large, elegant curve)
+        // Wing sweeps down and out, then curves back
+        vertices.push({ x: size * 0.3, y: size * 0.15 });   // Wing starts curving out
+        vertices.push({ x: size * 0.5, y: size * 0.35 });   // Wing mid section
+        vertices.push({ x: size * 0.7, y: size * 0.6 });    // Wing extends outward
+        vertices.push({ x: size * 0.85, y: size * 0.8 });   // Wing tip outer edge
+
+        // Wing curves back toward center (trailing edge)
+        vertices.push({ x: size * 0.75, y: size * 0.95 });  // Wing curves back
+        vertices.push({ x: size * 0.5, y: size * 1.0 });    // Wing inner edge
+
+        // CENTER AFT SECTION (bottom of body between wings)
+        vertices.push({ x: size * 0.2, y: size * 0.85 });
+        vertices.push({ x: 0, y: size * 0.75 });            // Center bottom point
+        vertices.push({ x: -size * 0.2, y: size * 0.85 });
+
+        // LEFT WING - DOWNWARD SWEPT (mirror of right)
+        // Inner edge
+        vertices.push({ x: -size * 0.5, y: size * 1.0 });
+        vertices.push({ x: -size * 0.75, y: size * 0.95 });
+
+        // Wing outer edge
+        vertices.push({ x: -size * 0.85, y: size * 0.8 });
+        vertices.push({ x: -size * 0.7, y: size * 0.6 });
+        vertices.push({ x: -size * 0.5, y: size * 0.35 });
+        vertices.push({ x: -size * 0.3, y: size * 0.15 });
+
+        // LEFT WING ROOT
+        vertices.push({ x: -size * 0.15, y: 0 });
+
+        // LEFT SIDE OF NECK
+        vertices.push({ x: -size * 0.08, y: -size * 0.1 });
+        vertices.push({ x: -size * 0.08, y: -size * 0.4 });
+
+        // Return to head (completes the circle on the left side)
+        // The loop will automatically close back to the first vertex
 
         return vertices;
     }
 
     generateTholianClass(size) {
-        // Asymmetrical diamond
-        return [
-            { x: 0, y: -size * 0.9 },
-            { x: size * 0.7, y: -size * 0.2 },
-            { x: size * 0.4, y: size * 0.8 },
-            { x: -size * 0.5, y: size * 0.6 },
-            { x: -size * 0.8, y: 0 }
-        ];
+        // Pirate ship design (based on user-provided silhouette)
+        // Cross-shaped with central pod, wide horizontal wings, and vertical stabilizers
+        const vertices = [];
+
+        // UPPER VERTICAL STABILIZER (weapon mount)
+        vertices.push({ x: 0, y: -size * 0.9 });           // Top point
+        vertices.push({ x: size * 0.12, y: -size * 0.7 }); // Right side of stabilizer
+        vertices.push({ x: size * 0.12, y: -size * 0.3 }); // Connect to central pod
+
+        // RIGHT HORIZONTAL WING
+        // Upper wing edge
+        vertices.push({ x: size * 0.2, y: -size * 0.25 }); // Wing root upper
+        vertices.push({ x: size * 0.4, y: -size * 0.2 });  // Wing extends out
+        vertices.push({ x: size * 0.7, y: -size * 0.15 }); // Wing mid section
+        vertices.push({ x: size * 0.9, y: -size * 0.1 });  // Wing tip leading edge
+
+        // Right wing tip (rounded)
+        vertices.push({ x: size * 0.95, y: 0 });           // Wing tip point
+
+        // Lower wing edge
+        vertices.push({ x: size * 0.9, y: size * 0.1 });   // Wing tip trailing edge
+        vertices.push({ x: size * 0.7, y: size * 0.15 });  // Wing trailing mid
+        vertices.push({ x: size * 0.4, y: size * 0.2 });   // Wing trailing inner
+        vertices.push({ x: size * 0.2, y: size * 0.25 });  // Wing root lower
+
+        // CENTRAL POD - RIGHT SIDE (circular section)
+        vertices.push({ x: size * 0.15, y: size * 0.3 });  // Pod right upper
+
+        // RIGHT SIDE OF LOWER STABILIZER
+        vertices.push({ x: size * 0.12, y: size * 0.35 }); // Connect to lower stabilizer
+        vertices.push({ x: size * 0.12, y: size * 0.7 });  // Lower stabilizer right
+
+        // LOWER VERTICAL STABILIZER (weapon mount)
+        vertices.push({ x: 0, y: size * 0.9 });            // Bottom point
+
+        // LEFT SIDE OF LOWER STABILIZER
+        vertices.push({ x: -size * 0.12, y: size * 0.7 }); // Lower stabilizer left
+        vertices.push({ x: -size * 0.12, y: size * 0.35 });
+
+        // CENTRAL POD - LEFT SIDE
+        vertices.push({ x: -size * 0.15, y: size * 0.3 }); // Pod left lower
+
+        // LEFT HORIZONTAL WING
+        // Lower wing edge (mirror of right)
+        vertices.push({ x: -size * 0.2, y: size * 0.25 });
+        vertices.push({ x: -size * 0.4, y: size * 0.2 });
+        vertices.push({ x: -size * 0.7, y: size * 0.15 });
+        vertices.push({ x: -size * 0.9, y: size * 0.1 });
+
+        // Left wing tip
+        vertices.push({ x: -size * 0.95, y: 0 });
+
+        // Upper wing edge
+        vertices.push({ x: -size * 0.9, y: -size * 0.1 });
+        vertices.push({ x: -size * 0.7, y: -size * 0.15 });
+        vertices.push({ x: -size * 0.4, y: -size * 0.2 });
+        vertices.push({ x: -size * 0.2, y: -size * 0.25 });
+
+        // Connect back to upper stabilizer
+        vertices.push({ x: -size * 0.12, y: -size * 0.3 });
+        vertices.push({ x: -size * 0.12, y: -size * 0.7 });
+
+        return vertices;
     }
 
     generateWeaponPoints() {
@@ -711,10 +1006,16 @@ class Ship extends Entity {
 
     thrust(direction, deltaTime) {
         // direction: 1 = forward, -1 = backward (reverse)
+        // Apply boost multiplier if active
+        const boostMultiplier = this.getBoostMultiplier();
+        const effectiveAcceleration = this.acceleration * boostMultiplier;
+        const effectiveMaxSpeed = this.maxSpeed * boostMultiplier;
+        const effectiveMaxReverseSpeed = this.maxReverseSpeed * boostMultiplier;
+
         if (direction > 0) {
             // W key - accelerate forward
-            this.currentSpeed += this.acceleration * deltaTime;
-            this.currentSpeed = Math.min(this.currentSpeed, this.maxSpeed);
+            this.currentSpeed += effectiveAcceleration * deltaTime;
+            this.currentSpeed = Math.min(this.currentSpeed, effectiveMaxSpeed);
         } else if (direction < 0) {
             // S key - decelerate quickly, then reverse
             if (this.currentSpeed > 1.0) {
@@ -723,17 +1024,17 @@ class Ship extends Entity {
                 this.currentSpeed = Math.max(this.currentSpeed, 0);
             } else if (this.currentSpeed >= -0.1 && this.currentSpeed <= 1.0) {
                 // Near zero - accelerate backward gradually
-                this.currentSpeed -= this.acceleration * deltaTime;
-                this.currentSpeed = Math.max(this.currentSpeed, -this.maxReverseSpeed);
+                this.currentSpeed -= effectiveAcceleration * deltaTime;
+                this.currentSpeed = Math.max(this.currentSpeed, -effectiveMaxReverseSpeed);
             } else {
                 // Already reversing - continue accelerating backward
-                this.currentSpeed -= this.acceleration * deltaTime;
-                this.currentSpeed = Math.max(this.currentSpeed, -this.maxReverseSpeed);
+                this.currentSpeed -= effectiveAcceleration * deltaTime;
+                this.currentSpeed = Math.max(this.currentSpeed, -effectiveMaxReverseSpeed);
             }
         }
 
         // Apply velocity based on current speed and facing direction
-        if (this.physicsComponent) {
+        if (this.physicsComponent && !CONFIG.DISABLE_PHYSICS) {
             const vec = MathUtils.vectorFromAngle(this.rotation, this.currentSpeed);
             this.physicsComponent.body.setLinearVelocity(planck.Vec2(vec.x, vec.y));
         } else {
@@ -754,7 +1055,7 @@ class Ship extends Entity {
         }
 
         // Apply velocity
-        if (this.physicsComponent) {
+        if (this.physicsComponent && !CONFIG.DISABLE_PHYSICS) {
             const vec = MathUtils.vectorFromAngle(this.rotation, this.currentSpeed);
             this.physicsComponent.body.setLinearVelocity(planck.Vec2(vec.x, vec.y));
         } else {
@@ -777,7 +1078,7 @@ class Ship extends Entity {
         if (wasPositive && this.currentSpeed < 0) this.currentSpeed = 0;
         if (wasNegative && this.currentSpeed > 0) this.currentSpeed = 0;
 
-        if (this.physicsComponent) {
+        if (this.physicsComponent && !CONFIG.DISABLE_PHYSICS) {
             // Apply torque via physics
             const torque = this.turnRate * direction * 10; // Scale for physics
             this.physicsComponent.body.applyTorque(torque);
@@ -798,24 +1099,28 @@ class Ship extends Entity {
     }
 
     stopRotation() {
-        if (this.physicsComponent) {
+        if (this.physicsComponent && !CONFIG.DISABLE_PHYSICS) {
             // Zero out angular velocity
             this.physicsComponent.body.setAngularVelocity(0);
         }
+        // No action needed for non-physics mode (rotation handled directly)
     }
 
     update(deltaTime) {
-        if (this.physicsComponent) {
-            // Sync position from physics
+        if (this.physicsComponent && !CONFIG.DISABLE_PHYSICS) {
+            // Sync position from physics (only if physics is enabled)
             this.physicsComponent.syncToEntity();
             // Note: currentSpeed is maintained independently via thrust/deceleration/turn methods
             // We don't sync it from physics to avoid direction flip bugs when turning
         } else {
-            // Fallback to non-physics movement
+            // Fallback to non-physics movement (or when physics disabled)
             this.transform.updatePosition(deltaTime);
         }
 
         const currentTime = performance.now() / 1000;
+
+        // Update boost system
+        this.updateBoost(deltaTime, currentTime);
 
         // Update damage flash effect (decay)
         if (this.damageFlashAlpha > 0) {
@@ -910,9 +1215,6 @@ class Ship extends Entity {
      */
     fireTorpedoes(targetX, targetY, lockOnTarget = null) {
         if (!this.canFireWeapons()) {
-            if (CONFIG.DEBUG_MODE && this.isPlayer) {
-                console.log('Cannot fire weapons - weapons disabled');
-            }
             return [];
         }
 
@@ -922,18 +1224,9 @@ class Ship extends Entity {
         // Calculate angle to target
         const targetAngle = MathUtils.angleBetween(this.x, this.y, targetX, targetY);
 
-        // DEBUG
-        if (CONFIG.DEBUG_MODE && this.isPlayer) {
-            console.log('Fire Torpedoes:', {
-                weaponCount: this.weapons.length,
-                targetAngle: targetAngle.toFixed(1),
-                lockOnTarget: !!lockOnTarget
-            });
-        }
-
         // Fire all torpedo/plasma launchers that have target in arc
         for (const weapon of this.weapons) {
-            if (weapon instanceof TorpedoLauncher || weapon instanceof PlasmaTorpedo) {
+            if (weapon instanceof TorpedoLauncher || weapon instanceof DualTorpedoLauncher || weapon instanceof PlasmaTorpedo) {
                 if (weapon.isInArc(targetAngle, this.rotation)) {
                     const projectile = weapon.fire(this, targetX, targetY, currentTime, lockOnTarget);
                     if (projectile) {
@@ -1020,20 +1313,69 @@ class Ship extends Entity {
     }
 
     /**
-     * Deploy mine
+     * Deploy mine (with variant types)
+     * @param {string} mineType - 'standard', 'captor', 'phaser', or 'transporter'
      */
-    deployMine() {
+    deployMine(mineType = 'standard') {
         const currentTime = performance.now() / 1000;
 
-        if (this.mines <= 0) return null;
         if (currentTime - this.lastDeploymentTime < CONFIG.DEPLOYMENT_COOLDOWN) return null;
 
-        this.mines--;
-        this.lastDeploymentTime = currentTime;
+        let mine = null;
 
-        // Create mine at ship position
-        const mine = new Mine(this.x, this.y, this);
-        eventBus.emit('mine-deployed', { ship: this });
+        switch (mineType) {
+            case 'captor':
+                if (this.captorMines <= 0) return null;
+                this.captorMines--;
+                mine = new CaptorMine({
+                    x: this.x,
+                    y: this.y,
+                    owner: this,
+                    captureRange: 30,
+                    captureDuration: 5.0
+                });
+                eventBus.emit('captor-mine-deployed', { ship: this });
+                break;
+
+            case 'phaser':
+                if (this.phaserMines <= 0) return null;
+                this.phaserMines--;
+                mine = new PhaserMine({
+                    x: this.x,
+                    y: this.y,
+                    owner: this,
+                    phaserRange: 150,
+                    phaserDamage: 1,
+                    phaserCooldown: 2.0
+                });
+                eventBus.emit('phaser-mine-deployed', { ship: this });
+                break;
+
+            case 'transporter':
+                if (this.transporterMines <= 0) return null;
+                this.transporterMines--;
+                mine = new TransporterMine({
+                    x: this.x,
+                    y: this.y,
+                    owner: this,
+                    transportRange: 40,
+                    transportDuration: 3.0
+                });
+                eventBus.emit('transporter-mine-deployed', { ship: this });
+                break;
+
+            case 'standard':
+            default:
+                if (this.mines <= 0) return null;
+                this.mines--;
+                mine = new Mine(this.x, this.y, this);
+                eventBus.emit('mine-deployed', { ship: this });
+                break;
+        }
+
+        if (mine) {
+            this.lastDeploymentTime = currentTime;
+        }
 
         return mine;
     }
@@ -1049,7 +1391,139 @@ class Ship extends Entity {
      * Get all torpedo launchers
      */
     getTorpedoLaunchers() {
-        return this.weapons.filter(w => w instanceof TorpedoLauncher || w instanceof PlasmaTorpedo);
+        return this.weapons.filter(w => w instanceof TorpedoLauncher || w instanceof DualTorpedoLauncher || w instanceof PlasmaTorpedo);
+    }
+
+    /**
+     * Cycle torpedo type selection
+     */
+    cycleTorpedoType() {
+        const currentIndex = this.torpedoTypes.indexOf(this.selectedTorpedoType);
+        const nextIndex = (currentIndex + 1) % this.torpedoTypes.length;
+        this.selectedTorpedoType = this.torpedoTypes[nextIndex];
+
+        eventBus.emit('torpedo-type-changed', {
+            ship: this,
+            torpedoType: this.selectedTorpedoType
+        });
+
+        return this.selectedTorpedoType;
+    }
+
+    /**
+     * Deploy interceptor missile
+     */
+    deployInterceptor() {
+        const currentTime = performance.now() / 1000;
+
+        if (this.interceptors <= 0) return null;
+        if (currentTime - this.lastDeploymentTime < CONFIG.DEPLOYMENT_COOLDOWN) return null;
+
+        this.interceptors--;
+        this.lastDeploymentTime = currentTime;
+
+        // Get ship size for proper offset
+        const shipSize = this.getShipSize();
+        const offset = shipSize * 0.75;
+        const worldRad = MathUtils.toRadians(this.rotation);
+
+        // Create interceptor at ship position (forward offset)
+        const interceptor = new InterceptorMissile({
+            x: this.x + Math.sin(worldRad) * offset,
+            y: this.y - Math.cos(worldRad) * offset,
+            rotation: this.rotation,
+            sourceShip: this,
+            interceptRange: 200,
+            speed: 300,
+            lifetime: 15.0
+        });
+
+        eventBus.emit('interceptor-deployed', { ship: this });
+
+        return interceptor;
+    }
+
+    /**
+     * Activate boost
+     */
+    activateBoost(direction) {
+        const currentTime = performance.now() / 1000;
+
+        // Check if boost is on cooldown
+        if (currentTime - this.lastBoostTime < this.boostCooldown) {
+            const remainingCooldown = this.boostCooldown - (currentTime - this.lastBoostTime);
+            console.log(`Boost on cooldown: ${remainingCooldown.toFixed(1)}s remaining`);
+            return false;
+        }
+
+        // Check if systems are operational
+        if (!this.systems || this.systems.power.hp <= 0) {
+            console.log('Boost unavailable: Power system damaged');
+            return false;
+        }
+
+        // Activate boost
+        this.boostActive = true;
+        this.boostStartTime = currentTime;
+        this.boostDirection = direction;
+
+        eventBus.emit('boost-started', { ship: this, direction: direction });
+        console.log(`Boost activated! Direction: ${direction.toUpperCase()}`);
+
+        return true;
+    }
+
+    /**
+     * Update boost system
+     */
+    updateBoost(deltaTime, currentTime) {
+        if (!this.boostActive) return;
+
+        // Check if boost duration has expired
+        const boostElapsed = currentTime - this.boostStartTime;
+        if (boostElapsed >= this.boostDuration) {
+            this.deactivateBoost();
+        }
+    }
+
+    /**
+     * Deactivate boost
+     */
+    deactivateBoost() {
+        if (!this.boostActive) return;
+
+        const currentTime = performance.now() / 1000;
+        this.boostActive = false;
+        this.lastBoostTime = currentTime;
+        this.boostDirection = null;
+
+        eventBus.emit('boost-ended', { ship: this });
+        console.log('Boost deactivated');
+    }
+
+    /**
+     * Get boost multiplier for current movement
+     */
+    getBoostMultiplier() {
+        return this.boostActive ? this.boostMultiplier : 1.0;
+    }
+
+    /**
+     * Check if boost is available
+     */
+    canBoost() {
+        const currentTime = performance.now() / 1000;
+        return (currentTime - this.lastBoostTime >= this.boostCooldown) &&
+               this.systems && this.systems.power.hp > 0;
+    }
+
+    /**
+     * Get boost cooldown remaining
+     */
+    getBoostCooldownRemaining() {
+        const currentTime = performance.now() / 1000;
+        const remaining = this.boostCooldown - (currentTime - this.lastBoostTime);
+        return Math.max(0, remaining);
     }
 
     /**

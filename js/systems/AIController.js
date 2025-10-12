@@ -280,15 +280,41 @@ class AIController {
     }
 
     applyThrust(thrustPercent) {
-        if (!this.ship.physicsComponent) return;
+        // Physics-based movement (if physics is enabled)
+        if (this.ship.physicsComponent && !CONFIG.DISABLE_PHYSICS) {
+            const thrust = this.ship.acceleration * thrustPercent;
+            const thrustVec = MathUtils.vectorFromAngle(this.ship.rotation, thrust);
 
-        const thrust = this.ship.acceleration * thrustPercent;
-        const thrustVec = MathUtils.vectorFromAngle(this.ship.rotation, thrust);
+            // Apply force
+            this.ship.physicsComponent.body.applyForceToCenter(
+                planck.Vec2(thrustVec.x, thrustVec.y)
+            );
+        } else {
+            // Direct movement fallback (when physics is disabled)
+            // Use the ship's thrust method if available
+            if (this.ship.thrust) {
+                this.ship.thrust(thrustPercent, 0.033); // Assume ~30fps deltaTime
+            } else {
+                // Manual velocity update as last resort
+                const thrustAmount = this.ship.acceleration * thrustPercent * 0.033;
+                const angleRad = MathUtils.toRadians(this.ship.rotation);
 
-        // Apply force
-        this.ship.physicsComponent.body.applyForceToCenter(
-            planck.Vec2(thrustVec.x, thrustVec.y)
-        );
+                this.ship.vx = (this.ship.vx || 0) + Math.cos(angleRad) * thrustAmount;
+                this.ship.vy = (this.ship.vy || 0) + Math.sin(angleRad) * thrustAmount;
+
+                // Cap at max speed
+                const speed = Math.sqrt(this.ship.vx * this.ship.vx + this.ship.vy * this.ship.vy);
+                if (speed > this.ship.maxSpeed) {
+                    const scale = this.ship.maxSpeed / speed;
+                    this.ship.vx *= scale;
+                    this.ship.vy *= scale;
+                }
+
+                // Update position
+                this.ship.x += this.ship.vx * 0.033;
+                this.ship.y += this.ship.vy * 0.033;
+            }
+        }
     }
 
     fireWeapons(currentTime, accuracy) {
@@ -330,7 +356,7 @@ class AIController {
         // Simple lead calculation
         const targetVX = this.target.vx || 0;
         const targetVY = this.target.vy || 0;
-        const projectileSpeed = CONFIG.BEAM_SPEED_PIXELS;
+        const projectileSpeed = CONFIG.BEAM_SPEED || 5000; // Use BEAM_SPEED from config
         const distance = MathUtils.distance(this.ship.x, this.ship.y, this.target.x, this.target.y);
         const timeToImpact = distance / projectileSpeed;
 

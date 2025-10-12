@@ -10,9 +10,34 @@ class Renderer {
 
     render(entities, warpProgress = 0) {
         // Apply camera transform
-        this.camera.applyTransform(this.ctx);
+        if (this.camera) {
+            this.camera.applyTransform(this.ctx);
+        }
+
+        // Render star field background
+        this.renderStarField();
 
         // Render entities
+        this.renderEntities(entities);
+
+        // Remove camera transform
+        this.camera.removeTransform(this.ctx);
+    }
+
+    renderWithoutBackground(entities, warpProgress = 0) {
+        // Apply camera transform
+        if (this.camera) {
+            this.camera.applyTransform(this.ctx);
+        }
+
+        // Render entities (starfield already rendered before camera transform)
+        this.renderEntities(entities);
+
+        // Remove camera transform
+        this.camera.removeTransform(this.ctx);
+    }
+
+    renderEntities(entities) {
         for (const entity of entities) {
             if (!entity.active) continue;
 
@@ -41,45 +66,119 @@ class Renderer {
                     break;
             }
         }
-
-        // Remove camera transform
-        this.camera.removeTransform(this.ctx);
     }
 
     renderProjectile(p) {
-        // Simple projectile rendering if no custom method
-        const screen = this.camera.worldToScreen(p.x, p.y);
+        // If projectile has custom render method, use it
+        if (typeof p.render === 'function') {
+            p.render(this.ctx, this.camera);
+            return;
+        }
+
+        // Otherwise use generic circle rendering
+        // Note: Camera transform already applied, use world coords directly
         this.ctx.save();
         this.ctx.fillStyle = (p.projectileType === 'plasma') ? '#00ff88'
                            : (p.projectileType === 'torpedo') ? '#ffaa00'
                            : (p.projectileType === 'disruptor') ? '#ff00ff'
                            : '#ff5555';
-        const size = (p.projectileType === 'torpedo' || p.projectileType === 'plasma') ? 3 : 2;
+
+        // Make projectiles MUCH bigger so they're visible at reduced resolution
+        const size = (p.projectileType === 'torpedo' || p.projectileType === 'plasma') ? 8 : 4;
         this.ctx.beginPath();
-        this.ctx.arc(screen.x, screen.y, size * this.camera.zoom, 0, Math.PI * 2);
+        this.ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
         this.ctx.fill();
+
+        // Add glow effect for torpedoes
+        if (p.projectileType === 'torpedo' || p.projectileType === 'plasma') {
+            this.ctx.globalAlpha = 0.5;
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, size * 2, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.globalAlpha = 1.0;
+        }
+
         this.ctx.restore();
     }
 
     renderSimpleMarker(e) {
-        const screen = this.camera.worldToScreen(e.x, e.y);
+        // Note: Camera transform already applied, use world coords directly
         this.ctx.save();
         this.ctx.strokeStyle = (e.type === 'decoy') ? '#00ffff' : '#ff9900';
         this.ctx.lineWidth = 2;
         this.ctx.beginPath();
-        this.ctx.arc(screen.x, screen.y, 6 * this.camera.zoom, 0, Math.PI * 2);
+        this.ctx.arc(e.x, e.y, 6, 0, Math.PI * 2);
         this.ctx.stroke();
         this.ctx.restore();
     }
 
     renderGenericEntity(e) {
-        const screen = this.camera.worldToScreen(e.x, e.y);
+        // Note: Camera transform already applied, use world coords directly
         this.ctx.save();
         this.ctx.fillStyle = '#cccccc';
-        const r = (e.radius || 12) * this.camera.zoom;
+        const r = e.radius || 12;
         this.ctx.beginPath();
-        this.ctx.arc(screen.x, screen.y, r, 0, Math.PI * 2);
+        this.ctx.arc(e.x, e.y, r, 0, Math.PI * 2);
         this.ctx.fill();
+        this.ctx.restore();
+    }
+
+    renderStarField() {
+        // Simple, clean starfield with random-looking distribution
+        this.ctx.save();
+        this.ctx.fillStyle = '#ffffff';
+
+        // Safety check for camera
+        if (!this.camera || typeof this.camera.x !== 'number' || typeof this.camera.y !== 'number') {
+            this.ctx.restore();
+            return;
+        }
+
+        // Use camera position to create subtle parallax effect
+        const offsetX = (this.camera.x || 0) * 0.05;
+        const offsetY = (this.camera.y || 0) * 0.05;
+
+        const cameraX = this.camera.x || 0;
+        const cameraY = this.camera.y || 0;
+
+        // Account for zoom - when zoomed out, viewport is larger in world coordinates
+        const zoom = this.camera.zoom || 1.0;
+        const cameraWidth = (this.camera.width || 1920) / zoom;
+        const cameraHeight = (this.camera.height || 1080) / zoom;
+
+        // Star distribution - larger cells, fewer stars
+        const cellSize = 120;
+        const startX = Math.floor((cameraX - cameraWidth/2 - 200) / cellSize) * cellSize;
+        const startY = Math.floor((cameraY - cameraHeight/2 - 200) / cellSize) * cellSize;
+        const endX = cameraX + cameraWidth/2 + 200;
+        const endY = cameraY + cameraHeight/2 + 200;
+
+        for (let x = startX; x < endX; x += cellSize) {
+            for (let y = startY; y < endY; y += cellSize) {
+                // Hash function for consistent pseudo-random placement
+                const hash = Math.abs((x * 73856093) ^ (y * 19349663)) % 2147483647;
+
+                // Only about 30% of cells get a star
+                if (hash % 10 < 3) {
+                    // Random offset within cell
+                    const offsetInCellX = (hash % 1000) / 1000 * cellSize;
+                    const offsetInCellY = ((hash >> 10) % 1000) / 1000 * cellSize;
+
+                    const starX = x + offsetInCellX + offsetX;
+                    const starY = y + offsetInCellY + offsetY;
+
+                    // Simple size variation (mostly 1px, some 2px)
+                    const size = (hash % 10 < 8) ? 1 : 2;
+
+                    if (isFinite(starX) && isFinite(starY)) {
+                        this.ctx.beginPath();
+                        this.ctx.arc(starX, starY, size, 0, Math.PI * 2);
+                        this.ctx.fill();
+                    }
+                }
+            }
+        }
+
         this.ctx.restore();
     }
 }

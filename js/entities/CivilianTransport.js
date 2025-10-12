@@ -21,13 +21,13 @@ class CivilianTransport extends Entity {
     }
 
     render(ctx, camera) {
-        const screen = camera.worldToScreen(this.x, this.y);
+        // Note: Camera transform already applied, use world coords directly
         ctx.save();
         ctx.fillStyle = '#bbbbbb';
         ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.arc(screen.x, screen.y, this.radius * camera.zoom, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
         ctx.restore();

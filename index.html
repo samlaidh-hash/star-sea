@@ -42,41 +42,6 @@
                 </div>
             </div>
 
-            <!-- Weapons -->
-            <div class="system-group">
-                <div class="system-label">Weapons</div>
-                <div id="weapon-status">
-                    <div class="weapon-item" data-weapon="beam-forward">
-                        <div class="weapon-bar" id="beam-forward">
-                            <span class="weapon-label">FWD BEAM</span>
-                            <div class="bar-fill"></div>
-                        </div>
-                        <div class="weapon-hp">HP: <span class="hp">4/4</span></div>
-                    </div>
-                    <div class="weapon-item" data-weapon="beam-aft">
-                        <div class="weapon-bar" id="beam-aft">
-                            <span class="weapon-label">AFT BEAM</span>
-                            <div class="bar-fill"></div>
-                        </div>
-                        <div class="weapon-hp">HP: <span class="hp">4/4</span></div>
-                    </div>
-                    <div class="weapon-item" data-weapon="torp-forward">
-                        <div class="weapon-bar" id="torp-forward">
-                            <span class="weapon-label">FWD TORP</span>
-                            <span class="torp-count">4/20</span>
-                        </div>
-                        <div class="weapon-hp">HP: <span class="hp">4/4</span></div>
-                    </div>
-                    <div class="weapon-item" data-weapon="torp-aft">
-                        <div class="weapon-bar" id="torp-aft">
-                            <span class="weapon-label">AFT TORP</span>
-                            <span class="torp-count">4/20</span>
-                        </div>
-                        <div class="weapon-hp">HP: <span class="hp">4/4</span></div>
-                    </div>
-                </div>
-            </div>
-
             <!-- Hull Integrity -->
             <div class="system-group">
                 <div class="system-label">Hull Integrity</div>
@@ -113,16 +78,35 @@
                         <span class="system-name">Power</span>
                         <div class="system-hp-bar"><div class="hp-fill"></div></div>
                     </div>
+                    <!-- Weapons -->
+                    <div class="system-item" data-system="beam-forward">
+                        <span class="system-name">FWD Beam</span>
+                        <div class="system-hp-bar"><div class="hp-fill"></div></div>
+                    </div>
+                    <div class="system-item" data-system="beam-aft">
+                        <span class="system-name">AFT Beam</span>
+                        <div class="system-hp-bar"><div class="hp-fill"></div></div>
+                    </div>
+                    <div class="system-item" data-system="torpedo">
+                        <span class="system-name">Torpedo</span>
+                        <div class="system-hp-bar"><div class="hp-fill"></div></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Decoys/Mines -->
+            <!-- Inventory -->
             <div class="system-group">
-                <div class="system-label">Countermeasures</div>
-                <div id="countermeasures">
-                    <div>Decoys: <span id="decoy-count">6</span></div>
-                    <div>Mines: <span id="mine-count">6</span></div>
-                </div>
+                <div class="inventory-line">Decoys: <span id="decoy-count">6</span></div>
+                <div class="inventory-line">Mines: <span id="mine-count">6</span></div>
+                <div class="inventory-line">Captor: <span id="captor-mine-count">2</span></div>
+                <div class="inventory-line">Phaser: <span id="phaser-mine-count">2</span></div>
+                <div class="inventory-line">Transp: <span id="transporter-mine-count">2</span></div>
+                <div class="inventory-line">Intercept: <span id="interceptor-count">6</span></div>
+                <div class="inventory-line">Shuttles: <span id="shuttle-count">0</span>/<span id="shuttle-max">6</span></div>
+                <div class="inventory-line">Fighters: <span id="fighter-count">0</span>/<span id="fighter-max">4</span></div>
+                <div class="inventory-line">Bombers: <span id="bomber-count">0</span>/<span id="bomber-max">2</span></div>
+                <div class="inventory-line">Bay: <span id="bay-space">0</span>/<span id="bay-max">8</span></div>
+                <div class="inventory-line">Torp: <span id="torpedo-storage">16</span> [<span id="torpedo-type">STD</span>]</div>
             </div>
 
             <!-- Critical Messages -->
@@ -136,6 +120,14 @@
                 <div class="system-label">Warp Drive</div>
                 <div id="warp-charge-bar">
                     <div id="warp-charge-fill"></div>
+                </div>
+            </div>
+
+            <!-- Boost Status -->
+            <div class="system-group" id="boost-status-group" style="display: none;">
+                <div class="system-label" id="boost-label">BOOST</div>
+                <div id="boost-bar">
+                    <div id="boost-fill"></div>
                 </div>
             </div>
         </div>
@@ -156,12 +148,63 @@
         <!-- Targeting Reticle -->
         <div id="reticle"></div>
 
+        <!-- Ship Tooltip -->
+        <div id="ship-tooltip" style="display: none;">
+            <div class="tooltip-header"></div>
+            <div class="tooltip-shields">
+                <div class="tooltip-shield-line"><span class="label">FWD:</span> <span class="value" data-shield="fore"></span></div>
+                <div class="tooltip-shield-line"><span class="label">PRT:</span> <span class="value" data-shield="port"></span></div>
+                <div class="tooltip-shield-line"><span class="label">STB:</span> <span class="value" data-shield="starboard"></span></div>
+                <div class="tooltip-shield-line"><span class="label">AFT:</span> <span class="value" data-shield="aft"></span></div>
+            </div>
+            <div class="tooltip-systems"></div>
+        </div>
+
         <!-- Speed Bar -->
         <div id="speed-bar-container">
             <div class="system-label">Speed</div>
             <div id="speed-bar">
                 <div id="speed-bar-reverse"></div>
                 <div id="speed-bar-forward"></div>
+            </div>
+        </div>
+
+        <!-- Controls Panel (Bottom Right) -->
+        <div id="controls-panel">
+            <div class="panel-header">Controls</div>
+            <div class="controls-section">
+                <div class="control-category">Movement</div>
+                <div class="control-line"><span class="key">W/A/S/D</span> Move Ship</div>
+                <div class="control-line"><span class="key">X</span> Full Stop</div>
+            </div>
+            <div class="controls-section">
+                <div class="control-category">Weapons</div>
+                <div class="control-line"><span class="key">LMB</span> Fire Beams</div>
+                <div class="control-line"><span class="key">RMB</span> Fire Torpedo</div>
+                <div class="control-line"><span class="key">R</span> Cycle Torp Type</div>
+                <div class="control-line"><span class="key">F</span> Lock Target</div>
+            </div>
+            <div class="controls-section">
+                <div class="control-category">Defenses</div>
+                <div class="control-line"><span class="key">C</span> Deploy Decoy</div>
+                <div class="control-line"><span class="key">M</span> Deploy Mine</div>
+                <div class="control-line"><span class="key">Shift+M</span> Captor Mine</div>
+                <div class="control-line"><span class="key">Alt+M</span> Phaser Mine</div>
+                <div class="control-line"><span class="key">Ctrl+M</span> Transp Mine</div>
+                <div class="control-line"><span class="key">I</span> Interceptor</div>
+            </div>
+            <div class="controls-section">
+                <div class="control-category">Advanced</div>
+                <div class="control-line"><span class="key">Q</span> Tractor Beam</div>
+                <div class="control-line"><span class="key">T</span> Transporter</div>
+                <div class="control-line"><span class="key">1-6</span> Shuttle Missions</div>
+                <div class="control-line"><span class="key">7</span> Launch Fighter</div>
+                <div class="control-line"><span class="key">8</span> Launch Bomber</div>
+            </div>
+            <div class="controls-section">
+                <div class="control-category">Systems</div>
+                <div class="control-line"><span class="key">Space</span> Warp Out</div>
+                <div class="control-line"><span class="key">ESC</span> Pause Menu</div>
             </div>
         </div>
     </div>
@@ -319,6 +362,12 @@
     <!-- Systems -->
     <script src="js/systems/TargetingSystem.js"></script>
     <script src="js/systems/AIController.js"></script>
+    <script src="js/systems/TractorBeamSystem.js"></script>
+    <script src="js/systems/PowerManagementSystem.js"></script>
+    <script src="js/systems/BaySystem.js"></script>
+    <script src="js/systems/TransporterSystem.js"></script>
+    <script src="js/systems/BalanceSystem.js"></script>
+    <script src="js/systems/TestingSystem.js"></script>
     <script src="js/data/Missions.js"></script>
     <script src="js/systems/MissionManager.js"></script>
     <script src="js/systems/SaveManager.js"></script>
@@ -334,8 +383,10 @@
     <script src="js/components/weapons/BeamWeapon.js"></script>
     <script src="js/components/weapons/PulseBeam.js"></script>
     <script src="js/components/weapons/TorpedoLauncher.js"></script>
+    <script src="js/components/weapons/DualTorpedoLauncher.js"></script>
     <script src="js/components/weapons/Disruptor.js"></script>
     <script src="js/components/weapons/PlasmaTorpedo.js"></script>
+    <script src="js/components/weapons/LaserBattery.js"></script>
 
     <!-- Shield & Systems Components -->
     <script src="js/components/Shield.js"></script>
@@ -349,6 +400,21 @@
     <script src="js/entities/Ship.js"></script>
     <script src="js/entities/Asteroid.js"></script>
     <script src="js/entities/Environmental.js"></script>
+    <script src="js/entities/LaserProjectile.js"></script>
+    <script src="js/entities/BeamProjectile.js"></script>
+    <script src="js/entities/Shuttle.js"></script>
+    <script src="js/entities/Fighter.js"></script>
+    <script src="js/entities/Bomber.js"></script>
+    <script src="js/entities/HeavyTorpedo.js"></script>
+    <script src="js/entities/InterceptorMissile.js"></script>
+    <script src="js/entities/CaptorMine.js"></script>
+    <script src="js/entities/PhaserMine.js"></script>
+    <script src="js/entities/TransporterMine.js"></script>
+    <script src="js/entities/DhojanShip.js"></script>
+    <script src="js/entities/AndromedanShip.js"></script>
+    <script src="js/entities/CommonwealthShip.js"></script>
+    <script src="js/entities/QuantumTorpedo.js"></script>
+    <script src="js/entities/GravityTorpedo.js"></script>
     <script src="js/entities/MissionEntity.js"></script>
     <script src="js/entities/CivilianTransport.js"></script>
     <script src="js/entities/SpaceStation.js"></script>

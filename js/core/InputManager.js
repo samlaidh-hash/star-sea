@@ -12,6 +12,10 @@ class InputManager {
         this.spacebarPressTime = 0;
         this.spacebarReleased = true;
 
+        // Double-tap detection for boost
+        this.lastKeyPressTimes = new Map(); // Track last press time for each key
+        this.doubleTapThreshold = 300; // 300ms threshold for double-tap
+
         this.init();
     }
 
@@ -39,6 +43,23 @@ class InputManager {
             this.spacebarReleased = false;
         }
 
+        // Double-tap detection for boost (W, A, S, D keys)
+        const key = e.key.toLowerCase();
+        if (key === 'w' || key === 'a' || key === 's' || key === 'd') {
+            const currentTime = performance.now();
+            const lastPressTime = this.lastKeyPressTimes.get(key) || 0;
+            const timeSinceLastPress = currentTime - lastPressTime;
+
+            if (timeSinceLastPress < this.doubleTapThreshold) {
+                // Double-tap detected!
+                eventBus.emit('boost-activated', { direction: key });
+                console.log(`Boost activated (double-tap ${key.toUpperCase()})`);
+                this.lastKeyPressTimes.set(key, 0); // Reset to prevent triple-tap
+            } else {
+                this.lastKeyPressTimes.set(key, currentTime);
+            }
+        }
+
         eventBus.emit('keydown', { key: e.key.toLowerCase(), event: e });
     }
 
@@ -53,8 +74,36 @@ class InputManager {
             if (pressDuration < 500) {
                 eventBus.emit('deploy-decoy');
             } else {
-                eventBus.emit('deploy-mine');
+                eventBus.emit('deploy-mine', { mineType: 'standard' });
             }
+        }
+
+        // C key for decoy deployment
+        if (e.key === 'c' || e.key === 'C') {
+            eventBus.emit('deploy-decoy');
+        }
+
+        // M key for mine deployment (with modifiers for variants)
+        if (e.key === 'm' || e.key === 'M') {
+            if (e.shiftKey) {
+                eventBus.emit('deploy-mine', { mineType: 'captor' });
+            } else if (e.altKey) {
+                eventBus.emit('deploy-mine', { mineType: 'phaser' });
+            } else if (e.ctrlKey) {
+                eventBus.emit('deploy-mine', { mineType: 'transporter' });
+            } else {
+                eventBus.emit('deploy-mine', { mineType: 'standard' });
+            }
+        }
+
+        // R key for torpedo type cycling
+        if (e.key === 'r' || e.key === 'R') {
+            eventBus.emit('cycle-torpedo-type');
+        }
+
+        // I key for interceptor deployment
+        if (e.key === 'i' || e.key === 'I') {
+            eventBus.emit('deploy-interceptor');
         }
 
         eventBus.emit('keyup', { key: e.key.toLowerCase(), event: e });

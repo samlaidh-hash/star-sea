@@ -28,25 +28,33 @@ class BeamWeapon extends Weapon {
         // Calculate firing point based on weapon position and ship weapon points
         const firingPoint = this.calculateFiringPoint(ship, targetX, targetY);
 
-        // Create beam projectile
+        // Create beam projectile starting at the firing point
         const beam = new BeamProjectile({
-            x: ship.x, // Ship position for general reference
-            y: ship.y,
-            firingPointX: firingPoint.x, // Actual firing point in world space
-            firingPointY: firingPoint.y,
+            x: firingPoint.x, // Start at calculated firing point
+            y: firingPoint.y,
             rotation: ship.rotation,
             targetX: targetX,
             targetY: targetY,
             damage: this.damage,
             range: this.range,
             speed: this.speed,
-            sourceShip: ship
+            sourceShip: ship,
+            sourceWeapon: this
         });
 
         return beam;
     }
 
     calculateFiringPoint(ship, targetX, targetY) {
+        // Debug logging
+        if (isNaN(ship.x) || isNaN(ship.y) || isNaN(ship.rotation)) {
+            console.error('🔴 Ship has NaN values:', {
+                x: ship.x,
+                y: ship.y,
+                rotation: ship.rotation
+            });
+        }
+
         // Determine which weapon band to use based on weapon arc
         let band = null;
 
@@ -162,16 +170,14 @@ class BeamWeapon extends Weapon {
         const worldX = shipX + (localX * worldCos - localY * worldSin);
         const worldY = shipY + (localX * worldSin + localY * worldCos);
 
-        if (CONFIG.DEBUG_MODE) {
-            console.log('Ellipse firing point:', {
-                shipWorld: { x: shipX.toFixed(1), y: shipY.toFixed(1), rot: shipRotation.toFixed(1) },
-                targetWorld: { x: targetX.toFixed(1), y: targetY.toFixed(1) },
-                targetLocal: { x: localTargetX.toFixed(1), y: localTargetY.toFixed(1) },
-                ellipseLocal: { cx: band.centerX.toFixed(1), cy: band.centerY.toFixed(1), rx: band.radiusX.toFixed(1), ry: band.radiusY.toFixed(1) },
-                angleToTargetDeg: angleToTargetDeg.toFixed(1),
-                radiusAtAngle: r.toFixed(1),
-                firingPointLocal: { x: localX.toFixed(1), y: localY.toFixed(1) },
-                firingPointWorld: { x: worldX.toFixed(1), y: worldY.toFixed(1) }
+        if (isNaN(worldX) || isNaN(worldY)) {
+            console.error('🔴 Ellipse calculation produced NaN:', {
+                shipX, shipY, shipRotation,
+                localX, localY,
+                worldCos, worldCos,
+                worldSin,
+                worldX, worldY,
+                band
             });
         }
 

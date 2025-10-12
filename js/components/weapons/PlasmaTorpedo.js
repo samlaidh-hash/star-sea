@@ -34,10 +34,13 @@ class PlasmaTorpedo extends Weapon {
         // Use charged damage if provided, otherwise use default
         const damagePotential = chargeDamage > 0 ? chargeDamage : CONFIG.PLASMA_DAMAGE_POTENTIAL;
 
+        // Calculate firing point offset from ship center
+        const firingPoint = this.calculateFiringPoint(ship);
+
         // Create plasma torpedo projectile
         const plasmaTorp = new PlasmaTorpedoProjectile({
-            x: ship.x,
-            y: ship.y,
+            x: firingPoint.x,
+            y: firingPoint.y,
             rotation: ship.rotation,
             targetX: targetX,
             targetY: targetY,
@@ -81,5 +84,37 @@ class PlasmaTorpedo extends Weapon {
 
     getStoredCount() {
         return 0; // No stored plasma torps
+    }
+
+    /**
+     * Calculate plasma torpedo firing point from weapon mount position
+     */
+    calculateFiringPoint(ship) {
+        // Get ship size for proper offset calculation
+        const shipSize = ship.getShipSize ? ship.getShipSize() : 40;
+
+        // Use weapon position if available
+        if (this.position) {
+            const worldRad = MathUtils.toRadians(ship.rotation);
+            const worldCos = Math.cos(worldRad);
+            const worldSin = Math.sin(worldRad);
+
+            // Apply weapon mount position with additional forward offset to clear ship hull
+            const forwardOffset = shipSize * 0.9; // 90% of ship size forward (increased from 60%)
+            const totalX = this.position.x;
+            const totalY = this.position.y - forwardOffset; // Negative Y = forward
+
+            const worldX = ship.x + (totalX * worldCos - totalY * worldSin);
+            const worldY = ship.y + (totalX * worldSin + totalY * worldCos);
+            return { x: worldX, y: worldY };
+        }
+
+        // Fallback: offset forward from ship center (large offset to clear ship)
+        const offset = shipSize * 1.1; // 110% of ship size forward (increased from 75%)
+        const worldRad = MathUtils.toRadians(ship.rotation);
+        return {
+            x: ship.x + Math.sin(worldRad) * offset,
+            y: ship.y - Math.cos(worldRad) * offset
+        };
     }
 }

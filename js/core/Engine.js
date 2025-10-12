@@ -2,6 +2,7 @@ const SHIP_CLASS_LABELS = {
     FG: "Frigate",
     DD: "Destroyer",
     CL: "Light Cruiser",
+    CS: "Strike Cruiser",
     CA: "Heavy Cruiser",
     BC: "Battlecruiser"
 };
@@ -44,6 +45,16 @@ const PLAYER_SHIP_BASE_OPTIONS = [
         description: "Balanced cruiser with strong beams and dual arcs.",
         torpedo: { loaded: 4, stored: 40, hp: 8, summary: "Dual forward and aft 90-degree arcs" },
         special: "Dual 90-degree torpedo arcs with cruiser endurance."
+    },
+    {
+        id: "FED_CS",
+        faction: "PLAYER",
+        shipClass: "CS",
+        name: "USS Akira",
+        label: "Federation Strike Cruiser (CS)",
+        description: "Fast attack cruiser with dual streak beams and heavy torpedo load.",
+        torpedo: { loaded: 4, stored: 40, hp: 8, summary: "Dual forward and aft 90-degree arcs" },
+        special: "Port and starboard streak beams (2-shot burst) with dual torpedo arcs."
     },
     {
         id: "FED_CA",
@@ -245,6 +256,8 @@ class Engine {
 
         // Performance tracking
         this.trailFrameCounter = 0;
+        this.updateCounter = 0;
+        this.lastUpdateTime = Date.now();
 
         // Weapon firing state
         this.beamFiring = false;
@@ -267,6 +280,14 @@ class Engine {
 
         // Audio system
         this.audioManager = new AudioManager();
+
+        // Advanced systems
+        this.tractorBeamSystem = new TractorBeamSystem();
+        this.powerManagementSystem = new PowerManagementSystem();
+        this.baySystem = new BaySystem();
+        this.transporterSystem = new TransporterSystem();
+        this.balanceSystem = new BalanceSystem();
+        this.testingSystem = new TestingSystem();
 
         // Physics
         this.physicsWorld = new PhysicsWorld();
@@ -302,19 +323,13 @@ class Engine {
     }
 
     resize() {
-        // Maintain aspect ratio while fitting window
-        const aspectRatio = CONFIG.CANVAS_WIDTH / CONFIG.CANVAS_HEIGHT;
-        const windowRatio = window.innerWidth / window.innerHeight;
+        // Set canvas to full window size (actual viewport)
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
 
-        if (windowRatio > aspectRatio) {
-            // Window is wider
-            this.canvas.height = window.innerHeight;
-            this.canvas.width = window.innerHeight * aspectRatio;
-        } else {
-            // Window is taller
-            this.canvas.width = window.innerWidth;
-            this.canvas.height = window.innerWidth / aspectRatio;
-        }
+        // Also set CSS size to match (prevents scaling/borders)
+        this.canvas.style.width = window.innerWidth + 'px';
+        this.canvas.style.height = window.innerHeight + 'px';
 
         // Update camera
         if (this.camera) {
@@ -342,8 +357,13 @@ class Engine {
 
         // Weapon firing - new hold-to-fire system
         eventBus.on('beam-fire-start', (data) => {
-            if (!this.stateManager.isPlaying() || !this.playerShip) return;
+            console.log('🔫 Beam fire START event received');
+            if (!this.stateManager.isPlaying() || !this.playerShip) {
+                console.log('⚠️ Cannot fire: playing=' + this.stateManager.isPlaying() + ', hasShip=' + !!this.playerShip);
+                return;
+            }
             this.beamFiring = true;
+            console.log('✅ beamFiring set to TRUE');
         });
 
         eventBus.on('beam-fire-stop', (data) => {
@@ -404,13 +424,69 @@ class Engine {
             }
         });
 
-        eventBus.on('deploy-mine', () => {
+        eventBus.on('deploy-mine', (data) => {
             if (!this.stateManager.isPlaying() || !this.playerShip) return;
 
-            const mine = this.playerShip.deployMine();
+            const mineType = data && data.mineType ? data.mineType : 'standard';
+            const mine = this.playerShip.deployMine(mineType);
             if (mine) {
                 this.entities.push(mine);
                 this.audioManager.playSound('mine-deploy');
+            }
+        });
+
+        // Torpedo type cycling
+        eventBus.on('cycle-torpedo-type', () => {
+            if (!this.stateManager.isPlaying() || !this.playerShip) return;
+
+            const newType = this.playerShip.cycleTorpedoType();
+            console.log(`Torpedo type changed to: ${newType}`);
+        });
+
+        // Interceptor deployment
+        eventBus.on('deploy-interceptor', () => {
+            if (!this.stateManager.isPlaying() || !this.playerShip) return;
+
+            const interceptor = this.playerShip.deployInterceptor();
+            if (interceptor) {
+                this.entities.push(interceptor);
+                this.audioManager.playSound('torpedo-fire'); // Reuse torpedo sound for now
+                console.log('Interceptor missile deployed');
+            }
+        });
+
+        // Shuttle/Fighter/Bomber launches from BaySystem
+        eventBus.on('shuttle-launched', (data) => {
+            if (data.shuttle) {
+                this.entities.push(data.shuttle);
+                this.audioManager.playSound('shuttle-launch');
+                console.log(`Shuttle launched on ${data.missionType} mission`);
+            }
+        });
+
+        eventBus.on('fighter-launched', (data) => {
+            if (data.fighter) {
+                this.entities.push(data.fighter);
+                this.audioManager.playSound('fighter-launch');
+                console.log('Fighter launched');
+            }
+        });
+
+        eventBus.on('bomber-launched', (data) => {
+            if (data.bomber) {
+                this.entities.push(data.bomber);
+                this.audioManager.playSound('bomber-launch');
+                console.log('Bomber launched');
+            }
+        });
+
+        // Boost system
+        eventBus.on('boost-activated', (data) => {
+            if (!this.stateManager.isPlaying() || !this.playerShip) return;
+
+            const success = this.playerShip.activateBoost(data.direction);
+            if (success) {
+                this.audioManager.playSound('boost'); // Boost sound effect
             }
         });
 
@@ -513,20 +589,24 @@ class Engine {
         // Player destroyed
         eventBus.on('player-destroyed', () => {
             this.hud.addCriticalMessage('SHIP DESTROYED!');
-            // Large explosion for player ship
+
+            // Create ship explosion first
             if (this.playerShip) {
-                this.particleSystem.createExplosion(this.playerShip.x, this.playerShip.y, {
-                    particleCount: 50,
-                    size: 2.0,
-                    color: '#ff6600',
-                    speed: 150
-                });
+                const shipSize = this.playerShip.getShipSize();
+                this.particleSystem.createShipExplosion(
+                    this.playerShip.x,
+                    this.playerShip.y,
+                    shipSize,
+                    { color: this.playerShip.color }
+                );
                 this.audioManager.playSound('explosion-large');
             }
+
+            // Show mission failed screen AFTER explosion (2 second delay)
             setTimeout(() => {
                 alert('Game Over! Your ship was destroyed.');
                 this.stateManager.setState('MAIN_MENU');
-            }, 1000);
+            }, 2000);
         });
 
         // Ship-asteroid collision
@@ -615,20 +695,21 @@ class Engine {
             if (this.missionManager.missionActive) {
                 this.missionManager.handleEnemyDestroyed(data.enemy);
             }
-            // Explosion for enemy ship
+            // Create ship explosion
             if (data.enemy) {
-                const shipSize = data.enemy.getShipSize ? data.enemy.getShipSize() / 50 : 1.0;
-                this.particleSystem.createExplosion(data.enemy.x, data.enemy.y, {
-                    particleCount: 30 + Math.floor(shipSize * 20),
-                    size: shipSize,
-                    color: '#ff6600',
-                    speed: 100
-                });
+                const shipSize = data.enemy.getShipSize ? data.enemy.getShipSize() : 70;
+                this.particleSystem.createShipExplosion(
+                    data.enemy.x,
+                    data.enemy.y,
+                    shipSize,
+                    { color: data.enemy.color || '#ff6600' }
+                );
 
                 // Play appropriate explosion sound based on ship size
-                if (shipSize > 1.2) {
+                const sizeRatio = shipSize / 70; // Normalize to CA class (70px)
+                if (sizeRatio > 1.2) {
                     this.audioManager.playSound('explosion-large');
-                } else if (shipSize > 0.8) {
+                } else if (sizeRatio > 0.8) {
                     this.audioManager.playSound('explosion-medium');
                 } else {
                     this.audioManager.playSound('explosion-small');
@@ -813,22 +894,29 @@ class Engine {
         }, 800);
     }
     startNewGame() {
+        console.log('🚀 Starting new game...');
+        
         // Initialize audio on first interaction (required by browsers)
         this.audioManager.initialize();
+        console.log('✅ Audio initialized');
 
         // Clear entities
         this.entities = [];
         this.enemyShips = [];
         this.environmentalHazards = [];
         this.projectiles = [];
+        console.log('✅ Entities cleared');
 
         // Clear particle system
         this.particleSystem.clear();
+        console.log('✅ Particle system cleared');
 
         const selectedOption = this.findPlayerShipOptionById(this.playerShipSelectionId) || this.playerShipOptions[0];
+        console.log('✅ Selected ship option:', selectedOption);
         this.applyPlayerShipOption(selectedOption, { skipSave: false, skipUI: true });
 
         // Create player ship based on selection
+        console.log('🚀 Creating player ship...');
         this.playerShip = new Ship({
             x: 0,
             y: 0,
@@ -838,17 +926,41 @@ class Engine {
             isPlayer: true,
             physicsWorld: this.physicsWorld
         });
+        console.log('✅ Player ship created:', this.playerShip);
 
         this.entities.push(this.playerShip);
+        console.log('✅ Player ship added to entities');
+
+        // Initialize advanced systems
+        console.log('🔧 Initializing advanced systems...');
+        this.tractorBeamSystem.init(this.playerShip);
+        this.powerManagementSystem.init(this.playerShip);
+        this.baySystem.init(this.playerShip);
+        this.transporterSystem.init(this.playerShip);
+        // this.balanceSystem.init(this); // Disabled for performance
+        this.testingSystem.init(this);
+        console.log('✅ Advanced systems initialized');
 
         // Start game loop
+        console.log('🎮 Starting game loop...');
         this.stateManager.setState('PLAYING');
         if (!this.gameLoop.running) {
             this.gameLoop.start();
         }
+        console.log('✅ Game loop started');
 
         // Load first mission
+        console.log('📋 Loading first mission...');
         this.loadMission('mission-01');
+        console.log('✅ Mission loaded');
+
+        // Spawn some test entities for immediate gameplay
+        console.log('🌌 Spawning test environment...');
+        this.spawnTestAsteroids();
+        this.spawnTestEnemies();
+        console.log('✅ Test environment spawned');
+        
+        console.log('🎉 New game started successfully!');
     }
     spawnTestAsteroids() {
         // Spawn a few test asteroids around the player
@@ -865,23 +977,6 @@ class Engine {
             const asteroid = new Asteroid(config.x, config.y, config.size, this.physicsWorld);
             this.entities.push(asteroid);
         }
-    }
-
-    spawnTestEnvironment() {
-        // Spawn a collapsar (black hole)
-        const collapsar = new EnvironmentalHazard(600, -400, 'collapsar', { radius: 30 });
-        this.entities.push(collapsar);
-        this.environmentalHazards.push(collapsar);
-
-        // Spawn a dust cloud
-        const dustCloud = new EnvironmentalHazard(-500, 300, 'dust', { radius: 120 });
-        this.entities.push(dustCloud);
-        this.environmentalHazards.push(dustCloud);
-
-        // Spawn a planet
-        const planet = new EnvironmentalHazard(800, 600, 'planet', { radius: 180, color: '#4488cc' });
-        this.entities.push(planet);
-        this.environmentalHazards.push(planet);
     }
 
     spawnTestEnemies() {
@@ -911,18 +1006,87 @@ class Engine {
         }
     }
 
+    spawnTestEnvironment() {
+        // Spawn a collapsar (black hole)
+        const collapsar = new EnvironmentalHazard(600, -400, 'collapsar', { radius: 30 });
+        this.entities.push(collapsar);
+        this.environmentalHazards.push(collapsar);
+
+        // Spawn a dust cloud
+        const dustCloud = new EnvironmentalHazard(-500, 300, 'dust', { radius: 120 });
+        this.entities.push(dustCloud);
+        this.environmentalHazards.push(dustCloud);
+
+        // Spawn a planet
+        const planet = new EnvironmentalHazard(800, 600, 'planet', { radius: 180, color: '#4488cc' });
+        this.entities.push(planet);
+        this.environmentalHazards.push(planet);
+    }
+
     update(deltaTime) {
         if (!this.stateManager.isPlaying()) return;
 
-        // Update camera to follow player
-        if (this.playerShip) {
-            this.camera.follow(this.playerShip.x, this.playerShip.y);
+        // Watchdog: detect infinite loops
+        this.updateCounter++;
+        const updateStartTime = Date.now();
+        const timeSinceLastUpdate = updateStartTime - this.lastUpdateTime;
+
+        if (timeSinceLastUpdate > 100) { // Log if update takes > 100ms
+            console.warn(`⚠️ Slow update detected! Counter: ${this.updateCounter}, Time: ${timeSinceLastUpdate}ms`);
+        }
+
+        // MINIMAL MODE - skip almost everything
+        if (CONFIG.MINIMAL_MODE) {
+            // Only update camera and basic player movement
+            if (this.playerShip) {
+                this.camera.follow(this.playerShip.x, this.playerShip.y);
+                this.handlePlayerInput(deltaTime);
+                this.playerShip.update(deltaTime);
+            }
+
+            this.lastUpdateTime = Date.now();
+            const totalTime = this.lastUpdateTime - updateStartTime;
+            if (this.updateCounter % 60 === 0) {
+                console.log(`⚡ MINIMAL MODE UPDATE: ${totalTime}ms`);
+            }
+            return;
+        }
+
+        // Performance profiling markers
+        const perf = {
+            start: updateStartTime,
+            camera: 0,
+            input: 0,
+            advancedSystems: 0,
+            targeting: 0,
+            beamFiring: 0,
+            entities: 0,
+            trails: 0,
+            ai: 0,
+            mission: 0,
+            collisions: 0,
+            physics: 0,
+            particles: 0,
+            hud: 0
+        };
+
+        try {
+            // Update camera to follow player
+            if (this.playerShip) {
+                this.camera.follow(this.playerShip.x, this.playerShip.y);
+            }
+            perf.camera = Date.now() - perf.start;
+        } catch (error) {
+            console.error('Error in camera update:', error);
         }
 
         // Handle input for player ship
+        const inputStart = Date.now();
         if (this.playerShip && !this.warpingOut) {
             this.handlePlayerInput(deltaTime);
         }
+        perf.input = Date.now() - inputStart;
+        perf.advancedSystems = this.lastAdvancedSystemsTime || 0;
 
         // Update warp sequence
         this.updateWarpSequence(deltaTime);
@@ -932,44 +1096,30 @@ class Engine {
             const mousePos = this.inputManager.getMousePosition();
             this.targetingSystem.update(mousePos.x, mousePos.y, this.entities, this.camera, deltaTime);
         }
+        perf.targeting = Date.now() - perf.start - perf.input;
 
         // Handle continuous beam firing
+        const beamStart = Date.now();
         if (this.beamFiring && this.playerShip && !this.warpingOut) {
             const mousePos = this.inputManager.getMousePosition();
             const worldPos = this.camera.screenToWorld(mousePos.x, mousePos.y);
             const currentTime = performance.now() / 1000;
 
-            // DEBUG: Weapon alignment - logs only when DEBUG_MODE is true
-            if (CONFIG.DEBUG_MODE) {
-                console.log('=== WEAPON FIRE DEBUG ===');
-                console.log('Mouse (screen):', `x=${mousePos.x.toFixed(1)}, y=${mousePos.y.toFixed(1)}`);
-                console.log('Target (world):', `x=${worldPos.x.toFixed(1)}, y=${worldPos.y.toFixed(1)}`);
-                console.log('Ship (world):', `x=${this.playerShip.x.toFixed(1)}, y=${this.playerShip.y.toFixed(1)}, rotation=${this.playerShip.rotation.toFixed(1)}ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°`);
-                console.log('Camera:', `x=${this.camera.x.toFixed(1)}, y=${this.camera.y.toFixed(1)}, zoom=${this.camera.zoom.toFixed(2)}`);
-            }
-
             const projectiles = this.playerShip.fireBeams(worldPos.x, worldPos.y, currentTime);
             if (projectiles && projectiles.length > 0) {
+                console.log(`🔫 Firing ${projectiles.length} beams`);
                 this.projectiles.push(...projectiles);
                 this.entities.push(...projectiles);
-
-                // DEBUG: Log beam endpoints
-                if (CONFIG.DEBUG_MODE && projectiles.length > 0) {
-                    projectiles.forEach((p, i) => {
-                        console.log(`Beam ${i}:`, {
-                            firing: `(${p.firingPointX.toFixed(1)}, ${p.firingPointY.toFixed(1)})`,
-                            end: `(${p.endX.toFixed(1)}, ${p.endY.toFixed(1)})`,
-                            target: `(${p.targetX.toFixed(1)}, ${p.targetY.toFixed(1)})`
-                        });
-                    });
-                }
 
                 // Only play sound for first beam fired per frame to avoid audio spam
                 if (projectiles.length > 0) {
                     this.audioManager.playSound('beam-fire');
                 }
+            } else {
+                console.log('⚠️ fireBeams returned no projectiles or null');
             }
         }
+        perf.beamFiring = Date.now() - beamStart;
 
         // Handle disruptor burst shots (for player and AI)
         for (const entity of this.entities) {
@@ -1016,20 +1166,30 @@ class Engine {
         }
 
         // Update all entities
-        for (const entity of this.entities) {
-            if (entity.update) {
-                entity.update(deltaTime);
+        const entitiesStart = Date.now();
+        try {
+            for (const entity of this.entities) {
+                if (entity.update) {
+                    // Pass entities array to entities that need it (like space stations for targeting)
+                    // Most entities ignore the extra parameter
+                    entity.update(deltaTime, this.entities);
+                }
             }
+        } catch (error) {
+            console.error('Error updating entities:', error);
+            console.error('Failed entity:', entity);
         }
+        perf.entities = Date.now() - entitiesStart;
 
         // Create engine trails for moving ships (throttled for performance)
+        const trailsStart = Date.now();
         this.trailFrameCounter++;
-        if (this.trailFrameCounter >= 3) { // Only create trails every 3rd frame
+        if (this.trailFrameCounter >= 5) { // Only create trails every 5th frame for better performance
             this.trailFrameCounter = 0;
             for (const entity of this.entities) {
                 if (entity.type === 'ship' && entity.active) {
                     const speed = MathUtils.magnitude(entity.vx || 0, entity.vy || 0);
-                    if (speed > 20) { // Only create trails when moving above threshold
+                    if (speed > 30) { // Only create trails when moving above threshold
                         const trailIntensity = Math.min(speed / 100, 1.0);
                         // Calculate trail position at rear of ship
                         const shipSize = entity.getShipSize ? entity.getShipSize() : 40;
@@ -1053,16 +1213,26 @@ class Engine {
                 }
             }
         }
+        perf.trails = Date.now() - trailsStart;
 
         // Update AI controllers
-        const currentTime = performance.now() / 1000;
-        for (const enemyShip of this.enemyShips) {
-            if (enemyShip.aiController && enemyShip.active) {
-                enemyShip.aiController.update(deltaTime, currentTime, this.playerShip, this.entities);
+        const aiStart = Date.now();
+        if (!CONFIG.DISABLE_AI) {
+            try {
+                const currentTime = performance.now() / 1000;
+                for (const enemyShip of this.enemyShips) {
+                    if (enemyShip.aiController && enemyShip.active) {
+                        enemyShip.aiController.update(deltaTime, currentTime, this.playerShip, this.entities);
+                    }
+                }
+            } catch (error) {
+                console.error('Error in AI controller update:', error);
             }
         }
+        perf.ai = Date.now() - aiStart;
 
         // Update mission system
+        const missionStart = Date.now();
         if (this.missionManager.missionActive) {
             const gameState = {
                 playerShip: this.playerShip,
@@ -1071,34 +1241,59 @@ class Engine {
             };
             this.missionManager.update(deltaTime, gameState);
         }
+        perf.mission = Date.now() - missionStart;
 
         // Handle projectile collisions
-        this.handleProjectileCollisions();
+        const collisionsStart = Date.now();
+        if (!CONFIG.DISABLE_COLLISIONS) {
+            try {
+                this.handleProjectileCollisions();
+            } catch (error) {
+                console.error('Error in projectile collisions:', error);
+            }
 
-        // Handle decoy confusion
-        this.handleDecoyConfusion();
+            // Handle decoy confusion
+            try {
+                this.handleDecoyConfusion();
+            } catch (error) {
+                console.error('Error in decoy confusion:', error);
+            }
 
-        // Handle mine triggers
-        this.handleMineTriggers();
-
-        // Apply gravity from collapsars
-        for (const hazard of this.environmentalHazards) {
-            if (hazard.type === 'collapsar' && hazard.applyGravity) {
-                hazard.applyGravity(this.entities, deltaTime);
+            // Handle mine triggers
+            try {
+                this.handleMineTriggers();
+            } catch (error) {
+                console.error('Error in mine triggers:', error);
             }
         }
+        perf.collisions = Date.now() - collisionsStart;
 
-        // Step physics simulation
-        this.physicsWorld.step(deltaTime);
+        // Apply gravity from collapsars
+        const physicsStart = Date.now();
+        if (!CONFIG.DISABLE_PHYSICS) {
+            for (const hazard of this.environmentalHazards) {
+                if (hazard.type === 'collapsar' && hazard.applyGravity) {
+                    hazard.applyGravity(this.entities, deltaTime);
+                }
+            }
 
-        // Handle asteroid breaking
-        this.handleAsteroidBreaking();
+            // Step physics simulation
+            this.physicsWorld.step(deltaTime);
+
+            // Handle asteroid breaking
+            this.handleAsteroidBreaking();
+        }
 
         // Remove destroyed entities
         this.cleanupEntities();
+        perf.physics = Date.now() - physicsStart;
 
         // Update particle system
-        this.particleSystem.update(deltaTime);
+        const particlesStart = Date.now();
+        if (!CONFIG.DISABLE_PARTICLES) {
+            this.particleSystem.update(deltaTime);
+        }
+        perf.particles = Date.now() - particlesStart;
 
         // Update HUD
         this.hud.update(this.playerShip, this.entities);
@@ -1109,18 +1304,79 @@ class Engine {
         } else {
             this.hud.hideObjectives();
         }
+
+        // Update tooltip for hovered ship
+        const mousePos = this.inputManager.getMousePosition();
+        const worldPos = this.camera.screenToWorld(mousePos.x, mousePos.y);
+        const hoveredShip = this.findShipAtPosition(worldPos.x, worldPos.y);
+        this.hud.updateTooltip(mousePos.x, mousePos.y, hoveredShip);
+        perf.hud = Date.now() - perf.start - perf.particles;
+
+        // Log performance breakdown every 60 frames if slow
+        this.lastUpdateTime = Date.now();
+        const totalTime = this.lastUpdateTime - updateStartTime;
+
+        if (this.updateCounter % 60 === 0) {
+            console.log('🐌 PERFORMANCE BREAKDOWN:', {
+                total: totalTime + 'ms',
+                camera: perf.camera + 'ms',
+                input: perf.input + 'ms',
+                advancedSystems: perf.advancedSystems + 'ms',
+                targeting: perf.targeting + 'ms',
+                beamFiring: perf.beamFiring + 'ms',
+                entities: perf.entities + 'ms',
+                trails: perf.trails + 'ms',
+                ai: perf.ai + 'ms',
+                mission: perf.mission + 'ms',
+                collisions: perf.collisions + 'ms',
+                physics: perf.physics + 'ms',
+                particles: perf.particles + 'ms',
+                hud: perf.hud + 'ms'
+            });
+
+            // Calculate unaccounted time
+            const accountedTime = perf.camera + perf.input + perf.advancedSystems + perf.targeting + perf.beamFiring +
+                                 perf.entities + perf.trails + perf.ai + perf.mission +
+                                 perf.collisions + perf.physics + perf.particles + perf.hud;
+            const unaccounted = totalTime - accountedTime;
+            if (unaccounted > 50) {
+                console.warn(`⚠️ UNACCOUNTED TIME: ${unaccounted}ms`);
+            }
+        }
     }
 
     handleProjectileCollisions() {
+        const currentTime = performance.now() / 1000;
+
         for (const projectile of this.projectiles) {
             if (!projectile.active) continue;
 
             // Check collision with ships and asteroids
             for (const entity of this.entities) {
                 if (!entity.active) continue;
-                if (entity === projectile.sourceShip) continue; // Don't hit source
                 if (entity.type === 'projectile') continue; // Don't hit other projectiles
                 if (projectile.hasHit(entity)) continue; // Already hit this entity
+
+                // CRITICAL: Check source ship AFTER age check to see if we're hitting ourselves
+                const projectileAge = currentTime - projectile.creationTime;
+                const isSourceShip = (entity === projectile.sourceShip || entity.id === projectile.sourceShip?.id);
+
+                if (isSourceShip) {
+                    // Log if we're trying to hit the source ship
+                    if (projectile.projectileType === 'beam' && projectileAge < 0.2) {
+                        console.log('🛡️ Blocked hit on source ship:', {
+                            age: projectileAge.toFixed(3),
+                            projectilePos: `(${projectile.x.toFixed(0)}, ${projectile.y.toFixed(0)})`,
+                            shipPos: `(${entity.x.toFixed(0)}, ${entity.y.toFixed(0)})`,
+                            distance: MathUtils.distance(projectile.x, projectile.y, entity.x, entity.y).toFixed(1)
+                        });
+                    }
+                    continue; // Don't hit source
+                }
+
+                // Short grace period to prevent spawn collision (50ms for beams, 250ms for torpedoes)
+                const graceTime = (projectile.projectileType === 'beam') ? 0.05 : 0.25;
+                if (projectileAge < graceTime) continue;
 
                 // Check if projectile is close to entity
                 const distance = MathUtils.distance(projectile.x, projectile.y, entity.x, entity.y);
@@ -1129,6 +1385,21 @@ class Engine {
                 if (distance <= hitRadius) {
                     // Hit!
                     if (projectile.projectileType === 'beam' || projectile.projectileType === 'disruptor') {
+                        // Debug logging for beam hits
+                        if (projectile.projectileType === 'beam' && projectileAge < 0.2) {
+                            console.log('⚠️ BEAM HIT IMMEDIATELY:', {
+                                age: projectileAge.toFixed(3),
+                                distance: distance.toFixed(1),
+                                hitRadius: hitRadius.toFixed(1),
+                                projectilePos: `(${projectile.x.toFixed(0)}, ${projectile.y.toFixed(0)})`,
+                                entityPos: `(${entity.x.toFixed(0)}, ${entity.y.toFixed(0)})`,
+                                entityType: entity.type,
+                                isSourceShip: entity === projectile.sourceShip,
+                                sourceShipId: projectile.sourceShip?.id,
+                                entityId: entity.id
+                            });
+                        }
+
                         // Beam/Disruptor hit
                         if (entity.takeDamage) {
                             entity.takeDamage(projectile.damage, { x: projectile.x, y: projectile.y });
@@ -1303,6 +1574,8 @@ class Engine {
         // Movement (WASD)
         const wPressed = this.inputManager.isKeyDown('w');
         const sPressed = this.inputManager.isKeyDown('s');
+        const aPressed = this.inputManager.isKeyDown('a');
+        const dPressed = this.inputManager.isKeyDown('d');
 
         if (wPressed) {
             ship.thrust(1, deltaTime);
@@ -1313,9 +1586,6 @@ class Engine {
             ship.applyDeceleration(deltaTime);
         }
 
-        const aPressed = this.inputManager.isKeyDown('a');
-        const dPressed = this.inputManager.isKeyDown('d');
-
         if (aPressed) {
             ship.turn(-1, deltaTime);
         } else if (dPressed) {
@@ -1323,6 +1593,72 @@ class Engine {
         } else {
             // Stop rotation when no turn input
             ship.stopRotation();
+        }
+
+        // Advanced systems input
+        this.handleAdvancedInput(deltaTime);
+    }
+
+    handleAdvancedInput(deltaTime) {
+        const advStart = Date.now();
+        const currentTime = performance.now() / 1000;
+
+        // Tractor Beam (Q key)
+        if (this.inputManager.isKeyDown('q')) {
+            this.tractorBeamSystem.toggle(this.playerShip, this.entities);
+        }
+
+        // Transporter (T key)
+        if (this.inputManager.isKeyDown('t')) {
+            this.transporterSystem.toggleTransporter();
+        }
+
+        // Power Management (TAB key)
+        if (this.inputManager.isKeyDown('tab')) {
+            this.powerManagementSystem.handleTabPress(currentTime);
+        }
+
+        // Bay System (1-6 keys for shuttles, 7-8 for fighters/bombers)
+        this.handleBaySystemInput(currentTime);
+
+        // Update advanced systems
+        this.tractorBeamSystem.update(deltaTime, currentTime, this.playerShip);
+        this.powerManagementSystem.update(deltaTime, currentTime, this.playerShip);
+        this.baySystem.update(deltaTime, currentTime, this.entities);
+        this.transporterSystem.update(deltaTime, currentTime);
+        // Note: balanceSystem disabled for performance - enable if needed for balancing
+
+        // Store advanced systems time in a property we can access
+        this.lastAdvancedSystemsTime = Date.now() - advStart;
+    }
+
+    handleBaySystemInput(currentTime) {
+        // Shuttle missions (1-6 keys)
+        if (this.inputManager.isKeyDown('1')) {
+            this.baySystem.launchShuttle('ATTACK');
+        }
+        if (this.inputManager.isKeyDown('2')) {
+            this.baySystem.launchShuttle('DEFENSE');
+        }
+        if (this.inputManager.isKeyDown('3')) {
+            this.baySystem.launchShuttle('WILD_WEASEL');
+        }
+        if (this.inputManager.isKeyDown('4')) {
+            this.baySystem.launchShuttle('SUICIDE');
+        }
+        if (this.inputManager.isKeyDown('5')) {
+            this.baySystem.launchShuttle('TRANSPORT');
+        }
+        if (this.inputManager.isKeyDown('6')) {
+            this.baySystem.launchShuttle('SCAN');
+        }
+
+        // Fighter/Bomber launches (7-8 keys)
+        if (this.inputManager.isKeyDown('7')) {
+            this.baySystem.launchFighter();
+        }
+        if (this.inputManager.isKeyDown('8')) {
+            this.baySystem.launchBomber();
         }
     }
 
@@ -1373,43 +1709,146 @@ class Engine {
     }
 
     render(deltaTime) {
-        // Clear canvas
-        this.ctx.fillStyle = '#000';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
         if (!this.stateManager.isPlaying() && !this.stateManager.isPaused()) {
             return; // Don't render game when in menu
         }
 
-        // Apply screen shake
-        const shake = this.particleSystem.getScreenShake();
-        this.ctx.save();
-        this.ctx.translate(shake.x, shake.y);
+        const renderStart = Date.now();
 
-        // Calculate warp progress
-        const warpProgress = this.warpingOut ? (this.warpSequenceTime / this.warpSequenceDuration) : 0;
-
-        // Render game world
-        this.renderer.render(this.entities, warpProgress);
-
-        // Render particle effects
-        this.particleSystem.render(this.ctx, this.camera);
-
-        this.ctx.restore();
-
-        // Render waypoint arrows (after screen shake is removed)
-        if (this.missionManager.missionActive && this.playerShip) {
-            this.renderer.uiRenderer.renderWaypointArrows(
-                this.playerShip,
-                this.missionManager.objectives,
-                this.camera,
-                this.ctx
-            );
+        // ALWAYS log config status on first few frames to verify it loaded
+        if (this.updateCounter <= 5) {
+            console.log(`🎨 RENDER START - Frame ${this.updateCounter}: MINIMAL_MODE=${CONFIG.MINIMAL_MODE}, PERFORMANCE_MODE=${CONFIG.PERFORMANCE_MODE}`);
         }
 
-        // Debug info
-        if (CONFIG.DEBUG_MODE) {
-            this.renderDebugInfo();
+        try {
+            if (CONFIG.MINIMAL_MODE) {
+                // ULTRA MINIMAL RENDERING - just a green square
+                this.ctx.fillStyle = '#000';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Draw player as green square in center
+                this.ctx.fillStyle = '#00ff00';
+                this.ctx.fillRect(this.canvas.width / 2 - 10, this.canvas.height / 2 - 10, 20, 20);
+
+                // Info
+                this.ctx.fillStyle = '#0f0';
+                this.ctx.font = '16px Arial';
+                this.ctx.fillText('MINIMAL MODE - Press WASD to move', 10, 20);
+                this.ctx.fillText(`Player: (${Math.round(this.playerShip?.x || 0)}, ${Math.round(this.playerShip?.y || 0)})`, 10, 40);
+
+                const renderTime = Date.now() - renderStart;
+                if (this.updateCounter % 60 === 0) {
+                    console.log(`⚡ MINIMAL MODE RENDER: ${renderTime}ms`);
+                }
+                return;
+            }
+
+            if (CONFIG.PERFORMANCE_MODE) {
+                // PERFORMANCE MODE: Simple rendering
+                this.ctx.fillStyle = '#000';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Camera transform
+                this.ctx.save();
+                this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
+                this.ctx.scale(this.camera.zoom, this.camera.zoom);
+                this.ctx.translate(-this.camera.x, -this.camera.y);
+
+                // Draw simple shapes for entities
+                for (const entity of this.entities) {
+                    if (!entity.active) continue;
+
+                    this.ctx.save();
+                    this.ctx.translate(entity.x, entity.y);
+                    if (entity.rotation !== undefined) {
+                        this.ctx.rotate(entity.rotation);
+                    }
+
+                    // Color by type/faction
+                    if (entity.isPlayer) {
+                        this.ctx.fillStyle = '#00ff00';
+                    } else if (entity.type === 'ship') {
+                        if (entity.faction === 'TRIGON') this.ctx.fillStyle = '#ff4444';
+                        else if (entity.faction === 'SCINTILIAN') this.ctx.fillStyle = '#00ff88';
+                        else if (entity.faction === 'PIRATE') this.ctx.fillStyle = '#ff8800';
+                        else this.ctx.fillStyle = '#ff0000';
+                    } else if (entity.type === 'projectile') {
+                        this.ctx.fillStyle = '#ffff00';
+                    } else {
+                        this.ctx.fillStyle = '#888888';
+                    }
+
+                    // Draw simple triangle pointing forward
+                    const size = entity.getShipSize ? entity.getShipSize() / 2 : 10;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(size, 0);
+                    this.ctx.lineTo(-size, -size/2);
+                    this.ctx.lineTo(-size, size/2);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+
+                    this.ctx.restore();
+                }
+
+                this.ctx.restore();
+
+                // Performance info
+                this.ctx.fillStyle = '#0f0';
+                this.ctx.font = '16px Arial';
+                this.ctx.fillText('PERFORMANCE MODE - Simple Graphics', 10, 20);
+                this.ctx.fillText(`FPS: ${Math.round(1000 / (deltaTime * 1000))}`, 10, 40);
+                this.ctx.fillText(`Entities: ${this.entities.length}`, 10, 60);
+
+            } else {
+                // FULL RENDERING MODE
+                // Clear canvas
+                this.ctx.fillStyle = '#000';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Apply screen shake
+                const shake = this.particleSystem.getScreenShake();
+                this.ctx.save();
+                this.ctx.translate(shake.x, shake.y);
+
+                // Calculate warp progress
+                const warpProgress = this.warpingOut ? (this.warpSequenceTime / this.warpSequenceDuration) : 0;
+
+                // Render game world
+                this.renderer.render(this.entities, warpProgress);
+
+                // Render particle effects
+                this.particleSystem.render(this.ctx, this.camera);
+
+                this.ctx.restore();
+
+                // Render waypoint arrows (after screen shake is removed)
+                if (this.missionManager.missionActive && this.playerShip) {
+                    this.renderer.uiRenderer.renderWaypointArrows(
+                        this.playerShip,
+                        this.missionManager.objectives,
+                        this.camera,
+                        this.ctx
+                    );
+                }
+
+                // Debug info
+                if (CONFIG.DEBUG_MODE) {
+                    this.renderDebugInfo();
+                }
+            }
+        } catch (error) {
+            console.error('ERROR IN RENDER:', error);
+            console.error('Stack:', error.stack);
+            // Draw error on screen
+            this.ctx.fillStyle = '#ff0000';
+            this.ctx.font = '20px Arial';
+            this.ctx.fillText('RENDER ERROR - Check console', 50, 50);
+        }
+
+        // Always log render time to diagnose
+        const renderTime = Date.now() - renderStart;
+        if (this.updateCounter % 60 === 0) {
+            console.log(`🎨 RENDER TIME: ${renderTime}ms | PERFORMANCE_MODE: ${CONFIG.PERFORMANCE_MODE}`);
         }
     }
 
@@ -1421,7 +1860,7 @@ class Engine {
         this.ctx.fillText(`Entities: ${this.entities.length}`, 10, 35);
         if (this.playerShip) {
             this.ctx.fillText(`Player: (${Math.round(this.playerShip.x)}, ${Math.round(this.playerShip.y)})`, 10, 50);
-            this.ctx.fillText(`Rotation: ${Math.round(this.playerShip.rotation)}ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â°`, 10, 65);
+            this.ctx.fillText(`Rotation: ${Math.round(this.playerShip.rotation)}°`, 10, 65);
             this.ctx.fillText(`Velocity: ${Math.round(MathUtils.magnitude(this.playerShip.vx, this.playerShip.vy))}`, 10, 80);
             this.ctx.fillText(`Mode: ${this.playerShip.movementMode}`, 10, 95);
         }
@@ -1448,36 +1887,82 @@ class Engine {
      * @param {string} missionId - Mission ID (e.g., 'mission-01')
      */
     startMission(missionId) {
-        // Start mission in MissionManager
-        const success = this.missionManager.startMission(missionId);
-        if (!success) {
-            console.error(`Failed to start mission ${missionId}`);
-            return;
-        }
+        console.log('🎯 Starting mission:', missionId);
 
-        // Apply upgrades to player ship
-        if (this.playerShip && this.progressionManager) {
-            this.progressionManager.applyUpgradesToShip(this.playerShip);
-        }
+        try {
+            // Start mission in MissionManager
+            console.log('📋 Starting mission in MissionManager...');
+            const success = this.missionManager.startMission(missionId);
+            if (!success) {
+                console.error(`Failed to start mission ${missionId}`);
+                alert('Mission failed to start - check console');
+                return;
+            }
+            console.log('✅ Mission started in MissionManager');
 
-        // Clear existing entities (except player)
-        this.entities = this.entities.filter(e => e.isPlayer);
-        this.enemyShips = [];
-        this.environmentalHazards = [];
-        this.projectiles = [];
+            // Apply upgrades to player ship
+            if (this.playerShip && this.progressionManager) {
+                console.log('🔧 Applying upgrades to player ship...');
+                this.progressionManager.applyUpgradesToShip(this.playerShip);
+                console.log('✅ Upgrades applied');
+            } else {
+                console.warn('⚠️ No player ship or progression manager');
+            }
 
-        // Spawn mission entities
-        const mission = MISSIONS[missionId];
-        if (mission.enemies) {
-            this.spawnMissionEnemies(mission.enemies);
-        }
-        if (mission.entities) {
-            this.spawnMissionEntities(mission.entities);
-        }
+            // Clear existing entities (except player)
+            console.log('🧹 Clearing existing entities...');
+            this.entities = this.entities.filter(e => e.isPlayer);
+            this.enemyShips = [];
+            this.environmentalHazards = [];
+            this.projectiles = [];
+            console.log(`✅ Entities cleared. Remaining: ${this.entities.length}`);
 
-        // Show objectives panel
-        this.hud.showObjectives();
-        this.hud.addCriticalMessage(`Mission Started: ${mission.title}`);
+            // Spawn mission entities
+            const mission = MISSIONS[missionId];
+            console.log('📦 Mission data:', mission);
+
+            if (mission.enemies) {
+                console.log(`🎭 Spawning ${mission.enemies.length} enemies...`);
+                this.spawnMissionEnemies(mission.enemies);
+                console.log(`✅ Enemies spawned. Total: ${this.enemyShips.length}`);
+            } else {
+                console.log('ℹ️ No enemies in this mission');
+            }
+
+            if (mission.entities) {
+                console.log(`🏭 Spawning ${mission.entities.length} mission entities...`);
+                this.spawnMissionEntities(mission.entities);
+                console.log('✅ Mission entities spawned');
+            } else {
+                console.log('ℹ️ No mission entities');
+            }
+
+            console.log(`📊 Total entities after spawn: ${this.entities.length}`);
+
+            // Show objectives panel
+            console.log('📋 Showing objectives...');
+            this.hud.showObjectives();
+            this.hud.addCriticalMessage(`Mission Started: ${mission.title}`);
+            console.log('✅ Mission start complete!');
+
+        } catch (error) {
+            console.error('❌ CRITICAL ERROR in startMission:', error);
+            console.error('Stack trace:', error.stack);
+            console.error('Error details:', {
+                name: error.name,
+                message: error.message,
+                stack: error.stack
+            });
+
+            // Try to recover by showing an error message
+            if (this.hud && this.hud.addCriticalMessage) {
+                this.hud.addCriticalMessage(`Mission failed to load: ${error.message}`);
+            }
+            alert(`Mission loading failed: ${error.message}\n\nCheck console for details.`);
+
+            // Return to main menu
+            this.stateManager.setState('MAIN_MENU');
+        }
     }
 
     /**
@@ -1485,26 +1970,33 @@ class Engine {
      * @param {Array} enemyConfigs - Array of enemy configurations
      */
     spawnMissionEnemies(enemyConfigs) {
-        for (const config of enemyConfigs) {
-            const enemyShip = new Ship({
-                x: config.position.x,
-                y: config.position.y,
-                shipClass: config.class,
-                faction: config.faction,
-                isPlayer: false,
-                physicsWorld: this.physicsWorld
-            });
+        for (let i = 0; i < enemyConfigs.length; i++) {
+            const config = enemyConfigs[i];
+            
+            try {
+                const enemyShip = new Ship({
+                    x: config.position.x,
+                    y: config.position.y,
+                    shipClass: config.class,
+                    faction: config.faction,
+                    isPlayer: false,
+                    physicsWorld: this.physicsWorld
+                });
 
-            // Set cloak state if specified
-            if (config.cloaked && enemyShip.systems?.cloak) {
-                enemyShip.systems.cloak.activate();
+                // Set cloak state if specified
+                if (config.cloaked && enemyShip.systems?.cloak) {
+                    enemyShip.systems.cloak.activate();
+                }
+
+                // Create AI controller for enemy ship
+                enemyShip.aiController = new AIController(enemyShip);
+
+                this.entities.push(enemyShip);
+                this.enemyShips.push(enemyShip);
+            } catch (error) {
+                console.error(`❌ Error creating enemy ship ${i + 1}:`, error);
+                throw error; // Re-throw to stop the freeze
             }
-
-            // Create AI controller for enemy ship
-            enemyShip.aiController = new AIController(enemyShip);
-
-            this.entities.push(enemyShip);
-            this.enemyShips.push(enemyShip);
         }
     }
 
@@ -1513,51 +2005,58 @@ class Engine {
      * @param {Array} entityConfigs - Array of entity configurations
      */
     spawnMissionEntities(entityConfigs) {
-        for (const config of entityConfigs) {
-            let entity = null;
+        for (let i = 0; i < entityConfigs.length; i++) {
+            const config = entityConfigs[i];
+            
+            try {
+                let entity = null;
 
-            switch (config.type) {
-                case 'civilian-transport':
-                    entity = new CivilianTransport({
-                        id: config.id,
-                        x: config.position.x,
-                        y: config.position.y,
-                        hp: config.hp,
-                        name: config.name
-                    });
-                    break;
+                switch (config.type) {
+                    case 'civilian-transport':
+                        entity = new CivilianTransport({
+                            id: config.id,
+                            x: config.position.x,
+                            y: config.position.y,
+                            hp: config.hp,
+                            name: config.name
+                        });
+                        break;
 
-                case 'space-station':
-                    entity = new SpaceStation({
-                        id: config.id,
-                        x: config.position.x,
-                        y: config.position.y,
-                        hp: config.hp,
-                        radius: config.radius,
-                        faction: config.faction,
-                        hostile: config.hostile,
-                        name: config.name
-                    });
-                    break;
+                    case 'space-station':
+                        entity = new SpaceStation({
+                            id: config.id,
+                            x: config.position.x,
+                            y: config.position.y,
+                            hp: config.hp,
+                            radius: config.radius,
+                            faction: config.faction,
+                            hostile: config.hostile,
+                            name: config.name
+                        });
+                        break;
 
-                case 'derelict':
-                    entity = new Derelict({
-                        id: config.id,
-                        x: config.position.x,
-                        y: config.position.y,
-                        hp: config.hp,
-                        radius: config.radius,
-                        name: config.name
-                    });
-                    break;
+                    case 'derelict':
+                        entity = new Derelict({
+                            id: config.id,
+                            x: config.position.x,
+                            y: config.position.y,
+                            hp: config.hp,
+                            radius: config.radius,
+                            name: config.name
+                        });
+                        break;
 
-                default:
-                    console.warn(`Unknown entity type: ${config.type}`);
-                    break;
-            }
+                    default:
+                        console.warn(`Unknown entity type: ${config.type}`);
+                        break;
+                }
 
-            if (entity) {
-                this.entities.push(entity);
+                if (entity) {
+                    this.entities.push(entity);
+                }
+            } catch (error) {
+                console.error(`❌ Error creating entity ${i + 1}:`, error);
+                throw error; // Re-throw to stop the freeze
             }
         }
     }
@@ -1655,6 +2154,25 @@ class Engine {
         }
 
         return nearestTarget;
+    }
+
+    /**
+     * Find ship at mouse position (for tooltip)
+     */
+    findShipAtPosition(worldX, worldY) {
+        for (const entity of this.entities) {
+            if (!entity.active) continue;
+            if (entity.type !== 'ship') continue;
+
+            const distance = MathUtils.distance(worldX, worldY, entity.x, entity.y);
+            const shipSize = entity.getShipSize ? entity.getShipSize() : 40;
+
+            if (distance <= shipSize / 2) {
+                return entity;
+            }
+        }
+
+        return null;
     }
 
     start() {

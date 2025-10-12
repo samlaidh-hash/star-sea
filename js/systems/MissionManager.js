@@ -18,12 +18,14 @@ class MissionManager {
      * Load and start a mission
      */
     startMission(missionId) {
+        console.log('📋 MissionManager: Starting mission:', missionId);
         const mission = MISSIONS[missionId];
         if (!mission) {
             console.error(`Mission ${missionId} not found`);
             return false;
         }
 
+        console.log('📋 MissionManager: Mission found:', mission.title);
         this.currentMission = mission;
         this.missionActive = true;
         this.missionTime = 0;

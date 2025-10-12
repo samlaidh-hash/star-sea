@@ -419,6 +419,38 @@
     transition: width 0.2s;
 }
 
+/* Boost Status Bar */
+#boost-status-group {
+    margin-top: 5px;
+}
+
+#boost-label {
+    font-size: 9px;
+    font-weight: bold;
+    margin-bottom: 3px;
+    text-align: center;
+    transition: color 0.3s;
+}
+
+#boost-bar {
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid #0ff;
+    position: relative;
+    overflow: hidden;
+}
+
+#boost-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #0ff, #0af);
+    transition: width 0.1s;
+}
+
 /* Mission Objectives Panel - Right Side */
 #objectives-panel {
     position: absolute;
@@ -527,4 +559,105 @@
 
 #objectives-display::-webkit-scrollbar-thumb:hover {
     background: #0f0;
+}
+
+/* Controls Panel - Bottom Right */
+#controls-panel {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 200px;
+    background: rgba(0, 20, 0, 0.9);
+    border: 2px solid #0f0;
+    padding: 8px;
+    font-size: 10px;
+    pointer-events: auto;
+}
+
+.controls-section {
+    margin-bottom: 8px;
+}
+
+.control-category {
+    font-weight: bold;
+    color: #0ff;
+    font-size: 10px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid #0a0;
+    padding-bottom: 2px;
+}
+
+.control-line {
+    display: flex;
+    align-items: center;
+    margin: 3px 0;
+    font-size: 9px;
+    color: #0f0;
+}
+
+.control-line .key {
+    display: inline-block;
+    min-width: 45px;
+    padding: 2px 6px;
+    background: rgba(0, 255, 0, 0.2);
+    border: 1px solid #0f0;
+    border-radius: 3px;
+    font-weight: bold;
+    text-align: center;
+    margin-right: 8px;
+    font-size: 9px;
+}
+
+/* Inventory lines */
+.inventory-line {
+    font-size: 9px;
+    color: #0f0;
+    margin: 2px 0;
+    padding: 1px 3px;
+}
+
+/* Ship Tooltip */
+#ship-tooltip {
+    position: fixed;
+    background: rgba(0, 20, 0, 0.95);
+    border: 2px solid #0f0;
+    padding: 8px;
+    font-size: 10px;
+    pointer-events: none;
+    z-index: 1000;
+    min-width: 150px;
+}
+
+.tooltip-header {
+    font-weight: bold;
+    color: #0ff;
+    margin-bottom: 5px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid #0a0;
+    font-size: 11px;
+}
+
+.tooltip-shields {
+    margin-bottom: 5px;
+}
+
+.tooltip-shield-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    margin: 2px 0;
+}
+
+.tooltip-shield-line .label {
+    color: #0aa;
+}
+
+.tooltip-shield-line .value {
+    color: #0f0;
+    font-weight: bold;
+}
+
+.tooltip-systems {
+    font-size: 9px;
+    color: #0f0;
 }
