@@ -414,6 +414,30 @@ class Engine {
             }
         });
 
+        // Shuttle control events
+        eventBus.on('cycle-shuttle-mission', () => {
+            if (!this.stateManager.isPlaying() || !this.playerShip) return;
+
+            this.playerShip.cycleShuttleMission();
+        });
+
+        eventBus.on('launch-shuttle', () => {
+            if (!this.stateManager.isPlaying() || !this.playerShip) return;
+
+            const shuttle = this.playerShip.launchShuttle();
+            if (shuttle) {
+                this.entities.push(shuttle);
+                // Audio for shuttle launch (if available)
+                // this.audioManager.playSound('shuttle-launch');
+            }
+        });
+
+        eventBus.on('recall-shuttles', () => {
+            if (!this.stateManager.isPlaying() || !this.playerShip) return;
+
+            this.playerShip.recallShuttles();
+        });
+
         // Lock-on events for reticle visuals
         eventBus.on('lock-acquired', (data) => {
             const reticle = document.getElementById('reticle');
@@ -1093,6 +1117,11 @@ class Engine {
 
         // Handle asteroid breaking
         this.handleAsteroidBreaking();
+
+        // Clean up inactive shuttles
+        if (this.playerShip) {
+            this.playerShip.cleanupShuttles();
+        }
 
         // Remove destroyed entities
         this.cleanupEntities();
