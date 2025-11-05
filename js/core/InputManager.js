@@ -12,10 +12,6 @@ class InputManager {
         this.spacebarPressTime = 0;
         this.spacebarReleased = true;
 
-        // M key handling for shuttle mission cycling and launch
-        this.mKeyPressTime = 0;
-        this.mKeyReleased = true;
-
         this.init();
     }
 
@@ -37,16 +33,18 @@ class InputManager {
     onKeyDown(e) {
         this.keys.set(e.key.toLowerCase(), true);
 
-        // Handle spacebar press timing for mine deployment
+        // Handle spacebar press timing for decoy/mine deployment
         if (e.key === ' ' && this.spacebarReleased) {
             this.spacebarPressTime = performance.now();
             this.spacebarReleased = false;
         }
 
-        // Handle M key press timing for shuttle mission cycle/launch
-        if (e.key.toLowerCase() === 'm' && this.mKeyReleased) {
-            this.mKeyPressTime = performance.now();
-            this.mKeyReleased = false;
+        // Handle 1-6 keys for shuttle launch (with modifier keys for different craft types)
+        const key = e.key;
+        if (['1', '2', '3', '4', '5', '6'].includes(key)) {
+            const missionIndex = parseInt(key) - 1;
+            const craftType = this.getCraftType(e);
+            eventBus.emit('launch-shuttle', { missionIndex, craftType });
         }
 
         // Handle R key for shuttle recall
@@ -62,6 +60,14 @@ class InputManager {
         eventBus.emit('keydown', { key: e.key.toLowerCase(), event: e });
     }
 
+    getCraftType(event) {
+        // CTRL = Drone, SHIFT = Fighter, ALT = Bomber, None = Shuttle
+        if (event.ctrlKey) return 'drone';
+        if (event.shiftKey) return 'fighter';
+        if (event.altKey) return 'bomber';
+        return 'shuttle';
+    }
+
     onKeyUp(e) {
         this.keys.set(e.key.toLowerCase(), false);
 
@@ -74,20 +80,6 @@ class InputManager {
                 eventBus.emit('deploy-decoy');
             } else {
                 eventBus.emit('deploy-mine');
-            }
-        }
-
-        // Handle M key release for shuttle mission cycle vs launch
-        if (e.key.toLowerCase() === 'm') {
-            const pressDuration = performance.now() - this.mKeyPressTime;
-            this.mKeyReleased = true;
-
-            if (pressDuration < 500) {
-                // Tap: Cycle mission type
-                eventBus.emit('cycle-shuttle-mission');
-            } else {
-                // Long press: Launch shuttle
-                eventBus.emit('launch-shuttle');
             }
         }
 

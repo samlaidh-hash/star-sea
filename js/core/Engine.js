@@ -415,16 +415,11 @@ class Engine {
         });
 
         // Shuttle control events
-        eventBus.on('cycle-shuttle-mission', () => {
+        eventBus.on('launch-shuttle', (data) => {
             if (!this.stateManager.isPlaying() || !this.playerShip) return;
 
-            this.playerShip.cycleShuttleMission();
-        });
-
-        eventBus.on('launch-shuttle', () => {
-            if (!this.stateManager.isPlaying() || !this.playerShip) return;
-
-            const shuttle = this.playerShip.launchShuttle();
+            const { missionIndex, craftType } = data;
+            const shuttle = this.playerShip.launchShuttleByIndex(missionIndex, craftType);
             if (shuttle) {
                 this.entities.push(shuttle);
                 // Audio for shuttle launch (if available)

@@ -1160,10 +1160,16 @@ class Ship extends Entity {
     }
 
     /**
-     * Launch shuttle on selected mission
+     * Launch a shuttle from the bay by mission index
+     * @param {number} missionIndex - Mission index (0-5)
+     * @param {string} craftType - 'shuttle', 'drone', 'fighter', or 'bomber'
      */
-    launchShuttle() {
-        // Check if bay has a shuttle
+    launchShuttleByIndex(missionIndex, craftType = 'shuttle') {
+        // Map mission index to mission type
+        const missionTypes = ['attack', 'defense', 'weasel', 'suicide', 'transport', 'patrol'];
+        const missionType = missionTypes[missionIndex] || 'attack';
+
+        // Check if bay has a shuttle (for now, all craft types use shuttle entity)
         const shuttleIndex = this.bayContents.findIndex(item => item.type === 'shuttle');
         if (shuttleIndex === -1) {
             // No shuttles in bay
@@ -1181,25 +1187,34 @@ class Ship extends Entity {
             x: this.x,
             y: this.y,
             parentShip: this,
-            missionType: this.selectedShuttleMission,
-            missionData: this.getShuttleMissionData(),
-            faction: this.faction
+            missionType: missionType,
+            missionData: this.getShuttleMissionDataFor(missionType),
+            faction: this.faction,
+            craftType: craftType // Store craft type for future differentiation
         });
 
         // Track active shuttle
         this.activeShuttles.push(shuttle);
 
         // Emit event
-        eventBus.emit('shuttle-launched', { ship: this, shuttle: shuttle, missionType: this.selectedShuttleMission });
+        eventBus.emit('shuttle-launched', { ship: this, shuttle: shuttle, missionType: missionType, craftType: craftType });
 
         return shuttle;
     }
 
     /**
+     * Launch shuttle on selected mission (legacy method)
+     */
+    launchShuttle() {
+        // Use first mission type as default
+        return this.launchShuttleByIndex(0, 'shuttle');
+    }
+
+    /**
      * Get mission data for transport missions
      */
-    getShuttleMissionData() {
-        if (this.selectedShuttleMission === 'transport') {
+    getShuttleMissionDataFor(missionType) {
+        if (missionType === 'transport' || missionType === 'patrol') {
             // Default transport mission: fly 500 units forward, pause 5 seconds, return
             const forwardX = this.x + Math.cos(this.rotation) * 500;
             const forwardY = this.y + Math.sin(this.rotation) * 500;
@@ -1211,6 +1226,13 @@ class Ship extends Entity {
         }
 
         return {};
+    }
+
+    /**
+     * Get mission data for transport missions (legacy method)
+     */
+    getShuttleMissionData() {
+        return this.getShuttleMissionDataFor(this.selectedShuttleMission);
     }
 
     /**
