@@ -242,10 +242,14 @@ class Ship extends Entity {
         this.maxHp = this.getShipHp();
         this.hp = this.maxHp;
 
-        // Countermeasures
+        // Countermeasures (legacy - replaced by bay system)
         this.decoys = CONFIG.DECOY_COUNT;
         this.mines = CONFIG.MINE_COUNT;
         this.lastDeploymentTime = 0;
+
+        // Bay System
+        this.bayCapacity = this.getBayCapacity();
+        this.bayContents = this.initializeBayContents();
 
         // Shields
         this.shields = this.createShields();
@@ -421,6 +425,75 @@ class Ship extends Entity {
         }
 
         return rate;
+    }
+
+    getBayCapacity() {
+        switch (this.shipClass) {
+            case 'FG': return CONFIG.BAY_CAPACITY_FG;
+            case 'DD': return CONFIG.BAY_CAPACITY_DD;
+            case 'CL': return CONFIG.BAY_CAPACITY_CL;
+            case 'CA': return CONFIG.BAY_CAPACITY_CA;
+            case 'BC': return CONFIG.BAY_CAPACITY_BC;
+            default: return CONFIG.BAY_CAPACITY_CA;
+        }
+    }
+
+    initializeBayContents() {
+        // Default loadouts based on ship class
+        // Each item takes 1 space: shuttle, decoy, or mine
+        // For now, shuttles not implemented, so use decoys and mines
+        const contents = [];
+
+        switch (this.shipClass) {
+            case 'FG':
+                // 2 spaces: 1 Decoy + 1 Mine
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'mine' });
+                break;
+            case 'DD':
+                // 3 spaces: 2 Decoys + 1 Mine
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'mine' });
+                break;
+            case 'CL':
+                // 4 spaces: 2 Decoys + 2 Mines
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'mine' });
+                contents.push({ type: 'mine' });
+                break;
+            case 'CA':
+                // 6 spaces: 3 Decoys + 3 Mines
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'mine' });
+                contents.push({ type: 'mine' });
+                contents.push({ type: 'mine' });
+                break;
+            case 'BC':
+                // 8 spaces: 4 Decoys + 4 Mines
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'mine' });
+                contents.push({ type: 'mine' });
+                contents.push({ type: 'mine' });
+                contents.push({ type: 'mine' });
+                break;
+            default:
+                // Default CA loadout
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'mine' });
+                contents.push({ type: 'mine' });
+                contents.push({ type: 'mine' });
+        }
+
+        return contents;
     }
 
     getColor() {
@@ -1006,10 +1079,18 @@ class Ship extends Entity {
     deployDecoy() {
         const currentTime = performance.now() / 1000;
 
-        if (this.decoys <= 0) return null;
+        // Check bay contents for decoy
+        const decoyIndex = this.bayContents.findIndex(item => item.type === 'decoy');
+        if (decoyIndex === -1) return null; // No decoys in bay
+
         if (currentTime - this.lastDeploymentTime < CONFIG.DEPLOYMENT_COOLDOWN) return null;
 
-        this.decoys--;
+        // Remove decoy from bay
+        this.bayContents.splice(decoyIndex, 1);
+
+        // Update legacy counter for backward compatibility
+        this.decoys = this.bayContents.filter(item => item.type === 'decoy').length;
+
         this.lastDeploymentTime = currentTime;
 
         // Create decoy at ship position
@@ -1025,10 +1106,18 @@ class Ship extends Entity {
     deployMine() {
         const currentTime = performance.now() / 1000;
 
-        if (this.mines <= 0) return null;
+        // Check bay contents for mine
+        const mineIndex = this.bayContents.findIndex(item => item.type === 'mine');
+        if (mineIndex === -1) return null; // No mines in bay
+
         if (currentTime - this.lastDeploymentTime < CONFIG.DEPLOYMENT_COOLDOWN) return null;
 
-        this.mines--;
+        // Remove mine from bay
+        this.bayContents.splice(mineIndex, 1);
+
+        // Update legacy counter for backward compatibility
+        this.mines = this.bayContents.filter(item => item.type === 'mine').length;
+
         this.lastDeploymentTime = currentTime;
 
         // Create mine at ship position

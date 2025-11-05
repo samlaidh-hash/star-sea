@@ -170,9 +170,30 @@ class HUD {
 
         const decoyElement = document.getElementById('decoy-count');
         const mineElement = document.getElementById('mine-count');
+        const bayElement = document.getElementById('bay-status');
 
-        if (decoyElement) decoyElement.textContent = ship.decoys || 0;
-        if (mineElement) mineElement.textContent = ship.mines || 0;
+        // Count items in bay
+        const decoyCount = ship.bayContents ? ship.bayContents.filter(item => item.type === 'decoy').length : ship.decoys || 0;
+        const mineCount = ship.bayContents ? ship.bayContents.filter(item => item.type === 'mine').length : ship.mines || 0;
+        const shuttleCount = ship.bayContents ? ship.bayContents.filter(item => item.type === 'shuttle').length : 0;
+
+        if (decoyElement) decoyElement.textContent = decoyCount;
+        if (mineElement) mineElement.textContent = mineCount;
+
+        // Update bay status (if element exists)
+        if (bayElement && ship.bayContents && ship.bayCapacity) {
+            const bayUsed = ship.bayContents.length;
+            bayElement.textContent = `${bayUsed}/${ship.bayCapacity}`;
+
+            // Add color coding based on bay fullness
+            if (bayUsed === ship.bayCapacity) {
+                bayElement.style.color = '#ff4444'; // Red when full
+            } else if (bayUsed > ship.bayCapacity * 0.7) {
+                bayElement.style.color = '#ffaa44'; // Orange when mostly full
+            } else {
+                bayElement.style.color = '#44ff44'; // Green when space available
+            }
+        }
     }
 
     updateWarpCharge(ship) {
