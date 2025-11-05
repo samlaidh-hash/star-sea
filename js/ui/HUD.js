@@ -31,6 +31,9 @@ class HUD {
         // Update countermeasures
         this.updateCountermeasures(playerShip);
 
+        // Update shuttles
+        this.updateShuttles(playerShip);
+
         // Update warp charge
         this.updateWarpCharge(playerShip);
 
@@ -199,6 +202,53 @@ class HUD {
                 bayElement.style.color = '#ffaa44'; // Orange when mostly full
             } else {
                 bayElement.style.color = '#44ff44'; // Green when space available
+            }
+        }
+    }
+
+    updateShuttles(ship) {
+        if (!ship) return;
+
+        // Update selected mission
+        const missionElement = document.getElementById('shuttle-mission');
+        if (missionElement && ship.selectedShuttleMission) {
+            missionElement.textContent = ship.selectedShuttleMission.toUpperCase();
+        }
+
+        // Count shuttles in bay
+        const shuttleCount = ship.bayContents ? ship.bayContents.filter(item => item.type === 'shuttle').length : 0;
+        const activeCount = ship.activeShuttles ? ship.activeShuttles.length : 0;
+
+        const availableElement = document.getElementById('shuttle-available');
+        const activeElement = document.getElementById('shuttle-active');
+
+        if (availableElement) availableElement.textContent = shuttleCount;
+        if (activeElement) activeElement.textContent = activeCount;
+
+        // Update active shuttles display
+        const activeShuttlesDiv = document.getElementById('active-shuttles');
+        if (activeShuttlesDiv && ship.activeShuttles) {
+            activeShuttlesDiv.innerHTML = '';
+
+            for (const shuttle of ship.activeShuttles) {
+                if (!shuttle || !shuttle.active) continue;
+
+                const shuttleDiv = document.createElement('div');
+                shuttleDiv.className = 'active-shuttle';
+                shuttleDiv.style.fontSize = '10px';
+                shuttleDiv.style.padding = '2px 0';
+
+                const missionLabel = shuttle.missionType.toUpperCase();
+                const hpPercent = (shuttle.hp / shuttle.maxHp * 100).toFixed(0);
+                const shieldPercent = (shuttle.shields / shuttle.maxShields * 100).toFixed(0);
+
+                shuttleDiv.innerHTML = `
+                    <span style="color: #0cf">${missionLabel}</span> -
+                    HP: ${hpPercent}% |
+                    SHD: ${shieldPercent}%
+                `;
+
+                activeShuttlesDiv.appendChild(shuttleDiv);
             }
         }
     }

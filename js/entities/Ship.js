@@ -251,6 +251,11 @@ class Ship extends Entity {
         this.bayCapacity = this.getBayCapacity();
         this.bayContents = this.initializeBayContents();
 
+        // Shuttle System
+        this.selectedShuttleMission = 'attack'; // Current selected mission type
+        this.activeShuttles = []; // Tracking launched shuttles
+        this.shuttleMissionTypes = ['attack', 'defense', 'weasel', 'suicide', 'transport'];
+
         // Shields
         this.shields = this.createShields();
 
@@ -1125,6 +1130,93 @@ class Ship extends Entity {
         eventBus.emit('mine-deployed', { ship: this });
 
         return mine;
+    }
+
+    /**
+     * Cycle through shuttle mission types
+     */
+    cycleShuttleMission() {
+        const currentIndex = this.shuttleMissionTypes.indexOf(this.selectedShuttleMission);
+        const nextIndex = (currentIndex + 1) % this.shuttleMissionTypes.length;
+        this.selectedShuttleMission = this.shuttleMissionTypes[nextIndex];
+
+        // Emit event for HUD update
+        eventBus.emit('shuttle-mission-changed', { ship: this, missionType: this.selectedShuttleMission });
+    }
+
+    /**
+     * Launch shuttle on selected mission
+     */
+    launchShuttle() {
+        // Check if bay has a shuttle
+        const shuttleIndex = this.bayContents.findIndex(item => item.type === 'shuttle');
+        if (shuttleIndex === -1) {
+            // No shuttles in bay
+            if (CONFIG.DEBUG_MODE && this.isPlayer) {
+                console.log('No shuttles available in bay');
+            }
+            return null;
+        }
+
+        // Remove shuttle from bay
+        this.bayContents.splice(shuttleIndex, 1);
+
+        // Create shuttle entity
+        const shuttle = new Shuttle({
+            x: this.x,
+            y: this.y,
+            parentShip: this,
+            missionType: this.selectedShuttleMission,
+            missionData: this.getShuttleMissionData(),
+            faction: this.faction
+        });
+
+        // Track active shuttle
+        this.activeShuttles.push(shuttle);
+
+        // Emit event
+        eventBus.emit('shuttle-launched', { ship: this, shuttle: shuttle, missionType: this.selectedShuttleMission });
+
+        return shuttle;
+    }
+
+    /**
+     * Get mission data for transport missions
+     */
+    getShuttleMissionData() {
+        if (this.selectedShuttleMission === 'transport') {
+            // Default transport mission: fly 500 units forward, pause 5 seconds, return
+            const forwardX = this.x + Math.cos(this.rotation) * 500;
+            const forwardY = this.y + Math.sin(this.rotation) * 500;
+
+            return {
+                targetLocation: { x: forwardX, y: forwardY },
+                pauseDuration: 5
+            };
+        }
+
+        return {};
+    }
+
+    /**
+     * Recall all active shuttles
+     */
+    recallShuttles() {
+        for (const shuttle of this.activeShuttles) {
+            if (shuttle && shuttle.active) {
+                shuttle.recall();
+            }
+        }
+
+        // Emit event
+        eventBus.emit('shuttles-recalled', { ship: this, count: this.activeShuttles.length });
+    }
+
+    /**
+     * Clean up inactive shuttles from tracking
+     */
+    cleanupShuttles() {
+        this.activeShuttles = this.activeShuttles.filter(shuttle => shuttle && shuttle.active);
     }
 
     /**

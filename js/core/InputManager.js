@@ -12,6 +12,10 @@ class InputManager {
         this.spacebarPressTime = 0;
         this.spacebarReleased = true;
 
+        // M key handling for shuttle mission cycling and launch
+        this.mKeyPressTime = 0;
+        this.mKeyReleased = true;
+
         this.init();
     }
 
@@ -39,6 +43,17 @@ class InputManager {
             this.spacebarReleased = false;
         }
 
+        // Handle M key press timing for shuttle mission cycle/launch
+        if (e.key.toLowerCase() === 'm' && this.mKeyReleased) {
+            this.mKeyPressTime = performance.now();
+            this.mKeyReleased = false;
+        }
+
+        // Handle R key for shuttle recall
+        if (e.key.toLowerCase() === 'r') {
+            eventBus.emit('recall-shuttles');
+        }
+
         eventBus.emit('keydown', { key: e.key.toLowerCase(), event: e });
     }
 
@@ -54,6 +69,20 @@ class InputManager {
                 eventBus.emit('deploy-decoy');
             } else {
                 eventBus.emit('deploy-mine');
+            }
+        }
+
+        // Handle M key release for shuttle mission cycle vs launch
+        if (e.key.toLowerCase() === 'm') {
+            const pressDuration = performance.now() - this.mKeyPressTime;
+            this.mKeyReleased = true;
+
+            if (pressDuration < 500) {
+                // Tap: Cycle mission type
+                eventBus.emit('cycle-shuttle-mission');
+            } else {
+                // Long press: Launch shuttle
+                eventBus.emit('launch-shuttle');
             }
         }
 
