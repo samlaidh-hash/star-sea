@@ -74,27 +74,9 @@ class HUD {
 
         const beamWeapons = ship.getBeamWeapons();
         const torpedoLaunchers = ship.getTorpedoLaunchers();
-        const currentTime = performance.now() / 1000;
 
-        if (beamWeapons.length >= 1) {
-            const weapon = beamWeapons[0];
-            const cooldown = weapon.getCooldownPercentage ? weapon.getCooldownPercentage(currentTime) : 1.0;
-            this.updateBar('beam-forward', cooldown);
-            this.updateWeaponHP('beam-forward', weapon.hp, weapon.maxHp);
-        } else {
-            this.updateBar('beam-forward', 0);
-            this.updateWeaponHP('beam-forward', null, null);
-        }
-
-        if (beamWeapons.length >= 2) {
-            const weapon = beamWeapons[1];
-            const cooldown = weapon.getCooldownPercentage ? weapon.getCooldownPercentage(currentTime) : 1.0;
-            this.updateBar('beam-aft', cooldown);
-            this.updateWeaponHP('beam-aft', weapon.hp, weapon.maxHp);
-        } else {
-            this.updateBar('beam-aft', 0);
-            this.updateWeaponHP('beam-aft', null, null);
-        }
+        // Weapon HP is now shown in systems block, not here
+        // Just update torpedo counts in the weapon info section
 
         const forwardLauncher = this.findLauncherForArc(torpedoLaunchers, 0);
         let aftLauncher = this.findLauncherForArc(torpedoLaunchers, 180, forwardLauncher);
@@ -104,25 +86,15 @@ class HUD {
         }
 
         this.updateTorpedoCount(
-            'torp-forward',
+            'torp-forward-count',
             forwardLauncher ? forwardLauncher.getLoadedCount() : null,
             forwardLauncher ? forwardLauncher.getStoredCount() : null
         );
-        this.updateWeaponHP(
-            'torp-forward',
-            forwardLauncher ? forwardLauncher.hp : null,
-            forwardLauncher ? forwardLauncher.maxHp : null
-        );
 
         this.updateTorpedoCount(
-            'torp-aft',
+            'torp-aft-count',
             aftLauncher ? aftLauncher.getLoadedCount() : null,
             aftLauncher ? aftLauncher.getStoredCount() : null
-        );
-        this.updateWeaponHP(
-            'torp-aft',
-            aftLauncher ? aftLauncher.hp : null,
-            aftLauncher ? aftLauncher.maxHp : null
         );
     }
 
@@ -163,6 +135,41 @@ class HUD {
         this.updateSystemHP('cnc', ship.systems.cnc.hp, ship.systems.cnc.maxHp);
         this.updateSystemHP('bay', ship.systems.bay.hp, ship.systems.bay.maxHp);
         this.updateSystemHP('power', ship.systems.power.hp, ship.systems.power.maxHp);
+
+        // Update weapon HP bars (now in systems section)
+        const beamWeapons = ship.getBeamWeapons ? ship.getBeamWeapons() : [];
+        const torpedoLaunchers = ship.getTorpedoLaunchers ? ship.getTorpedoLaunchers() : [];
+
+        if (beamWeapons.length >= 1) {
+            this.updateSystemHP('beam-forward', beamWeapons[0].hp, beamWeapons[0].maxHp);
+        } else {
+            this.updateSystemHP('beam-forward', 0, 1);
+        }
+
+        if (beamWeapons.length >= 2) {
+            this.updateSystemHP('beam-aft', beamWeapons[1].hp, beamWeapons[1].maxHp);
+        } else {
+            this.updateSystemHP('beam-aft', 0, 1);
+        }
+
+        const forwardLauncher = this.findLauncherForArc(torpedoLaunchers, 0);
+        let aftLauncher = this.findLauncherForArc(torpedoLaunchers, 180, forwardLauncher);
+
+        if (!aftLauncher && forwardLauncher && this.weaponCoversArc(forwardLauncher, 180)) {
+            aftLauncher = forwardLauncher;
+        }
+
+        if (forwardLauncher) {
+            this.updateSystemHP('torp-forward', forwardLauncher.hp, forwardLauncher.maxHp);
+        } else {
+            this.updateSystemHP('torp-forward', 0, 1);
+        }
+
+        if (aftLauncher) {
+            this.updateSystemHP('torp-aft', aftLauncher.hp, aftLauncher.maxHp);
+        } else {
+            this.updateSystemHP('torp-aft', 0, 1);
+        }
     }
 
     updateCountermeasures(ship) {
@@ -241,7 +248,7 @@ class HUD {
     }
 
     updateTorpedoCount(elementId, loaded, stored) {
-        const element = document.querySelector(`#${elementId} .torp-count`);
+        const element = document.getElementById(elementId);
         if (element) {
             if (loaded === null || loaded === undefined || stored === null || stored === undefined) {
                 element.textContent = "--/--";

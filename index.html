@@ -42,37 +42,17 @@
                 </div>
             </div>
 
-            <!-- Weapons -->
+            <!-- Weapons (Simplified - charge status shown on ship graphics) -->
             <div class="system-group">
-                <div class="system-label">Weapons</div>
+                <div class="system-label">Weapons Info</div>
                 <div id="weapon-status">
-                    <div class="weapon-item" data-weapon="beam-forward">
-                        <div class="weapon-bar" id="beam-forward">
-                            <span class="weapon-label">FWD BEAM</span>
-                            <div class="bar-fill"></div>
-                        </div>
-                        <div class="weapon-hp">HP: <span class="hp">4/4</span></div>
+                    <div class="weapon-info" data-weapon="torp-forward">
+                        <span class="weapon-label">FWD TORP:</span>
+                        <span class="torp-count" id="torp-forward-count">4/20</span>
                     </div>
-                    <div class="weapon-item" data-weapon="beam-aft">
-                        <div class="weapon-bar" id="beam-aft">
-                            <span class="weapon-label">AFT BEAM</span>
-                            <div class="bar-fill"></div>
-                        </div>
-                        <div class="weapon-hp">HP: <span class="hp">4/4</span></div>
-                    </div>
-                    <div class="weapon-item" data-weapon="torp-forward">
-                        <div class="weapon-bar" id="torp-forward">
-                            <span class="weapon-label">FWD TORP</span>
-                            <span class="torp-count">4/20</span>
-                        </div>
-                        <div class="weapon-hp">HP: <span class="hp">4/4</span></div>
-                    </div>
-                    <div class="weapon-item" data-weapon="torp-aft">
-                        <div class="weapon-bar" id="torp-aft">
-                            <span class="weapon-label">AFT TORP</span>
-                            <span class="torp-count">4/20</span>
-                        </div>
-                        <div class="weapon-hp">HP: <span class="hp">4/4</span></div>
+                    <div class="weapon-info" data-weapon="torp-aft">
+                        <span class="weapon-label">AFT TORP:</span>
+                        <span class="torp-count" id="torp-aft-count">4/20</span>
                     </div>
                 </div>
             </div>
@@ -111,6 +91,23 @@
                     </div>
                     <div class="system-item" data-system="power">
                         <span class="system-name">Power</span>
+                        <div class="system-hp-bar"><div class="hp-fill"></div></div>
+                    </div>
+                    <!-- Weapon HP Bars -->
+                    <div class="system-item" data-system="beam-forward">
+                        <span class="system-name">Fwd Beam</span>
+                        <div class="system-hp-bar"><div class="hp-fill"></div></div>
+                    </div>
+                    <div class="system-item" data-system="beam-aft">
+                        <span class="system-name">Aft Beam</span>
+                        <div class="system-hp-bar"><div class="hp-fill"></div></div>
+                    </div>
+                    <div class="system-item" data-system="torp-forward">
+                        <span class="system-name">Fwd Torp</span>
+                        <div class="system-hp-bar"><div class="hp-fill"></div></div>
+                    </div>
+                    <div class="system-item" data-system="torp-aft">
+                        <span class="system-name">Aft Torp</span>
                         <div class="system-hp-bar"><div class="hp-fill"></div></div>
                     </div>
                 </div>
