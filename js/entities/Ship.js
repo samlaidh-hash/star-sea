@@ -262,6 +262,9 @@ class Ship extends Entity {
         // Internal Systems (create before weapons so we can link them)
         this.systems = this.createSystems();
 
+        // Tractor Beam System
+        this.tractorBeam = new TractorBeam(this);
+
         // Weapons (created after systems so we can link them)
         this.weapons = this.createWeapons();
 
@@ -921,6 +924,14 @@ class Ship extends Entity {
             this.maxSpeed = this.getMaxSpeed() * this.systems.getSpeedMultiplier();
             this.turnRate = this.getTurnRate() * this.systems.getTurnRateMultiplier();
         }
+
+        // Update tractor beam (requires entities from Engine)
+        // Note: tractor beam is updated from Engine.js where entities list is available
+
+        // Apply tractor beam penalties to ship stats
+        if (this.tractorBeam && this.tractorBeam.isActive()) {
+            this.maxSpeed *= this.tractorBeam.getSpeedMultiplier();
+        }
     }
 
     /**
@@ -974,6 +985,10 @@ class Ship extends Entity {
                 if (weapon.isInArc(targetAngle, this.rotation)) {
                     const projectile = weapon.fire(this, targetX, targetY, currentTime);
                     if (projectile) {
+                        // Apply tractor beam penalty to beam damage
+                        if (this.tractorBeam && this.tractorBeam.isActive()) {
+                            projectile.damage *= this.tractorBeam.getBeamMultiplier();
+                        }
                         projectiles.push(projectile);
                     }
                 }

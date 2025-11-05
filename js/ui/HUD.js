@@ -173,6 +173,47 @@ class HUD {
         } else {
             this.updateSystemHP('torp-aft', 0, 1);
         }
+
+        // Update tractor beam status
+        this.updateTractorBeam(ship);
+    }
+
+    updateTractorBeam(ship) {
+        if (!ship || !ship.tractorBeam) return;
+
+        const statusElement = document.getElementById('tractor-status');
+        const targetElement = document.getElementById('tractor-target');
+
+        if (statusElement) {
+            const isActive = ship.tractorBeam.isActive();
+            const isLocked = ship.tractorBeam.isLocked();
+
+            if (isActive) {
+                if (isLocked) {
+                    statusElement.textContent = 'LOCKED';
+                    statusElement.style.color = '#00ffff';
+                } else {
+                    statusElement.textContent = 'LOCKING...';
+                    statusElement.style.color = '#ffff00';
+                }
+            } else {
+                statusElement.textContent = 'OFFLINE';
+                statusElement.style.color = '#666';
+            }
+        }
+
+        if (targetElement) {
+            const target = ship.tractorBeam.getTarget();
+            if (target) {
+                const targetType = target.type || 'UNKNOWN';
+                const distance = Math.round(MathUtils.distance(ship.x, ship.y, target.x, target.y));
+                targetElement.textContent = `${targetType.toUpperCase()} (${distance}m)`;
+                targetElement.style.color = '#0cf';
+            } else {
+                targetElement.textContent = 'NO TARGET';
+                targetElement.style.color = '#666';
+            }
+        }
     }
 
     updateCountermeasures(ship) {

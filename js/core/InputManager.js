@@ -54,6 +54,11 @@ class InputManager {
             eventBus.emit('recall-shuttles');
         }
 
+        // Handle Q key for tractor beam toggle
+        if (e.key.toLowerCase() === 'q') {
+            eventBus.emit('toggle-tractor-beam');
+        }
+
         eventBus.emit('keydown', { key: e.key.toLowerCase(), event: e });
     }
 

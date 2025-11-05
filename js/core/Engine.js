@@ -438,6 +438,13 @@ class Engine {
             this.playerShip.recallShuttles();
         });
 
+        // Tractor beam control events
+        eventBus.on('toggle-tractor-beam', () => {
+            if (!this.stateManager.isPlaying() || !this.playerShip) return;
+
+            this.playerShip.tractorBeam.toggle();
+        });
+
         // Lock-on events for reticle visuals
         eventBus.on('lock-acquired', (data) => {
             const reticle = document.getElementById('reticle');
@@ -1046,6 +1053,12 @@ class Engine {
             }
         }
 
+        // Update tractor beam (requires entities list)
+        if (this.playerShip && this.playerShip.tractorBeam) {
+            const pushMode = this.inputManager.isKeyDown('shift');
+            this.playerShip.tractorBeam.update(deltaTime, this.entities, pushMode);
+        }
+
         // Create engine trails for moving ships (throttled for performance)
         this.trailFrameCounter++;
         if (this.trailFrameCounter >= 3) { // Only create trails every 3rd frame
@@ -1419,7 +1432,7 @@ class Engine {
         const warpProgress = this.warpingOut ? (this.warpSequenceTime / this.warpSequenceDuration) : 0;
 
         // Render game world
-        this.renderer.render(this.entities, warpProgress);
+        this.renderer.render(this.entities, warpProgress, this.playerShip);
 
         // Render particle effects
         this.particleSystem.render(this.ctx, this.camera);
