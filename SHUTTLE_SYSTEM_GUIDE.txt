@@ -1,0 +1,1395 @@
+================================================================================
+                         STAR SEA - SHUTTLE SYSTEM GUIDE
+                    Comprehensive Documentation v1.0
+================================================================================
+
+TABLE OF CONTENTS
+================================================================================
+  1. CRAFT TYPES & STATISTICS
+  2. MISSION TYPES & DESCRIPTIONS
+  3. CONTROL SCHEME & KEY BINDINGS
+  4. CONSUMABLE QUANTITIES BY SHIP CLASS
+  5. SPECIAL MECHANICS
+     5.1 Jamming System
+     5.2 Probe Sensor Extension
+     5.3 Ping System
+  6. TACTICAL GAMEPLAY TIPS
+  7. QUICK REFERENCE CHART
+
+
+================================================================================
+1. CRAFT TYPES & STATISTICS
+================================================================================
+
+All five craft types operate from your ship's bay system. Each has unique stats,
+roles, and mission capabilities. Larger ships carry more craft due to greater
+bay capacity.
+
+
+--- SHUTTLE (5 Mission Types Available) ---
+
+Role: Multi-purpose support craft with diverse mission capabilities
+Launch Key: 1-6 (Press once to select mission, press again to launch)
+Bay Space Cost: 1 space per shuttle
+Maximum Speed: 50% of player ship speed
+Acceleration: 50% of player ship speed
+Turn Rate: 150% of player ship speed (more maneuverable)
+
+Hull Points: 2 HP (Fragile)
+Shield Strength: 3 points (Weak shields)
+Beam Range: 20% of ship beam range
+Beam Damage: 1 point (Light weapons)
+
+Visual Identifier: Color changes by mission type (Red=ATTACK, Blue=DEFENSE, etc.)
+Special Ability: Can land on player ship to repair when damaged (1 HP per minute)
+
+Best For:
+- Attacking isolated targets
+- Defending against fighter/torpedo threats
+- Luring enemy fire away from main ship
+- Scanning distant locations
+- Transporting cargo or personnel
+
+
+--- FIGHTER (3 Mission Types Available) ---
+
+Role: Fast attack interceptor with anti-craft focus
+Launch Key: CTRL + 1-6 (Hold CTRL, press 1-6 to select/launch)
+Bay Space Cost: 1 space per fighter
+Maximum Speed: 80% of player ship speed
+Acceleration: 120% of player ship speed (responds quickly)
+Turn Rate: 200% of player ship speed (extremely nimble)
+
+Hull Points: 1 HP (Glass cannon)
+Shield Strength: 1 point (Minimal protection)
+Beam Range: 30% of ship beam range
+Beam Damage: 0.5 points (Light damage, fast fire rate: 0.5s cooldown)
+
+Visual Identifier: Small sleek blue fighter shape
+Color by Faction:
+  - Federation: Bright Blue (#4444ff)
+  - Trigon: Red (#ff4444)
+  - Scintilian: Bright Green (#44ff44)
+  - Pirate: Dark Orange (#ffaa44)
+
+Best For:
+- Quick strikes against enemy fighters
+- Rapid interception of incoming threats
+- Reconnaissance and forward scouting
+- Swarm tactics (3+ fighters together)
+
+Rock-Paper-Scissors: BEATS Shuttles, LOSES to Bombers
+
+
+--- BOMBER (3 Mission Types Available) ---
+
+Role: Heavy assault craft with torpedo capability
+Launch Key: ALT + 1-6 (Hold ALT, press 1-6 to select/launch)
+Bay Space Cost: 2 spaces per bomber (requires more cargo room)
+Maximum Speed: 40% of player ship speed (slow and deliberate)
+Acceleration: 60% of player ship speed
+Turn Rate: 120% of player ship speed (heavy, ungainly)
+
+Hull Points: 3 HP (Heavy armor)
+Shield Strength: 2 points (Moderate protection)
+Beam Range: 40% of ship beam range
+Beam Damage: 1.0 points (Full power, 1.0s cooldown)
+Torpedo Capability: YES - fires torpedoes at 3.0s cooldown
+Torpedo Range: 200 pixels
+Torpedo Damage: 2.0 points per torpedo
+
+Visual Identifier: Bulky craft with large wings, darker blue shade
+Color by Faction:
+  - Federation: Darker Blue (#6666ff)
+  - Trigon: Darker Red (#ff6666)
+  - Scintilian: Darker Green (#66ff66)
+  - Pirate: Pale Orange (#ffcc66)
+
+Best For:
+- Breaking enemy formations
+- Sustained fire support
+- Destroying larger targets (like other bombers)
+- Cover fire while main ship maneuvers
+
+Rock-Paper-Scissors: BEATS Bombers and Shuttles, LOSES to Fighters
+
+
+--- DRONE (3 Mission Types Available) ---
+
+Role: Trigon faction electronic warfare specialist
+Launch Key: SHIFT + 1-6 (Hold SHIFT, press 1-6 to select/launch)
+Bay Space Cost: 1 space per drone
+Maximum Speed: 90% of player ship speed (fastest light craft)
+Acceleration: 130% of player ship speed (very responsive)
+Turn Rate: 180% of player ship speed (highly maneuverable)
+
+Hull Points: 1 HP (Extremely fragile)
+Shield Strength: 2 points (Surprising durability for light craft)
+Beam Range: 25% of ship beam range
+Beam Damage: 0.5 points
+Beam Cooldown: 0.5s (Very rapid fire)
+
+Visual Identifier: Small hexagonal shape, orange/red coloring
+Special Color by Faction:
+  - Trigon: Bright Orange (#ff6600)
+  - Federation: Cyan (#00aaff)
+  - Scintilian: Lime Green (#88ff44)
+  - Pirate: Dark Orange (#cc6600)
+
+SPECIAL ABILITY: BEAM JAMMING
+When a drone fires and hits an enemy ship:
+- Adds 0.3 seconds to target ship's beam weapon cooldown
+- Effect stacks: Multiple hits = More cooldown delays
+- Effective for disrupting enemy fire patterns
+
+Best For:
+- Disrupting enemy beam weapons through jamming
+- Harassing enemy fighters
+- Quick hit-and-fade tactics
+- Electronic warfare support
+
+
+--- PROBE (Sensor-Only, No Combat) ---
+
+Role: Unmanned reconnaissance and sensor extension unit
+Launch Key: L (Point reticle at target location and press L)
+Bay Space Cost: 1 space per probe
+Maximum Speed: 100% of player ship speed (matches ship speed)
+Acceleration: 150% of player ship speed
+Turn Rate: 200% of player ship speed
+
+Hull Points: 1 HP (Extremely fragile - destroyed by any hit)
+Shield Strength: 0 points (No shields)
+Weapon Capability: NONE - cannot attack
+
+Visual Identifier: Small cyan diamond shape
+Color: Cyan (#00ffff) - distinctive sensor signature
+
+Special Properties:
+- Cannot be destroyed by your own weapons
+- Extends your ship's sensor range along its flight path
+- Tracks objects it passes near for mission victory conditions
+- Self-destructs after 10 seconds of flying past target
+- Useful for revealing hidden enemy positions
+
+Best For:
+- Scanning distant locations before main ship arrives
+- Revealing hidden enemy bases or fleet positions
+- Triggering mission objectives (proximity victories)
+- Low-risk reconnaissance (costs only 1 bay space)
+
+
+================================================================================
+2. MISSION TYPES & DESCRIPTIONS
+================================================================================
+
+Each craft type supports different mission types. Select and launch using the
+key bindings described in Section 3.
+
+
+--- MISSION TYPE: ATTACK ---
+
+Available For: Shuttles, Fighters, Bombers, Drones
+
+Description:
+The craft hunts and destroys the nearest enemy ship. It will pursue targets
+across the map, using all available weapons (beams for all, torpedoes for
+bombers). Drones will use their jamming ability when attacking.
+
+Behavior:
+1. Scan for nearest enemy ship within detection range
+2. Intercept and close distance
+3. Open fire when target enters weapon range
+4. Return to patrol around player ship if no enemies found
+
+Tactical Notes:
+- First press of mission key = Select ATTACK mission
+- Second press of mission key = Launch craft with ATTACK mission
+- Craft will stay in combat until target destroyed or they take heavy damage
+- For drones: Each hit jams target's beams for 0.3s
+
+Best Scenarios:
+- One-on-one duels with enemy fighters/bombers
+- Softening up stronger enemies before main ship engages
+- Clearing smaller targets away from battle area
+
+
+--- MISSION TYPE: DEFENSE ---
+
+Available For: Shuttles, Fighters, Bombers, Drones
+
+Description:
+The craft orbits your ship and intercepts incoming threats. It will attack
+enemy ships, torpedoes, and other hostile craft that come within its patrol
+radius. Prioritizes multiple threats intelligently.
+
+Behavior (by craft type):
+Shuttle:   Patrols 100-150 pixel radius, intercepts torpedoes and shuttles
+Fighter:   Orbits 100 pixel radius, intercepts torpedoes and nearby ships
+Bomber:    Heavy patrol 150 pixel radius, prioritizes torpedoes then ships
+Drone:     Tight orbit 70 pixel radius, intercepts torpedoes and fighters
+
+Threat Priority:
+1. Enemy Torpedoes (highest priority)
+2. Enemy Shuttles/Fighters/Drones (medium priority)
+3. Enemy Ships within defense radius (low priority)
+
+Tactical Notes:
+- Multiple DEFENSE craft create a screen around your ship
+- Bombers best for stopping large targets
+- Fighters best for torpedo interception
+- Drones jam enemy beams while defending
+
+Best Scenarios:
+- When heavily outnumbered
+- To protect ship during vulnerable maneuvers
+- Against torpedo-heavy enemies
+- To create a defensive umbrella during fleet engagement
+
+
+--- MISSION TYPE: WILD_WEASEL ---
+
+Available For: Shuttles, Drones (Not available for Fighters/Bombers)
+
+Description:
+The craft flies away from your ship at high speed while emitting signals
+that attract enemy torpedoes. Acts as a decoy/distraction to reduce enemy
+fire on your main ship.
+
+Behavior:
+1. Accelerate away from player ship in its current facing direction
+2. Emit strong electronic signals every 0.5 seconds
+3. Redirect nearby torpedoes to lock onto drone instead of ship
+4. Maintain distance to stay alive while drawing fire
+
+Tactical Notes:
+- Expendable role - craft will likely be destroyed
+- Best used when expecting heavy torpedo attacks
+- Shuttles have more HP (2) so last longer than drones (1)
+- Enemy torpedoes locked onto wild weasel leave main ship undefended
+- Multiple wild weasels can overload enemy targeting systems
+
+Best Scenarios:
+- Pre-battle before heavy missile barrage
+- Emergency use when getting hammered by torpedoes
+- Multi-ship battles with coordinated enemy fire
+
+
+--- MISSION TYPE: SUICIDE (Kamikaze) ---
+
+Available For: Shuttles, Bombers (Only these two can perform ramming attacks)
+
+Description:
+The craft charges at the nearest enemy at maximum speed and rams them,
+exploding with significant force. On impact, produces 2 heavy torpedoes
+worth of explosive damage.
+
+Behavior:
+1. Locate nearest enemy ship
+2. Accelerate to 150% normal thrust (maximum speed boost)
+3. Ram target at high velocity
+4. Detonate: Explodes as 2 Heavy Torpedoes (4 damage total)
+5. Self-destructs
+
+Tactical Notes:
+- Craft is lost after impact (intentional)
+- Creates 2 Heavy Torpedoes with lock-on capability
+- Heavy explosive damage to target (equivalent to 2x torpedo hits)
+- Best used against heavily armored targets
+- Bomber suicide: More effective due to larger payload
+
+Best Scenarios:
+- Emergency strike against high-priority target
+- Finishing damaged enemies without using ship resources
+- Breaking through enemy formations
+- Last-ditch effort when ship is losing badly
+
+
+--- MISSION TYPE: SCAN ---
+
+Available For: Shuttles (Only mission type)
+
+Description:
+The shuttle flies to a designated scan location and performs a deep sensor
+scan of the area. Reveals all hidden objects, enemy positions, and mission
+objectives within the scan zone.
+
+Behavior:
+1. Fly to designated target location (selected by player reticle position)
+2. Once within 50 pixels of target, begin scanning
+3. Scan takes 10 seconds to complete
+4. After scan complete, return to player ship automatically
+5. Land on player ship to be recovered
+
+Tactical Notes:
+- Scan radius: Approximately 100 pixels around shuttle position
+- Reveals cloaked ships in scan zone (Scintilian faction)
+- Shows hidden enemies/objectives on HUD
+- Does NOT engage in combat during scan
+- Shuttle may be attacked while scanning (needs DEFENSE cover)
+
+Best Scenarios:
+- Revealing enemy fleet positions before engagement
+- Finding hidden objectives for mission victories
+- Locating cloaked enemy ships
+- Reducing uncertainty in tactical situations
+
+
+--- MISSION TYPE: TRANSPORT ---
+
+Available For: Shuttles (Only mission type)
+
+Description:
+The shuttle carries cargo/personnel to a designated location, waits, and
+returns. Used for mission objectives like delivering supplies, evacuating
+personnel, or establishing remote positions.
+
+Behavior:
+1. Fly to designated target location (shown on map)
+2. Upon arrival (within 50 pixels), begin cargo transfer (5 seconds)
+3. After transfer complete, return to player ship
+4. Land on player ship to complete mission
+
+Tactical Notes:
+- Transport is vulnerable during cargo transfer phase
+- Consider DEFENSE escort if hostile forces nearby
+- May not always be selectable (depends on mission objectives)
+- Complete transport mission = Objective progress toward mission win
+
+Best Scenarios:
+- Completing mission objectives
+- Evacuating survivors
+- Establishing supply depots
+- Coordination with allied forces
+
+
+================================================================================
+3. CONTROL SCHEME & KEY BINDINGS
+================================================================================
+
+The craft launch system uses a two-step key binding scheme:
+1. First press = Cycle through available missions for that craft type
+2. Second press = Launch craft with selected mission
+
+All craft share the bay system but are accessed via different key combinations.
+
+
+--- SHUTTLE LAUNCHES (Keys 1-6) ---
+
+Press 1-6 alone (no modifiers):
+  Key 1: Shuttle from Bay Slot 1 - Cycle/Launch ATTACK mission
+  Key 2: Shuttle from Bay Slot 2 - Cycle/Launch DEFENSE mission
+  Key 3: Shuttle from Bay Slot 3 - Cycle/Launch WILD_WEASEL mission
+  Key 4: Shuttle from Bay Slot 4 - Cycle/Launch SUICIDE mission
+  Key 5: Shuttle from Bay Slot 5 - Cycle/Launch SCAN mission
+  Key 6: Shuttle from Bay Slot 6 - Cycle/Launch TRANSPORT mission
+
+Available Missions: [ATTACK, DEFENSE, WILD_WEASEL, SUICIDE, SCAN, TRANSPORT]
+(Six missions - perfect for 6 keyboard slots)
+
+Examples:
+  Press 1 → Console: "Shuttle 1: Mission set to ATTACK (press again to launch)"
+  Press 1 → Console: "Launched Shuttle with ATTACK mission from slot 1"
+  Press 2 → Console: "Shuttle 2: Mission set to DEFENSE (press again to launch)"
+  Press 2 → Console: "Launched Shuttle with DEFENSE mission from slot 2"
+
+
+--- FIGHTER LAUNCHES (CTRL + 1-6) ---
+
+Hold Ctrl, then press 1-6:
+  CTRL+1: Fighter from Bay Slot 1 - Cycle/Launch first mission type
+  CTRL+2: Fighter from Bay Slot 2 - Cycle/Launch second mission type
+  CTRL+3: Fighter from Bay Slot 3 - Cycle/Launch third mission type
+  CTRL+4: Fighter from Bay Slot 4 - (Cycles through all 3 again)
+  CTRL+5: Fighter from Bay Slot 5 - (Cycles through all 3 again)
+  CTRL+6: Fighter from Bay Slot 6 - (Cycles through all 3 again)
+
+Available Missions: [ATTACK, DEFENSE, SCAN]
+(Three missions - cycles through for slots 4-6)
+
+Examples:
+  CTRL+1 → Console: "Fighter 1: Mission set to ATTACK (press again to launch)"
+  CTRL+1 → Console: "Launched Fighter with ATTACK mission from slot 1"
+  CTRL+4 → Console: "Fighter 4: Mission set to ATTACK (press again to launch)"
+  CTRL+4 → Console: "Fighter 4: Mission set to DEFENSE (press again to launch)"
+  CTRL+4 → Console: "Fighter 4: Mission set to SCAN (press again to launch)"
+
+
+--- BOMBER LAUNCHES (ALT + 1-6) ---
+
+Hold Alt, then press 1-6:
+  ALT+1: Bomber from Bay Slot 1 - Cycle/Launch first mission type
+  ALT+2: Bomber from Bay Slot 2 - Cycle/Launch second mission type
+  ALT+3: Bomber from Bay Slot 3 - Cycle/Launch third mission type
+  ALT+4: Bomber from Bay Slot 4 - (Cycles through all 3 again)
+  ALT+5: Bomber from Bay Slot 5 - (Cycles through all 3 again)
+  ALT+6: Bomber from Bay Slot 6 - (Cycles through all 3 again)
+
+Available Missions: [ATTACK, DEFENSE, SUICIDE]
+(Three missions - cycles through for slots 4-6)
+
+IMPORTANT: Bombers cost 2 bay spaces each! Only 2-3 bombers per ship.
+
+Examples:
+  ALT+1 → Console: "Bomber 1: Mission set to ATTACK (press again to launch)"
+  ALT+1 → Console: "Launched Bomber with ATTACK mission from slot 1"
+
+
+--- DRONE LAUNCHES (SHIFT + 1-6) ---
+
+Hold Shift, then press 1-6:
+  SHIFT+1: Drone from Bay Slot 1 - Cycle/Launch first mission type
+  SHIFT+2: Drone from Bay Slot 2 - Cycle/Launch second mission type
+  SHIFT+3: Drone from Bay Slot 3 - Cycle/Launch third mission type
+  SHIFT+4: Drone from Bay Slot 4 - (Cycles through all 3 again)
+  SHIFT+5: Drone from Bay Slot 5 - (Cycles through all 3 again)
+  SHIFT+6: Drone from Bay Slot 6 - (Cycles through all 3 again)
+
+Available Missions: [ATTACK, DEFENSE, WILD_WEASEL]
+(Three missions - cycles through for slots 4-6)
+
+Only available if your faction is Trigon or has drone support.
+
+Examples:
+  SHIFT+1 → Console: "Drone 1: Mission set to ATTACK (press again to launch)"
+  SHIFT+1 → Console: "Launched Drone with ATTACK mission from slot 1"
+
+
+--- SPECIAL CRAFT LAUNCHES ---
+
+PROBE LAUNCH: L key
+  Press L while pointing reticle at target location
+  → Launches probe toward mouse cursor position
+  → Probe extends sensor coverage along flight path
+  → Self-destructs after 10 seconds past target
+
+Usage:
+  1. Point mouse at location to scan
+  2. Press L
+  3. Console: "Launched probe towards reticle"
+
+FIGHTERS: 7 key (Legacy binding, may be deprecated)
+  7: Launch Fighter (Alternative binding)
+
+BOMBERS: 8 key (Legacy binding, may be deprecated)
+  8: Launch Bomber (Alternative binding)
+
+
+--- OTHER KEY BINDINGS (Relevant Context) ---
+
+MOVEMENT CONTROLS:
+  W: Increase throttle by 10%
+  S: Decrease throttle by 10%
+  A: Turn left (Strafe forward-left with double-tap for boost)
+  D: Turn right (Strafe forward-right with double-tap for boost)
+  X: Emergency Stop (Full stop + shield boost)
+  Double-Tap W/A/S/D: Activate throttle boost (+speed for 5 seconds)
+
+WEAPONS:
+  LMB (Left Mouse): Hold to fire beams
+  RMB (Right Mouse): Hold to charge/fire torpedoes
+  R: Cycle torpedo type (Standard/Quantum/Gravity/Plasma)
+  F: Lock onto target (TAB cycles through targets)
+
+DEFENSES:
+  C: Deploy decoy
+  M: Deploy standard mine
+  SHIFT+M: Deploy Captor mine (captures targets temporarily)
+  ALT+M: Deploy Phaser mine (damages systems)
+  CTRL+M: Deploy Transporter mine (teleports targets)
+  I: Deploy Interceptor missile
+
+ADVANCED SYSTEMS:
+  Q: Toggle Tractor Beam
+  T: Toggle Transporter
+  V: Initiate Warp (when fully charged)
+  TAB: Cycle through available targets
+  P: Activate Ping system (see Section 5.3)
+  SPACE: Charge/deploy mine OR Warp Out (context-dependent)
+
+UI/MENU:
+  ESC: Pause menu
+
+
+================================================================================
+4. CONSUMABLE QUANTITIES BY SHIP CLASS
+================================================================================
+
+Consumables provide temporary bonuses during missions. Quantities vary by
+ship class (larger ships carry more supplies). Consumables are restored
+automatically between missions.
+
+CONSUMABLE TYPES:
+
+1. Extra Torpedoes
+   - Adds 10 torpedoes to your torpedo storage
+   - Key: F1
+   - Useful for prolonged engagements
+
+2. Extra Decoys
+   - Adds 3 decoys to your countermeasure supply
+   - Key: F2
+   - Helps escape from lock-on weapons
+
+3. Extra Mines
+   - Adds 3 standard mines to your mine supply
+   - Key: F3
+   - Useful for area denial and ambushes
+
+4. Shield Boost
+   - Instantly restores 20% of maximum shield strength to all quadrants
+   - Key: F4
+   - Emergency defense when under heavy fire
+
+5. Hull Repair Kit
+   - Instantly repairs 50 HP to your ship's hull
+   - Key: F5
+   - Critical for survival in extended battles
+
+6. Energy Cells
+   - Increases beam weapon damage by 20% for 60 seconds
+   - Key: F6
+   - Offensive boost for damage spike
+
+CONSUMABLE LOADOUTS BY SHIP CLASS:
+
+Frigate (FG):
+  Extra Torpedoes:  1 unit available
+  Extra Decoys:     1 unit available
+  Extra Mines:      1 unit available
+  Shield Boost:     0 units available
+  Hull Repair Kit:  1 unit available
+  Energy Cells:     0 units available
+  ---
+  Total Slots Used: 4/2 bay space (only consumables, no craft)
+
+Destroyer (DD):
+  Extra Torpedoes:  2 units available
+  Extra Decoys:     2 units available
+  Extra Mines:      1 unit available
+  Shield Boost:     1 unit available
+  Hull Repair Kit:  1 unit available
+  Energy Cells:     1 unit available
+  ---
+  Total Slots Used: 8/3 bay space (balanced with 1 shuttle)
+
+Light Cruiser (CL):
+  Extra Torpedoes:  2 units available
+  Extra Decoys:     2 units available
+  Extra Mines:      2 units available
+  Shield Boost:     1 unit available
+  Hull Repair Kit:  2 units available
+  Energy Cells:     1 unit available
+  ---
+  Total Slots Used: 10/4 bay space (balanced with 1 shuttle + 1 fighter)
+
+Strike Cruiser (CS):
+  Extra Torpedoes:  3 units available
+  Extra Decoys:     2 units available
+  Extra Mines:      2 units available
+  Shield Boost:     1 unit available
+  Hull Repair Kit:  2 units available
+  Energy Cells:     2 units available
+  ---
+  Total Slots Used: 12/5 bay space (balanced with craft)
+
+Heavy Cruiser (CA) - STANDARD FLAGSHIP:
+  Extra Torpedoes:  3 units available
+  Extra Decoys:     3 units available
+  Extra Mines:      2 units available
+  Shield Boost:     2 units available
+  Hull Repair Kit:  2 units available
+  Energy Cells:     2 units available
+  ---
+  Total Slots Used: 14/5 bay space (balanced with craft)
+
+Battlecruiser (BC):
+  Extra Torpedoes:  4 units available
+  Extra Decoys:     3 units available
+  Extra Mines:      3 units available
+  Shield Boost:     2 units available
+  Hull Repair Kit:  3 units available
+  Energy Cells:     2 units available
+  ---
+  Total Slots Used: 17/6 bay space (heavy loadout with craft)
+
+Battleship (BB):
+  Extra Torpedoes:  5 units available
+  Extra Decoys:     4 units available
+  Extra Mines:      3 units available
+  Shield Boost:     3 units available
+  Hull Repair Kit:  3 units available
+  Energy Cells:     3 units available
+  ---
+  Total Slots Used: 21/7 bay space (heavy loadout with craft)
+
+Dreadnought (DN):
+  Extra Torpedoes:  6 units available
+  Extra Decoys:     4 units available
+  Extra Mines:      4 units available
+  Shield Boost:     3 units available
+  Hull Repair Kit:  4 units available
+  Energy Cells:     3 units available
+  ---
+  Total Slots Used: 24/8 bay space (maximum loadout with craft)
+
+Super Dreadnought (SD):
+  Extra Torpedoes:  7 units available
+  Extra Decoys:     5 units available
+  Extra Mines:      4 units available
+  Shield Boost:     4 units available
+  Hull Repair Kit:  4 units available
+  Energy Cells:     4 units available
+  ---
+  Total Slots Used: 28/9 bay space (maximum capital ship loadout)
+
+CONSUMABLE USAGE STRATEGY:
+
+Early Mission: Use Extra Torpedoes for sustained fire
+Mid Mission: Use Shield Boost when shields drop
+Late Mission: Use Hull Repair Kit if taking heavy damage
+Emergency: Use Shield Boost + Energy Cells for survival burst
+Offensive: Chain Energy Cells with sustained beam fire
+
+
+================================================================================
+5. SPECIAL MECHANICS
+================================================================================
+
+Three advanced systems add depth to craft operations: jamming, probe sensors,
+and the ping system.
+
+
+5.1 JAMMING MECHANICS
+================================================================================
+
+DRONE JAMMING (Trigon Faction Primary Advantage)
+
+What is Jamming?
+When a Drone fires its beam weapon and hits an enemy SHIP (not other craft):
+- The hit triggers a jamming effect
+- The target ship's beam weapon cooldown increases by 0.3 seconds
+- Effect applies to ALL beam weapons on the target ship
+- Effects stack: Multiple drone hits = Multiple cooldown delays
+
+Jamming Mechanics Details:
+- ONLY effective against SHIPS (not other fighters/shuttles/drones)
+- Adds delay to the weapon's lastFireTime counter
+- Multiple drones can jam same target for compounding effect
+- Jamming is SILENT - no visual effect (just beam cooldown increases)
+- Non-Drones: Do NOT have jamming ability
+
+Tactical Applications:
+
+Single Drone Jamming:
+- Launch Drone with ATTACK mission
+- Let drone engage enemy ship for 10+ seconds
+- Result: Enemy beams fire 0.3s slower than normal
+- Effectiveness: Minimal for solo drone
+
+Multi-Drone Jamming:
+- Launch 2+ Drones on same target
+- Each drone adds 0.3s separately
+- 3 Drones = 0.9s total additional cooldown
+- Result: Significant firepower reduction on target
+- Effectiveness: High for coordinated drone swarms
+
+Combo Strategy - Drone Jamming + Bomber Assault:
+1. Launch 2-3 Drones with ATTACK mission
+2. Wait 5-10 seconds for jamming to stack
+3. Launch Bomber with ATTACK mission
+4. Enemy ship can barely fire back
+5. Bomber tears through crippled enemy
+
+Enemy Drone Jamming (When Enemy Uses Drones):
+- You will notice your beams firing slower than usual
+- Check system performance - is it lag, or are you jammed?
+- Counter: Employ DEFENSE shuttles/fighters to intercept drones
+- Or: Use ship's defenses to destroy enemy drones quickly
+
+Limitations:
+- Requires direct hits (beams must connect)
+- Only affects beam weapons (not torpedoes)
+- Duration is temporary (only applies to immediate next shot)
+- Not effective vs. other craft (only vs. ships)
+
+
+5.2 PROBE SENSOR EXTENSION
+================================================================================
+
+What is Probe Sensor Extension?
+
+Probes extend your ship's sensor range along their flight path. They are
+unmanned, unarmed reconnaissance units designed to extend your detection
+capabilities beyond your main ship's sensor range.
+
+Probe Statistics (For Reference):
+- Speed: 100% of player ship speed (keeps up with you)
+- Acceleration: 150% (quick to reach waypoint)
+- Maneuverability: 200% turn rate (can redirect en route)
+- HP: 1 (destroyed by any hit)
+- Shields: 0 (no protection)
+- Weapons: NONE - cannot attack
+
+Probe Mission Phases:
+
+APPROACH PHASE (Phase 1):
+- Launch probe toward reticle position
+- Probe flies toward target location
+- Extends sensor coverage cone behind it
+- Takes 20-30 seconds to reach distant targets
+- Any collision destroys probe (even asteroids)
+
+TARGET REACHED (Phase 2):
+- Once within 50 pixels of target, phase changes to EXTENDING
+- Probe continues flying past target for 10 more seconds
+- Maximum sensor coverage achieved
+- Console: "Probe reached target, continuing for 10 seconds..."
+
+EXTENDING PHASE (Phase 3):
+- Probe flies in straight line for 10 seconds after target
+- Continues to extend sensor coverage
+- Trajectory: Same direction as when target was reached
+- This extension reveals cloaked ships and hidden objectives
+
+EXPIRED PHASE (Phase 4):
+- After 10 seconds of extending, probe self-destructs
+- Emits event: "Probe destroyed (mission complete)"
+- No longer extends sensor coverage
+- Bay space is freed for recovery
+
+Sensor Coverage Details:
+
+Detection Area:
+- Line from player ship to probe current position
+- Radius: 100 pixels around probe (detection circle)
+- Distance: Up to probe's flight range (no hard limit)
+- Objects Detected:
+  * Enemy ships (even cloaked ones in range)
+  * Hidden objectives for missions
+  * Environmental hazards (asteroids, pulsars)
+  * Enemy torpedoes in flight
+  * Other hostile craft
+
+Mission Victory Integration:
+Probes can trigger mission victory conditions by:
+- Approaching designated scan objectives
+- Emitting proximity events for mission system
+- Revealing hidden target locations
+- Allowing main ship to reach objectives with full information
+
+Tactical Usage:
+
+Reconnaissance Mission:
+1. Identify suspect area on map
+2. Point reticle at suspicious location
+3. Press L to launch probe
+4. Probe flies over area, revealing all objects
+5. Enemy fleet positions become visible
+6. Plan main ship attack with full intelligence
+
+Cloaked Ship Detection:
+1. Know enemy Scintilian ships are in area
+2. Launch probe toward estimated hiding location
+3. If probe passes near cloaked ship, it becomes visible
+4. Allows targeting of previously hidden enemies
+5. Can coordinate attack with other craft
+
+Objective Scanning:
+1. Mission requires scanning an object at distance
+2. Launch probe toward objective location
+3. Probe passes within detection radius
+4. Mission system registers: "Objective detected"
+5. Contributes toward mission victory condition
+
+Pre-Battle Scouting:
+1. Before major engagement, launch probe toward enemy fleet
+2. Gather full intelligence on enemy composition
+3. See enemy destroyer? Launch extra drones for jamming
+4. See enemy bombers? Launch fighters for interception
+5. Make informed strategic decisions
+
+Probe Limitations:
+
+Vulnerability:
+- Destroyed by ANY hit (including asteroid collision)
+- No shields or armor
+- Enemy can shoot down probes to prevent scanning
+- Short mission time (20 seconds approach + 10 seconds extending)
+
+Single Coverage:
+- Only one probe mission reveals one area
+- Multiple probes needed for full map coverage
+- Bay space limited - can't launch infinite probes
+- Recovery time between probes
+
+Range Limits:
+- Must be able to see target location with reticle
+- Target beyond sensor range = can't see where to aim
+- Off-screen targets impossible to probe
+- Limited to visual map area
+
+
+5.3 PING SYSTEM
+================================================================================
+
+What is the Ping System?
+
+The Ping system is a advanced tactical tool (currently placeholder - full
+implementation pending). When activated, it broadcasts an active sonar pulse
+that reveals enemy positions and threats to you visually.
+
+Current Status: PARTIALLY IMPLEMENTED
+- Key: P (Press P to activate)
+- Effect: Console message - "Ping activated (placeholder)"
+- Future Feature: Full implementation in later development phase
+
+Intended Mechanics (When Fully Implemented):
+
+Ping Behavior:
+- Activation: Press P during gameplay
+- Broadcast Range: Extends to your sensor detection range
+- Effect: Sends out directional sonar pulse
+- Duration: Instantaneous scan with 5-second cooldown
+
+Information Revealed:
+- Enemy ship positions (distance and bearing)
+- Enemy torpedo trajectories (incoming threats)
+- Hidden objectives in proximity
+- Environmental hazards
+- Friendly craft status
+
+Tactical Applications (Planned):
+
+Passive Detection Replacement:
+- Allows active detection instead of passive sensors
+- Risk: May alert nearby enemies of your location
+- Reward: Instant full tactical picture
+
+Cloaked Ship Detection:
+- Ping can temporarily "light up" cloaked targets
+- Makes positioning cloaked ambush attack risky
+- Players must balance detection vs. stealth
+
+Emergency Response:
+- Quick ping to assess unexpected threat
+- No time to visually scan area
+- Get immediate threat assessment
+- Adjust formation/vector accordingly
+
+Target Area Search:
+- Ping to find specific targets
+- Instead of visual search across map
+- Faster than probe launch for quick intel
+- Trade bay space for faster response
+
+Current Placeholder Status:
+
+The ping system is currently marked as TODO in the codebase:
+"TODO: Implement ping system in Phase 9"
+
+This means:
+- Basic key binding works (P key)
+- Console message appears when activated
+- No actual game effects occur yet
+- Full implementation planned for future update
+
+Workarounds Until Full Implementation:
+
+Until ping is fully implemented, use:
+1. Probe launches (L key) - Actual sensor extension
+2. Visual scanning - Pan camera around area
+3. TAB target cycling - Find enemies methodically
+4. Fighter scouts - Send fighters on RECON mission
+5. Passive sensors - Wait for enemies to enter detection range
+
+
+================================================================================
+6. TACTICAL GAMEPLAY TIPS
+================================================================================
+
+Mastering the shuttle system requires understanding craft strengths,
+weaknesses, and synergies. This section provides strategic guidance.
+
+
+TIP 1: ROCK-PAPER-SCISSORS CRAFT BALANCE
+================================================================================
+
+The three combat craft types form a tactical triangle:
+
+FIGHTER → beats → SHUTTLE → beats → BOMBER → beats → FIGHTER
+
+Translation:
+- Fighter wins 1v1 vs. Shuttle (speed + maneuverability)
+- Shuttle can flee from Bomber (faster when damaged)
+- Bomber destroys Fighter (armor + torpedoes)
+
+Implication:
+- Don't fight Fighter with Shuttle alone
+- Launch multiple Shuttles to overwhelm individual Fighter
+- Send Fighters to intercept Bombers
+- Use Bombers to break Fighter formations
+
+Advanced Exploitation:
+- If enemy has Fighters, launch Bombers defensively
+- If enemy has Bombers, launch Fighters for intercept
+- If enemy has Shuttles, either Fighter or Bomber works
+- Force them to counter your counter (mind games!)
+
+Tournament Matchups (1v1 Assumption):
+- Fighter > Shuttle (2 out of 3 times)
+- Bomber > Fighter (2 out of 3 times)
+- Shuttle > Bomber (2 out of 3 times)
+
+
+TIP 2: CRAFT FORMATION TACTICS
+================================================================================
+
+Single Craft Strategy:
+- Scout mission (Fighter RECON)
+- Diversion (Shuttle WILD_WEASEL)
+- Emergency strike (Shuttle SUICIDE)
+Weakness: Can be destroyed quickly if focused
+
+Twin Craft Strategy (2 Fighters or 2 Shuttles):
+- One attacks, one supports
+- Can concentrate fire or scatter enemy focus
+- Good for 1v2 opponent engagements
+Best For: Fighting medium-strength enemies
+
+Swarm Tactics (3+ Fighters):
+- Overwhelm single target through numbers
+- Each Fighter deals 0.5 damage - 3 deal 1.5 damage
+- Enemy can't evade all three simultaneously
+- Very effective vs. enemy Bombers
+Best For: Destroying priority targets quickly
+
+Mixed Formations:
+- 1 Bomber + 2 Fighters = Heavy support + mobility
+- 3 Shuttles + 1 Fighter = Flexibility + speed
+- 2 Bombers + 1 Defense craft = Offense + support
+Best For: Balanced gameplay, adapting to threats
+
+Defense Screen:
+- Circle around player ship at 70-100 pixel radius
+- Intercept all incoming threats
+- Requires launching multiple DEFENSE craft
+- 2+ defensive craft very effective
+Best For: Heavily outnumbered scenarios
+
+
+TIP 3: MISSION SELECTION STRATEGY
+================================================================================
+
+BEFORE COMBAT:
+1. Scout with Probe (L key) or Fighter RECON
+2. Identify threat type (Fighters? Bombers? Torpedoes?)
+3. Launch craft to counter threat
+4. Position ship for main engagement
+
+AGGRESSIVE STRATEGY:
+- Launch Bomber with ATTACK on high-priority target
+- Follow with Fighter swarm (2-3 Fighters) on same target
+- Shuttle WILD_WEASEL to distract remaining enemies
+- Main ship targets weakened secondary target
+
+DEFENSIVE STRATEGY:
+- Launch Shuttles + Fighters with DEFENSE mission
+- Create defensive bubble around ship
+- Interceptors on incoming torpedoes
+- Drones jamming enemy beams
+- Wait for reinforcements or to repair
+
+TACTIC LAYERING STRATEGY:
+Layer 1: Probe reveals enemy position (L key)
+Layer 2: Fighters drawn out to intercept probe
+Layer 3: Bombers attack concentrated enemy fighters
+Layer 4: Main ship engages weakened enemy capital ship
+
+TIP 4: RESOURCE MANAGEMENT
+================================================================================
+
+Bay Space is LIMITED. Plan craft deployment:
+
+Frigate (FG): 2 spaces
+- Option A: 2 Shuttles
+- Option B: 1 Bomber (uses 2 spaces, no other craft)
+- Recommendation: 2 Shuttles for flexibility
+
+Destroyer (DD): 3 spaces
+- Option A: 3 Shuttles (most flexible)
+- Option B: 1 Fighter + 1 Shuttle
+- Option C: 1 Bomber + 1 Shuttle
+- Recommendation: 3 Shuttles (covers all mission types)
+
+Light Cruiser (CL): 4 spaces
+- Option A: 4 Shuttles (maximum flexibility)
+- Option B: 1 Fighter + 3 Shuttles
+- Option C: 2 Fighters + 2 Shuttles (balanced)
+- Option D: 1 Bomber + 2 Shuttles
+- Recommendation: 2 Fighters + 2 Shuttles (good balance)
+
+Heavy Cruiser (CA): 5 spaces
+- Option A: 2 Fighters + 1 Shuttle + 1 Bomber (2 spaces) = 5
+- Option B: 3 Fighters + 1 Shuttle + ? = 5
+- Option C: 1 Bomber + 3 Shuttles = 5
+- Recommendation: 2 Fighters + 1 Bomber + 1 Shuttle (all mission coverage)
+
+Battlecruiser (BC): 6 spaces
+- Maximum flexibility - can deploy any combination
+- Suggested: 2 Fighters + 1 Bomber + 3 Shuttles (balanced fleet)
+- Or: Fighter-heavy, Shuttle-heavy, or Bomber-heavy per mission
+
+Capital Ships (BB/DN/SD): 7-9 spaces
+- Deploy mixed formations for any situation
+- Recommend: Varied craft for flexibility
+
+
+TIP 5: CONSUMABLE TIMING
+================================================================================
+
+Consumable management separates good players from great ones:
+
+EARLY MISSION PHASE (First 20%):
+- DO save consumables - don't use yet
+- Monitor damage - shields should be holding
+- Plan for tougher battles ahead
+- Exceptions: Shield Boost if taking unexpected hits
+
+MID MISSION PHASE (40-60%):
+- Monitor health trends
+- If shields low: Use Shield Boost before next big fight
+- If torpedoes expended: Use Extra Torpedoes to reload
+- If mines low: Use Extra Mines for area defense
+
+LATE MISSION PHASE (Last 30%):
+- Know mission win condition
+- Use consumables to ensure victory
+- Heavy damage = Hull Repair Kit + Shield Boost combo
+- Low on key ammo = Consumables to top off
+
+EMERGENCY USAGE:
+- Under 30% HP: Use Hull Repair Kit immediately
+- Under 50% shields: Use Shield Boost + Energy Cells for offense
+- Critical systems damaged: Hull Repair Kit buys time
+- Final boss fight: Save for end-game emergency
+
+
+TIP 6: SYNERGISTIC CRAFT COMBINATIONS
+================================================================================
+
+Drone Jamming Combo:
+1. Launch 2 Drones with ATTACK mission
+2. Let them damage enemy ship for 10 seconds
+3. Accumulated jamming: -0.6s beam cooldown
+4. Launch Bomber with ATTACK
+5. Bomber fires at full rate while enemy struggles
+
+Interception Combo:
+1. Launch Shuttle with DEFENSE mission
+2. Launch Fighter with DEFENSE mission
+3. Create overlapping defense radius
+4. Nearly all incoming threats intercepted
+5. Ship can focus on main target
+
+Scout-Strike Combo:
+1. Launch Fighter with SCAN mission
+2. Fighter scouts ahead, reveals enemy positions
+3. Launch Bombers based on detected threats
+4. Bombers know exactly where to strike
+5. No wasted ordnance on empty space
+
+Sacrifice-Swarm Combo:
+1. Launch Shuttle with WILD_WEASEL
+2. Shuttle draws fire away from main ship
+3. Launch Bomber ATTACK on now-focused enemy
+4. Enemy occupied with Shuttle = exposed to Bomber
+5. Shuttle likely destroyed but Bomber gets free hits
+
+
+TIP 7: DAMAGE OPTIMIZATION
+================================================================================
+
+Maximum Damage Chain:
+1. Jam enemy with Drones (if available) - reduces enemy output
+2. Launch Bombers on priority target - high damage output
+3. Concentrate Fighter swarm - fast burst damage
+4. Use Consumable: Energy Cells for +20% beam damage
+5. Main ship joins bombing run
+6. Total damage: Very high
+
+Sustained Damage:
+- Keep ATTACK craft continuously engaged
+- Use consumables: Extra Torpedoes to maintain ammunition
+- Protect craft with DEFENSE escort
+- Rotate fresh craft in as others are damaged
+- Grind down enemy over time
+
+Burst Damage:
+- Activate Energy Cells consumable
+- Launch all available Bombers simultaneously
+- Concentrate all beam fire on one target
+- Overwhelm enemy before they can respond
+- Requires coordination and timing
+
+
+TIP 8: SURVIVAL AND RETREAT
+================================================================================
+
+Damage Control While Under Attack:
+1. Activate DEFENSE craft to reduce incoming damage
+2. Maneuver ship to protect shields
+3. Use consumables: Hull Repair Kit if critical
+4. Launch Drones to jam enemy beams
+5. Consider Emergency Stop (X key) to reposition
+
+Craft Recovery:
+- Damaged craft return to ship to recover
+- Shuttle repair rate: 1 HP per 60 seconds (slow)
+- Fighter/Bomber return on low HP (auto-recover)
+- Drone cannot recover (fragile, destroyed easily)
+- Probe cannot recover (self-destructs)
+
+Strategic Retreat:
+1. If outnumbered 3:1 or worse, consider tactical withdrawal
+2. Launch WILD_WEASEL to distract enemy
+3. Launch Probe (L key) to extend sensor range during retreat
+4. Chart course to avoid dangerous areas
+5. Regroup and prepare counter-attack
+
+Emergency Maneuver:
+- Press X for Emergency Stop (full stop + shield boost)
+- Activates during evasion of torpedoes
+- Gives brief invulnerability window
+- Use to reposition and launch defensive craft
+
+
+TIP 9: MISSION-SPECIFIC TACTICS
+================================================================================
+
+ATTACK MISSION OBJECTIVE:
+- Scout enemy positions with Probe first
+- Launch Fighter or Bomber ATTACK on primary target
+- Support with Shuttle ATTACK or DEFENSE
+- Concentrate fire to eliminate threats quickly
+- Use Consumable: Energy Cells for final burst
+
+DEFENSE MISSION OBJECTIVE:
+- Protect specific ship/target/location
+- Launch Shuttles/Fighters DEFENSE around target
+- Create defensive perimeter 100+ pixels from target
+- Expect enemy to attack - be ready
+- Launch reinforcements as craft are damaged
+
+SURVIVE MISSION OBJECTIVE:
+- Launch DEFENSE craft preventatively
+- Don't engage if not necessary
+- Use Drones to jam enemy beams
+- Keep shields above 50%
+- Preserve consumables for endgame
+
+DESTROY ALL ENEMIES:
+- Scout with Probe to find all enemies
+- Prioritize high-threat targets (Bombers first)
+- Use ATTACK craft on priority targets
+- Rotate craft to maintain pressure
+- Use Energy Cells consumable at 50% enemy health
+
+CAPTURE/TRANSPORT:
+- Launch Shuttle TRANSPORT to target location
+- Protect Shuttle with DEFENSE craft during delivery
+- Expect enemy interference during transport
+- Use WILD_WEASEL to distract enemy fire
+- Focus main ship on protecting transport craft
+
+
+TIP 10: ADAPTING TO FACTION STRENGTHS
+================================================================================
+
+VS. FEDERATION (Balanced, Torpedo-Heavy):
+- Expect dual-arc torpedoes and strong beams
+- Defend against missiles first (interrupt incoming)
+- Use DEFENSE shuttles + Interceptors
+- Drones can jam their beam weapons
+- Fighter swarms effective vs. their light craft
+
+VS. TRIGON (Disruptor-Heavy, Drone-Equipped):
+- No traditional torpedoes - disruptors instead
+- Disruptors fast but weak (0.5 damage each)
+- Can launch Drones that jam YOUR beams
+- Intercept their Drones immediately
+- Use Bombers for heavy defense
+
+VS. SCINTILIAN (Cloaked, Plasma Torpedo):
+- Expect cloaking and slow, powerful plasma
+- Use Probes to reveal cloaked positions
+- Plasma is devastating - kill them fast
+- Defensive craft essential vs. ambushes
+- Fighters for quick strikes on cloaked enemies
+
+VS. PIRATE (Unpredictable, Mixed Weapons):
+- Hybrid designs - mixed beam/torpedo
+- Less organized but still dangerous
+- Standard tactics work well
+- Focus on force concentration
+- ATTACK craft very effective
+
+
+================================================================================
+7. QUICK REFERENCE CHART
+================================================================================
+
+CRAFT TYPE COMPARISON TABLE:
+
+Type      | Bay  | Speed  | Accel | Turn  | HP | Shield | Damage | Special
+----------|------|--------|-------|-------|----|---------|---------|---------
+Shuttle   | 1    | 50%    | 50%   | 150%  | 2  | 3       | 1.0    | 5 Missions
+Fighter   | 1    | 80%    | 120%  | 200%  | 1  | 1       | 0.5    | RECON
+Bomber    | 2    | 40%    | 60%   | 120%  | 3  | 2       | 1.0+2T | Torpedoes
+Drone     | 1    | 90%    | 130%  | 180%  | 1  | 2       | 0.5    | Jamming
+Probe     | 1    | 100%   | 150%  | 200%  | 1  | 0       | None   | Sensors
+
+MISSION AVAILABILITY:
+
+               Attack  Defense  Wild_Weasel  Suicide  Scan  Transport
+Shuttle         ✓        ✓          ✓           ✓      ✓        ✓
+Fighter         ✓        ✓          -           -      ✓        -
+Bomber          ✓        ✓          -           ✓      -        -
+Drone           ✓        ✓          ✓           -      -        -
+Probe          None     None        None        None   Auto     -
+
+KEY BINDINGS:
+
+1-6             Shuttle (ATTACK/DEFENSE/WILD_WEASEL/SUICIDE/SCAN/TRANSPORT)
+CTRL+1-6        Fighter (ATTACK/DEFENSE/SCAN cycling)
+ALT+1-6         Bomber (ATTACK/DEFENSE/SUICIDE cycling)
+SHIFT+1-6       Drone (ATTACK/DEFENSE/WILD_WEASEL cycling)
+L               Probe (toward reticle)
+P               Ping (placeholder - not implemented yet)
+7               Fighter Launch (alternate)
+8               Bomber Launch (alternate)
+
+CONSUMABLE HOTKEYS:
+
+F1              Extra Torpedoes (+10 stored torpedoes)
+F2              Extra Decoys (+3 countermeasures)
+F3              Extra Mines (+3 standard mines)
+F4              Shield Boost (+20% all shields instantly)
+F5              Hull Repair Kit (+50 HP instantly)
+F6              Energy Cells (+20% beam damage for 60s)
+
+CONSUMABLE AVAILABILITY BY SHIP CLASS:
+
+        | FG | DD | CL | CS | CA | BC | BB | DN | SD |
+--------|----|----|----|----|----|----|----|----|----|
+Torpedo | 1  | 2  | 2  | 3  | 3  | 4  | 5  | 6  | 7  |
+Decoy   | 1  | 2  | 2  | 2  | 3  | 3  | 4  | 4  | 5  |
+Mine    | 1  | 1  | 2  | 2  | 2  | 3  | 3  | 4  | 4  |
+Shield  | 0  | 1  | 1  | 1  | 2  | 2  | 3  | 3  | 4  |
+Repair  | 1  | 1  | 2  | 2  | 2  | 3  | 3  | 4  | 4  |
+Energy  | 0  | 1  | 1  | 2  | 2  | 2  | 3  | 3  | 4  |
+
+COMBAT TRIANGLE:
+
+                        Fighter
+                           △
+                          / \
+                       BEATS LOSES TO
+                        /     \
+                       /       \
+                   Shuttle ← → Bomber
+
+Implications:
+- Fighter beats Shuttle, loses to Bomber
+- Bomber beats Fighter, loses to Shuttle
+- Shuttle beats Bomber, loses to Fighter
+
+BAY SPACE BY SHIP CLASS:
+
+Ship Class      Bay Spaces      Typical Loadout
+Frigate         2               2 Shuttles OR 1 Bomber
+Destroyer       3               1 Fighter + 2 Shuttles OR 3 Shuttles
+Light Cruiser   4               1 Bomber + 2 Shuttles OR 2F+2S
+Heavy Cruiser   5               1B+1F+3S (Balanced)
+Battlecruiser   6               2B+2F+2S (Mixed)
+Battleship      7               3B+2F+2S OR Full Fighters
+Dreadnought     8               Maximum flexibility
+Super Dread.    9               Maximum flexibility
+
+
+================================================================================
+APPENDIX: MISSION SYSTEM DESIGN NOTES
+================================================================================
+
+The shuttle system is built on a state machine architecture:
+
+LAUNCH SEQUENCE:
+1. Player presses KEY (1-6 with optional modifier)
+2. InputManager detects key press
+3. Engine.handleBaySystemInput() processes command
+4. BaySystem determines craft type from modifiers
+5. First Press: Cycle mission type, store in bayMissionState
+6. Second Press: Launch craft via baySystem.launchCraft(mission)
+7. Craft created at launch position (specific to craft type)
+8. Craft added to entities array
+9. Audio event triggered (launch sound)
+10. Console message confirms launch
+
+CRAFT LIFECYCLE:
+1. Craft spawns at launch position
+2. AI executes assigned mission
+3. Craft takes damage from combat
+4. If HP drops to 0, craft destroyed
+5. BaySystem detects destruction
+6. Bay space recovered when craft removed
+7. Shuttle can land to repair
+8. Fighter/Bomber/Drone destroyed when HP=0
+
+MISSION STATE TRACKING:
+- Separate state per craft type (Shuttle/Fighter/Bomber/Drone)
+- Each has 6 slots (matching keyboard 1-6)
+- First press: Sets mission, displays selection message
+- Second press: Launches craft, clears state for next launch
+- State resets after successful launch
+
+TECHNICAL IMPLEMENTATION NOTES:
+
+Engine:
+- handleBaySystemInput() processes all bay commands
+- Located at lines 1917-2034 of Engine.js
+- Updates happen every game frame
+- InputManager detects single-frame key presses
+
+BaySystem:
+- launchShuttle(missionType)
+- launchFighter()
+- launchBomber()
+- launchDrone(missionType)
+- launchProbe(targetX, targetY)
+- Each returns craft object or null if insufficient space
+
+Craft AI:
+- Each craft type extends Entity class
+- Implements executeMission() method
+- AI behavior varies by mission type
+- Update() called every frame from BaySystem.update()
+
+Event System:
+- eventBus.emit('craft-launched', data)
+- eventBus.emit('craft-destroyed', data)
+- eventBus.on('shuttle-landed', handler)
+- Mission system listens for probe/craft events
+
+
+================================================================================
+END OF GUIDE
+================================================================================
+
+This comprehensive guide covers all aspects of Star Sea's shuttle system.
+For additional information, consult the in-game tutorial, mission briefings,
+and tactical advisor during gameplay.
+
+Questions? Check the console (F12) for debug messages.
+Bugs? Report to the development team with console logs.
+
+Good luck, Captain!

@@ -3,10 +3,10 @@
  */
 
 const WEAPON_POSITIONS = {
-    forwardCenter: { x: 0, y: -15 },
+    forwardCenter: { x: 0, y: -30 },
     forwardPort: { x: -6, y: -14 },
     forwardStarboard: { x: 6, y: -14 },
-    aftCenter: { x: 0, y: 15 },
+    aftCenter: { x: 0, y: 70 },
     forwardTorpPort: { x: -3, y: -12 },
     forwardTorpStarboard: { x: 3, y: -12 },
     dualTorpCenter: { x: 0, y: -10 },
@@ -42,50 +42,50 @@ const WEAPON_POSITIONS = {
 const SHIP_WEAPON_LOADOUTS = {
     FEDERATION: {
         FG: [
-            { type: 'beam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
-            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (FG)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 4, loaded: 2, maxLoaded: 2, stored: 20 }
+            { type: 'continuousBeam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (FG)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 4, loaded: 2, maxLoaded: 2 }
         ],
         DD: [
-            { type: 'beam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
-            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (DD)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 6, loaded: 3, maxLoaded: 3, stored: 30 }
+            { type: 'continuousBeam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (DD)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 6, loaded: 3, maxLoaded: 3 }
         ],
         CL: [
-            { type: 'beam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
-            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (CL)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 8, loaded: 4, maxLoaded: 4, stored: 40 }
+            { type: 'continuousBeam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (CL)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 8, loaded: 4, maxLoaded: 4 }
         ],
         CS: [
             { type: 'streakBeam', name: 'Port Streak Beam', arc: 270, arcCenter: 270, positionKey: 'forwardPort' },
             { type: 'streakBeam', name: 'Starboard Streak Beam', arc: 270, arcCenter: 90, positionKey: 'forwardStarboard' },
-            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (CS)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 8, loaded: 4, maxLoaded: 4, stored: 40 }
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (CS)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 8, loaded: 4, maxLoaded: 4 }
         ],
         CA: [
-            { type: 'beam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
-            { type: 'beam', name: 'Aft Beam Battery', arc: 270, arcCenter: 180, positionKey: 'aftCenter' },
-            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (CA)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 10, loaded: 5, maxLoaded: 5, stored: 50 }
+            { type: 'continuousBeam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
+            { type: 'continuousBeam', name: 'Aft Beam Battery', arc: 270, arcCenter: 180, positionKey: 'aftCenter' },
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (CA)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 10, loaded: 5, maxLoaded: 5 }
         ],
         BC: [
-            { type: 'beam', name: 'Port Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardPort' },
-            { type: 'beam', name: 'Starboard Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardStarboard' },
-            { type: 'beam', name: 'Aft Beam Array', arc: 270, arcCenter: 180, positionKey: 'aftCenter' },
-            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (BC)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 12, loaded: 6, maxLoaded: 6, stored: 60 }
+            { type: 'continuousBeam', name: 'Port Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardPort' },
+            { type: 'continuousBeam', name: 'Starboard Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardStarboard' },
+            { type: 'continuousBeam', name: 'Aft Beam Array', arc: 270, arcCenter: 180, positionKey: 'aftCenter' },
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (BC)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 12, loaded: 6, maxLoaded: 6 }
         ],
         BB: [
-            { type: 'beam', name: 'Port Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardPort' },
-            { type: 'beam', name: 'Starboard Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardStarboard' },
-            { type: 'beam', name: 'Aft Beam Array', arc: 270, arcCenter: 180, positionKey: 'aftCenter' },
-            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (BB)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 14, loaded: 7, maxLoaded: 7, stored: 70 }
+            { type: 'continuousBeam', name: 'Port Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardPort' },
+            { type: 'continuousBeam', name: 'Starboard Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardStarboard' },
+            { type: 'continuousBeam', name: 'Aft Beam Array', arc: 270, arcCenter: 180, positionKey: 'aftCenter' },
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (BB)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 14, loaded: 7, maxLoaded: 7 }
         ],
         DN: [
-            { type: 'beam', name: 'Port Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardPort' },
-            { type: 'beam', name: 'Starboard Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardStarboard' },
-            { type: 'beam', name: 'Aft Beam Array', arc: 270, arcCenter: 180, positionKey: 'aftCenter' },
-            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (DN)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 16, loaded: 8, maxLoaded: 8, stored: 80 }
+            { type: 'continuousBeam', name: 'Port Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardPort' },
+            { type: 'continuousBeam', name: 'Starboard Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardStarboard' },
+            { type: 'continuousBeam', name: 'Aft Beam Array', arc: 270, arcCenter: 180, positionKey: 'aftCenter' },
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (DN)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 16, loaded: 8, maxLoaded: 8 }
         ],
         SD: [
-            { type: 'beam', name: 'Port Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardPort' },
-            { type: 'beam', name: 'Starboard Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardStarboard' },
-            { type: 'beam', name: 'Aft Beam Array', arc: 270, arcCenter: 180, positionKey: 'aftCenter' },
-            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (SD)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 18, loaded: 9, maxLoaded: 9, stored: 90 }
+            { type: 'continuousBeam', name: 'Port Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardPort' },
+            { type: 'continuousBeam', name: 'Starboard Forward Beam Array', arc: 270, arcCenter: 0, positionKey: 'forwardStarboard' },
+            { type: 'continuousBeam', name: 'Aft Beam Array', arc: 270, arcCenter: 180, positionKey: 'aftCenter' },
+            { type: 'dualTorpedo', name: 'Dual Torpedo Launcher (SD)', arc: 90, arcCenter: 0, arcCenters: [0, 180], positionKey: 'dualTorpCenter', hp: 18, loaded: 9, maxLoaded: 9 }
         ]
     },
     TRIGON: {
@@ -192,78 +192,24 @@ const SHIP_WEAPON_LOADOUTS = {
             { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'scintilianCenterAft' }
         ]
     },
-    PIRATE: {
-        FG: [
-            { type: 'beam', name: 'Salvaged Forward Beam', arc: 270, arcCenter: 0, positionKey: 'pirateUpperStabilizer' },
-            { type: 'torpedo', name: 'Jury-Rigged Torpedo', arc: 90, arcCenter: 180, positionKey: 'pirateLowerStabilizer' }
-        ],
-        DD: [
-            { type: 'disruptor', name: 'Stolen Disruptor', arc: 120, arcCenter: 0, positionKey: 'pirateUpperStabilizer' },
-            { type: 'beam', name: 'Port Wing Beam', arc: 180, arcCenter: 270, positionKey: 'pirateWingPortInner' },
-            { type: 'beam', name: 'Starboard Wing Beam', arc: 180, arcCenter: 90, positionKey: 'pirateWingStarboardInner' }
-        ],
-        CL: [
-            { type: 'pulseBeam', name: 'Hybrid Pulse Beam', arc: 270, arcCenter: 0, positionKey: 'pirateUpperStabilizer', cooldown: 0.6, damage: 0.6 },
-            { type: 'torpedo', name: 'Contraband Torpedoes', arc: 90, arcCenter: 180, positionKey: 'pirateLowerStabilizer' },
-            { type: 'disruptor', name: 'Port Wing Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortInner' }
-        ],
-        CA: [
-            { type: 'beam', name: 'Captured Beam Array', arc: 270, arcCenter: 0, positionKey: 'pirateUpperStabilizer' },
-            { type: 'plasma', name: 'Black Market Plasma', arc: 90, arcCenter: 180, positionKey: 'pirateLowerStabilizer' },
-            { type: 'disruptor', name: 'Port Wing Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortInner' },
-            { type: 'disruptor', name: 'Starboard Wing Disruptor', arc: 120, arcCenter: 90, positionKey: 'pirateWingStarboardInner' }
-        ],
-        BC: [
-            { type: 'beam', name: 'Heavy Forward Beam', arc: 270, arcCenter: 0, positionKey: 'pirateUpperStabilizer' },
-            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'pirateLowerStabilizer' },
-            { type: 'disruptor', name: 'Port Wing Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortTip' },
-            { type: 'disruptor', name: 'Starboard Wing Disruptor', arc: 120, arcCenter: 90, positionKey: 'pirateWingStarboardTip' },
-            { type: 'beam', name: 'Central Pod Beam', arc: 360, arcCenter: 0, positionKey: 'pirateCentralPod' }
-        ],
-        BB: [
-            { type: 'beam', name: 'Heavy Forward Beam', arc: 270, arcCenter: 0, positionKey: 'pirateUpperStabilizer' },
-            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'pirateLowerStabilizer' },
-            { type: 'disruptor', name: 'Port Wing Outer Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortTip' },
-            { type: 'disruptor', name: 'Starboard Wing Outer Disruptor', arc: 120, arcCenter: 90, positionKey: 'pirateWingStarboardTip' },
-            { type: 'disruptor', name: 'Port Wing Inner Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortInner' },
-            { type: 'disruptor', name: 'Starboard Wing Inner Disruptor', arc: 120, arcCenter: 90, positionKey: 'pirateWingStarboardInner' }
-        ],
-        DN: [
-            { type: 'beam', name: 'Heavy Forward Beam', arc: 270, arcCenter: 0, positionKey: 'pirateUpperStabilizer' },
-            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'pirateLowerStabilizer' },
-            { type: 'disruptor', name: 'Port Wing Outer Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortTip' },
-            { type: 'disruptor', name: 'Starboard Wing Outer Disruptor', arc: 120, arcCenter: 90, positionKey: 'pirateWingStarboardTip' },
-            { type: 'disruptor', name: 'Port Wing Inner Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortInner' },
-            { type: 'disruptor', name: 'Starboard Wing Inner Disruptor', arc: 120, arcCenter: 90, positionKey: 'pirateWingStarboardInner' },
-            { type: 'beam', name: 'Central Pod Beam', arc: 360, arcCenter: 0, positionKey: 'pirateCentralPod' }
-        ],
-        SD: [
-            { type: 'beam', name: 'Heavy Forward Beam', arc: 270, arcCenter: 0, positionKey: 'pirateUpperStabilizer' },
-            { type: 'plasma', name: 'Aft Plasma Launcher', arc: 90, arcCenter: 180, positionKey: 'pirateLowerStabilizer' },
-            { type: 'disruptor', name: 'Port Wing Outer Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortTip' },
-            { type: 'disruptor', name: 'Starboard Wing Outer Disruptor', arc: 120, arcCenter: 90, positionKey: 'pirateWingStarboardTip' },
-            { type: 'disruptor', name: 'Port Wing Inner Disruptor', arc: 120, arcCenter: 270, positionKey: 'pirateWingPortInner' },
-            { type: 'disruptor', name: 'Starboard Wing Inner Disruptor', arc: 120, arcCenter: 90, positionKey: 'pirateWingStarboardInner' },
-            { type: 'beam', name: 'Central Pod Beam', arc: 360, arcCenter: 0, positionKey: 'pirateCentralPod' }
-        ]
-    },
+    // PIRATE loadouts removed - now generated randomly per-ship for variety
     DEFAULT: {
         FG: [
-            { type: 'beam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' }
+            { type: 'continuousBeam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' }
         ],
         DD: [
-            { type: 'beam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
+            { type: 'continuousBeam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
             { type: 'torpedo', name: 'Forward Torpedo Launcher', arc: 90, arcCenter: 0, positionKey: 'forwardTorpPort' }
         ],
         CL: [
-            { type: 'beam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' }
+            { type: 'continuousBeam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' }
         ],
         CA: [
-            { type: 'beam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
+            { type: 'continuousBeam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
             { type: 'torpedo', name: 'Forward Torpedo Launcher', arc: 90, arcCenter: 0, positionKey: 'forwardTorpPort' }
         ],
         BC: [
-            { type: 'beam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
+            { type: 'continuousBeam', name: 'Forward Beam Battery', arc: 270, arcCenter: 0, positionKey: 'forwardCenter' },
             { type: 'torpedo', name: 'Forward Torpedo Launcher', arc: 90, arcCenter: 0, positionKey: 'forwardTorpPort' }
         ]
     }
@@ -271,6 +217,7 @@ const SHIP_WEAPON_LOADOUTS = {
 
 const WEAPON_BUILDERS = {
     beam: spec => new BeamWeapon(spec),
+    continuousBeam: spec => new ContinuousBeam(spec),
     pulseBeam: spec => new PulseBeam(spec),
     torpedo: spec => new TorpedoLauncher(spec),
     dualTorpedo: spec => new DualTorpedoLauncher(spec),
@@ -331,7 +278,76 @@ function resolveLoadoutFaction(faction) {
     return faction === 'PLAYER' ? 'FEDERATION' : faction;
 }
 
+/**
+ * Generate random pirate weapon loadout
+ * Pirates get 1-2 weapon types chosen randomly from: beams, torpedoes, disruptors, plasma
+ */
+function generatePirateLoadout(shipClass) {
+    const weaponTypes = ['continuousBeam', 'torpedo', 'disruptor', 'plasma'];
+    const numWeapons = Math.random() < 0.5 ? 1 : 2; // 50% chance of 1 or 2 types
+
+    // Randomly select weapon types
+    const selectedTypes = [];
+    const availableTypes = [...weaponTypes];
+    for (let i = 0; i < numWeapons && availableTypes.length > 0; i++) {
+        const index = Math.floor(Math.random() * availableTypes.length);
+        selectedTypes.push(availableTypes[index]);
+        availableTypes.splice(index, 1); // Remove to prevent duplicates
+    }
+
+    const loadout = [];
+
+    // Add weapons based on selected types
+    for (const type of selectedTypes) {
+        switch (type) {
+            case 'continuousBeam':
+                loadout.push({
+                    type: 'continuousBeam',
+                    name: 'Salvaged Beam',
+                    arc: 270,
+                    arcCenter: 0,
+                    positionKey: 'pirateUpperStabilizer'
+                });
+                break;
+            case 'torpedo':
+                loadout.push({
+                    type: 'torpedo',
+                    name: 'Jury-Rigged Torpedo',
+                    arc: 90,
+                    arcCenter: 180,
+                    positionKey: 'pirateLowerStabilizer'
+                });
+                break;
+            case 'disruptor':
+                loadout.push({
+                    type: 'disruptor',
+                    name: 'Stolen Disruptor',
+                    arc: 120,
+                    arcCenter: 270,
+                    positionKey: 'pirateWingPortInner'
+                });
+                break;
+            case 'plasma':
+                loadout.push({
+                    type: 'plasma',
+                    name: 'Black Market Plasma',
+                    arc: 90,
+                    arcCenter: 180,
+                    positionKey: 'pirateLowerStabilizer'
+                });
+                break;
+        }
+    }
+
+    return loadout;
+}
+
 function getShipLoadoutSpecs(faction, shipClass) {
+    // Pirates get random loadouts for variety
+    if (faction === 'PIRATE') {
+        return generatePirateLoadout(shipClass);
+    }
+
     const factionKey = resolveLoadoutFaction(faction);
     const factionLoadouts = SHIP_WEAPON_LOADOUTS[factionKey];
     if (factionLoadouts && factionLoadouts[shipClass]) {
@@ -376,9 +392,9 @@ class Ship extends Entity {
             this.createPhysicsBody();
         }
 
-        // Health
-        this.maxHp = this.getShipHp();
-        this.hp = this.maxHp;
+        // Health - NOW HANDLED BY HULL SYSTEM
+        // this.maxHp = this.getShipHp();  // DEPRECATED - Use this.systems.hull.maxHp
+        // this.hp = this.maxHp;           // DEPRECATED - Use this.systems.hull.hp
 
         // Countermeasures
         this.decoys = CONFIG.DECOY_COUNT;
@@ -402,6 +418,17 @@ class Ship extends Entity {
         this.lastBoostTime = -this.boostCooldown; // Allow boost immediately
         this.boostDirection = null; // 'w', 'a', 's', 'd'
 
+        // Throttle system (NEW - replaces hold-to-accelerate)
+        this.throttle = 0;  // 0.0 to 1.0 (0% to 100% max speed)
+        this.targetSpeed = 0;  // Speed ship is trying to reach based on throttle
+        this.throttleBoost = {
+            active: false,
+            endTime: 0,
+            duration: 3,  // 3 seconds
+            amount: 50,   // +50 speed units
+            rechargeDuration: 10  // 10 seconds
+        };
+
         // Shields
         this.shields = this.createShields();
 
@@ -415,6 +442,27 @@ class Ship extends Entity {
         if (this.systems) {
             this.systems.setWeapons(this.weapons);
         }
+
+        // Crew Skills System - affects ship performance
+        this.crewSkills = new CrewSkillSystem(this);
+
+        // Apply helm bonuses to movement stats (applied once at construction)
+        const helmBonuses = this.crewSkills.getHelmBonuses();
+        this.maxSpeed *= helmBonuses.speedMult;
+        this.maxReverseSpeed *= helmBonuses.speedMult;
+        this.acceleration *= helmBonuses.accelMult;
+        this.deceleration *= helmBonuses.accelMult;
+        this.reverseDeceleration *= helmBonuses.accelMult;
+        this.turnRate *= helmBonuses.turnMult;
+
+        // Consumables System - mission loadout items
+        this.consumables = new ConsumableSystem(this);
+
+        // Tractor Beam System - G key to pull targets
+        this.tractorBeam = new TractorBeamSystem(this);
+
+        // Transporter System - T key toggle for crew transport
+        this.transporter = new TransporterSystem(this);
     }
 
     createWeapons() {
@@ -487,6 +535,9 @@ class Ship extends Entity {
     }
 
     createSystems() {
+        // Get hull HP based on ship class
+        const hullHP = this.getHullHPForClass(this.shipClass);
+
         // Player Heavy Cruiser system configuration
         if (this.shipClass === 'CA' && (this.faction === 'PLAYER' || this.faction === 'FEDERATION')) {
             return new SystemManager({
@@ -496,6 +547,7 @@ class Ship extends Entity {
                 cncHP: CONFIG.SYSTEM_HP_CNC,
                 bayHP: CONFIG.SYSTEM_HP_BAY,
                 powerHP: CONFIG.SYSTEM_HP_MAIN_POWER,
+                hullHP: hullHP,
                 hasCloak: false
             });
         }
@@ -509,6 +561,7 @@ class Ship extends Entity {
                 cncHP: 6,
                 bayHP: 6,
                 powerHP: 12,
+                hullHP: hullHP,
                 hasCloak: true,
                 cloakHP: CONFIG.SYSTEM_HP_SENSORS // Same HP as sensors
             });
@@ -522,8 +575,25 @@ class Ship extends Entity {
             cncHP: 6,
             bayHP: 6,
             powerHP: 12,
+            hullHP: hullHP,
             hasCloak: false
         });
+    }
+
+    getHullHPForClass(shipClass) {
+        // Hull HP scaled similar to old ship HP values
+        switch(shipClass) {
+            case 'FG': return CONFIG.SHIP_HP_FG || 60;
+            case 'DD': return CONFIG.SHIP_HP_DD || 80;
+            case 'CL': return CONFIG.SHIP_HP_CL || 100;
+            case 'CS': return CONFIG.SHIP_HP_CS || 110;
+            case 'CA': return CONFIG.SHIP_HP_CA || 120;
+            case 'BC': return CONFIG.SHIP_HP_BC || 140;
+            case 'BB': return 160;
+            case 'DN': return 180;
+            case 'SD': return 200;
+            default: return 100;
+        }
     }
 
     createPhysicsBody() {
@@ -954,49 +1024,60 @@ class Ship extends Entity {
         const points = {
             forwardBeamBand: null,
             aftBeamPoint: null,
-            forwardTorpedoPoint: null,
-            aftTorpedoPoint: null
+            portBeamPoint: null,
+            starboardBeamPoint: null,
+            dualTorpedoPoint: null // Federation ships use dual mount launchers
         };
 
-        if (this.faction === 'PLAYER' || this.faction === 'FEDERATION' || this.faction === 'SCINTILIAN' || this.faction === 'PIRATE') {
-            // Galaxy-class weapon points (centered in saucer)
-            const saucerRadius = size * 0.5; // Smaller radius to fit inside saucer
-            const saucerCenterY = -size * 0.15; // Centered in saucer, moved down
+        if (this.faction === 'PLAYER' || this.faction === 'FEDERATION') {
+            // Strike Cruiser (CS) has port/starboard streak beams instead of forward beam band
+            if (this.shipClass === 'CS') {
+                // Port beam (left side)
+                points.portBeamPoint = {
+                    type: 'point',
+                    x: -40,
+                    y: 33
+                };
 
-            // Forward beam battery band (270ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â° circular arc on saucer)
-            points.forwardBeamBand = {
-                type: 'ellipse',
-                centerX: 0,
-                centerY: saucerCenterY,
-                radiusX: saucerRadius,
-                radiusY: saucerRadius, // Circular, not elliptical
-                startAngle: 180, // Left side
-                endAngle: 360,   // Right side (via top)
-                arcDegrees: 270
-            };
+                // Starboard beam (right side)
+                points.starboardBeamPoint = {
+                    type: 'point',
+                    x: 40,
+                    y: 33
+                };
+            } else {
+                // Other Federation ships (CA, BC, etc.) use forward/aft beam configuration
+                const saucerRadius = size * 0.5; // Smaller radius to fit inside saucer
+                const saucerCenterY = -size * 0.30; // Centered in saucer, moved down to match WEAPON_POSITIONS forwardCenter
 
-            // Aft beam battery band (rounded rectangle perpendicular to ship axis)
-            points.aftBeamPoint = {
-                type: 'rectangle',
-                x: 0,
-                y: size * 0.95, // Position at rear of engineering hull
-                width: size * 0.3, // Width perpendicular to ship axis
-                height: size * 0.08, // Height along ship axis
-                rotation: 0 // Perpendicular to long axis (horizontal)
-            };
+                // Forward beam battery band (270° circular arc on saucer)
+                points.forwardBeamBand = {
+                    type: 'ellipse',
+                    centerX: 0,
+                    centerY: saucerCenterY,
+                    radiusX: saucerRadius,
+                    radiusY: saucerRadius, // Circular, not elliptical
+                    startAngle: 180, // Left side
+                    endAngle: 360,   // Right side (via top)
+                    arcDegrees: 270
+                };
 
-            // Forward torpedo origin (top front of ship)
-            points.forwardTorpedoPoint = {
+                // Aft beam battery band (rounded rectangle perpendicular to ship axis)
+                points.aftBeamPoint = {
+                    type: 'rectangle',
+                    x: 0,
+                    y: size * 0.90, // Position at rear of engineering hull
+                    width: size * 0.3, // Width perpendicular to ship axis
+                    height: size * 0.08, // Height along ship axis
+                    rotation: 0 // Perpendicular to long axis (horizontal)
+                };
+            }
+
+            // Dual torpedo launcher (all Federation ships)
+            points.dualTorpedoPoint = {
                 type: 'point',
                 x: 0,
-                y: saucerCenterY - saucerRadius // Top of circular saucer
-            };
-
-            // Aft torpedo origin (bottom rear of ship)
-            points.aftTorpedoPoint = {
-                type: 'point',
-                x: 0,
-                y: size * 1.02 // Bottom of engineering hull
+                y: -20 // Dual torpedo launcher position
             };
         }
         // Add weapon points for other factions as needed
@@ -1106,6 +1187,78 @@ class Ship extends Entity {
         // No action needed for non-physics mode (rotation handled directly)
     }
 
+    /**
+     * Update throttle system - ship maintains speed based on throttle setting
+     * Called every frame from update()
+     */
+    updateThrottle(deltaTime) {
+        // Calculate target speed from throttle (0.0 to 1.0)
+        this.targetSpeed = this.maxSpeed * this.throttle;
+
+        // Add boost if active
+        const currentTime = performance.now() / 1000;
+        if (this.throttleBoost.active && currentTime < this.throttleBoost.endTime) {
+            this.targetSpeed += this.throttleBoost.amount;
+        } else if (this.throttleBoost.active) {
+            this.throttleBoost.active = false; // Boost expired
+        }
+
+        // Accelerate/decelerate toward target speed
+        const currentSpeed = Math.abs(this.currentSpeed);
+        const speedDiff = this.targetSpeed - currentSpeed;
+
+        if (Math.abs(speedDiff) > 1) { // Only adjust if difference is significant
+            if (speedDiff > 0) {
+                // Accelerate toward target
+                const accel = this.acceleration * deltaTime;
+                this.currentSpeed += accel;
+                this.currentSpeed = Math.min(this.currentSpeed, this.targetSpeed);
+            } else {
+                // Decelerate toward target
+                const decel = this.deceleration * deltaTime;
+                this.currentSpeed -= decel;
+                this.currentSpeed = Math.max(this.currentSpeed, this.targetSpeed);
+            }
+
+            // Apply velocity based on current speed and facing direction
+            if (this.physicsComponent && !CONFIG.DISABLE_PHYSICS) {
+                const vec = MathUtils.vectorFromAngle(this.rotation, this.currentSpeed);
+                this.physicsComponent.body.setLinearVelocity(planck.Vec2(vec.x, vec.y));
+            } else {
+                this.transform.setVelocityFromAngle(this.rotation, this.currentSpeed);
+            }
+        }
+    }
+
+    /**
+     * Emergency stop - rapidly decelerate to zero and boost shields
+     */
+    emergencyStop() {
+        const currentTime = performance.now() / 1000;
+
+        // Set throttle to zero
+        this.throttle = 0;
+        this.targetSpeed = 0;
+
+        // Rapid deceleration (90% speed reduction)
+        this.currentSpeed *= 0.1;
+
+        // Apply velocity
+        if (this.physicsComponent && !CONFIG.DISABLE_PHYSICS) {
+            const vec = MathUtils.vectorFromAngle(this.rotation, this.currentSpeed);
+            this.physicsComponent.body.setLinearVelocity(planck.Vec2(vec.x, vec.y));
+        } else {
+            this.transform.setVelocityFromAngle(this.rotation, this.currentSpeed);
+        }
+
+        // Shield boost for 7 seconds
+        if (this.shields) {
+            this.shields.applyEmergencyBoost(currentTime, 7);
+        }
+
+        eventBus.emit('emergency-stop', { ship: this });
+    }
+
     update(deltaTime) {
         if (this.physicsComponent && !CONFIG.DISABLE_PHYSICS) {
             // Sync position from physics (only if physics is enabled)
@@ -1119,8 +1272,16 @@ class Ship extends Entity {
 
         const currentTime = performance.now() / 1000;
 
+        // Update throttle system (NEW - maintains speed automatically)
+        this.updateThrottle(deltaTime);
+
         // Update boost system
         this.updateBoost(deltaTime, currentTime);
+
+        // Update consumables (for active effect timers)
+        if (this.consumables) {
+            this.consumables.update(currentTime);
+        }
 
         // Update damage flash effect (decay)
         if (this.damageFlashAlpha > 0) {
@@ -1134,10 +1295,12 @@ class Ship extends Entity {
 
         // Update systems (now includes weapons auto-repair)
         if (this.systems) {
-            const systemEvent = this.systems.update(deltaTime, currentTime);
+            const systemEvent = this.systems.update(deltaTime, currentTime, this);
             if (systemEvent) {
                 if (systemEvent.type === 'core-breach') {
-                    this.hp = 0;
+                    // Core breach destroys hull
+                    this.systems.hull.hp = 0;
+                    this.systems.hull.updateStatus();
                     this.destroy();
                 } else if (systemEvent.type === 'control-glitch' && this.isPlayer) {
                     eventBus.emit('control-glitch');
@@ -1179,6 +1342,13 @@ class Ship extends Entity {
             currentTime = performance.now() / 1000;
         }
 
+        // Apply nebula accuracy penalty if inside nebula
+        if (this.inNebula && this.currentNebula) {
+            const penalty = CONFIG.NEBULA_ACCURACY_PENALTY;
+            targetX += (Math.random() - 0.5) * penalty * 2; // ±penalty pixels
+            targetY += (Math.random() - 0.5) * penalty * 2;
+        }
+
         const projectiles = [];
 
         // Calculate angle to target
@@ -1201,6 +1371,46 @@ class Ship extends Entity {
                 if (weapon.isInArc(targetAngle, this.rotation)) {
                     const projectile = weapon.fire(this, targetX, targetY, currentTime);
                     if (projectile) {
+                        // Apply consumable damage multiplier (energy cells)
+                        if (this.consumables) {
+                            projectile.damage *= this.consumables.getDamageMultiplier();
+                        }
+                        projectiles.push(projectile);
+                    }
+                }
+            }
+        }
+
+        return projectiles;
+    }
+
+    /**
+     * Fire continuous beam weapons at target
+     * Called continuously while LMB is held
+     */
+    fireContinuousBeams(targetX, targetY, currentTime) {
+        if (!this.canFireWeapons()) return [];
+
+        // Apply nebula accuracy penalty if inside nebula
+        if (this.inNebula && this.currentNebula) {
+            const penalty = CONFIG.NEBULA_ACCURACY_PENALTY;
+            targetX += (Math.random() - 0.5) * penalty * 2; // ±penalty pixels
+            targetY += (Math.random() - 0.5) * penalty * 2;
+        }
+
+        const projectiles = [];
+        const targetAngle = MathUtils.angleBetween(this.x, this.y, targetX, targetY);
+
+        // Fire all continuous beam weapons that are currently firing and in arc
+        for (const weapon of this.weapons) {
+            if (weapon instanceof ContinuousBeam && weapon.isFiring) {
+                if (weapon.isInArc(targetAngle, this.rotation)) {
+                    const projectile = weapon.fire(this, targetX, targetY, currentTime);
+                    if (projectile) {
+                        // Apply consumable damage multiplier (energy cells)
+                        if (this.consumables) {
+                            projectile.damage *= this.consumables.getDamageMultiplier();
+                        }
                         projectiles.push(projectile);
                     }
                 }
@@ -1218,6 +1428,13 @@ class Ship extends Entity {
             return [];
         }
 
+        // Apply nebula accuracy penalty if inside nebula
+        if (this.inNebula && this.currentNebula) {
+            const penalty = CONFIG.NEBULA_ACCURACY_PENALTY;
+            targetX += (Math.random() - 0.5) * penalty * 2; // ±penalty pixels
+            targetY += (Math.random() - 0.5) * penalty * 2;
+        }
+
         const currentTime = performance.now() / 1000;
         const projectiles = [];
 
@@ -1230,6 +1447,10 @@ class Ship extends Entity {
                 if (weapon.isInArc(targetAngle, this.rotation)) {
                     const projectile = weapon.fire(this, targetX, targetY, currentTime, lockOnTarget);
                     if (projectile) {
+                        // Apply consumable damage multiplier (energy cells)
+                        if (this.consumables) {
+                            projectile.damage *= this.consumables.getDamageMultiplier();
+                        }
                         projectiles.push(projectile);
                     }
                 }
@@ -1243,11 +1464,23 @@ class Ship extends Entity {
      * Fire plasma torpedoes with charged damage
      */
     firePlasma(targetX, targetY, lockOnTarget, chargeDamage) {
+        // Apply nebula accuracy penalty if inside nebula
+        if (this.inNebula && this.currentNebula) {
+            const penalty = CONFIG.NEBULA_ACCURACY_PENALTY;
+            targetX += (Math.random() - 0.5) * penalty * 2; // ±penalty pixels
+            targetY += (Math.random() - 0.5) * penalty * 2;
+        }
+
         if (!this.canFireWeapons()) {
             if (CONFIG.DEBUG_MODE && this.isPlayer) {
                 console.log('Cannot fire weapons - weapons disabled');
             }
             return [];
+        }
+
+        // Apply consumable damage multiplier to charge damage
+        if (this.consumables) {
+            chargeDamage *= this.consumables.getDamageMultiplier();
         }
 
         const currentTime = performance.now() / 1000;
@@ -1479,6 +1712,24 @@ class Ship extends Entity {
     updateBoost(deltaTime, currentTime) {
         if (!this.boostActive) return;
 
+        // Drain shields while boost is active (1 HP per second from all quadrants)
+        if (this.shields) {
+            const drainAmount = 1.0 * deltaTime; // 1 HP per second
+            const quadrants = this.shields.getAllQuadrants();
+
+            for (const quadrantName of ['fore', 'aft', 'port', 'starboard']) {
+                const quadrant = quadrants[quadrantName];
+                quadrant.current = Math.max(0, quadrant.current - drainAmount);
+
+                // If any quadrant hits 0, deactivate boost
+                if (quadrant.current <= 0) {
+                    console.log(`Boost deactivated: ${quadrantName} shield depleted`);
+                    this.deactivateBoost();
+                    return;
+                }
+            }
+        }
+
         // Check if boost duration has expired
         const boostElapsed = currentTime - this.boostStartTime;
         if (boostElapsed >= this.boostDuration) {
@@ -1549,7 +1800,7 @@ class Ship extends Entity {
     }
 
     /**
-     * Take damage
+     * Take damage (collision damage only - projectile damage handled in Engine.js)
      */
     takeDamage(damage, contactPoint) {
         let remainingDamage = damage;
@@ -1561,8 +1812,8 @@ class Ship extends Entity {
         }
 
         // Calculate impact angle if contact point provided
-        // NO SHIELDS while cloaked!
-        if (contactPoint && this.shields && !this.isCloaked()) {
+        // NO SHIELDS while cloaked or in nebula!
+        if (contactPoint && this.shields && !this.isCloaked() && !this.inNebula) {
             const impactAngle = MathUtils.angleBetween(this.x, this.y, contactPoint.x, contactPoint.y);
             remainingDamage = this.shields.applyDamage(this.rotation, impactAngle, remainingDamage, currentTime);
 
@@ -1576,37 +1827,9 @@ class Ship extends Entity {
             }
         }
 
-        // Apply damage to internal systems based on hit location
-        if (remainingDamage > 0 && contactPoint && this.systems) {
-            // Convert contact point to ship-relative coordinates
-            const dx = contactPoint.x - this.x;
-            const dy = contactPoint.y - this.y;
-
-            // Rotate to ship's reference frame
-            const rad = MathUtils.toRadians(-this.rotation);
-            const localX = dx * Math.cos(rad) - dy * Math.sin(rad);
-            const localY = dx * Math.sin(rad) + dy * Math.cos(rad);
-
-            const systemDamage = this.systems.applyDamageToNearestSystem(localX, localY, remainingDamage);
-
-            if (systemDamage.system && this.isPlayer) {
-                const systemDamageTaken = remainingDamage - systemDamage.overflow;
-                if (systemDamageTaken > 0) {
-                    eventBus.emit('system-damage', {
-                        system: systemDamage.system.name,
-                        damage: systemDamageTaken,
-                        hp: systemDamage.system.hp,
-                        maxHp: systemDamage.system.maxHp
-                    });
-                }
-            }
-
-            remainingDamage = systemDamage.overflow;
-        }
-
-        // Apply remaining damage to hull
-        if (remainingDamage > 0) {
-            this.hp = Math.max(0, this.hp - remainingDamage);
+        // Apply remaining damage to hull (collisions don't damage systems)
+        if (remainingDamage > 0 && this.systems && this.systems.hull) {
+            this.systems.hull.takeDamage(remainingDamage);
 
             // Add damage flash effect for ALL ships (not just player)
             this.damageFlashAlpha = 0.8;
@@ -1614,13 +1837,14 @@ class Ship extends Entity {
             if (this.isPlayer) {
                 eventBus.emit('player-damage', {
                     damage: remainingDamage,
-                    hp: this.hp,
+                    hp: this.systems.hull.hp,
                     point: contactPoint
                 });
             }
         }
 
-        if (this.hp <= 0) {
+        // Check if hull destroyed
+        if (this.systems && this.systems.hull && this.systems.hull.destroyed) {
             this.destroy();
         }
     }

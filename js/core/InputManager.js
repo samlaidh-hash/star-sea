@@ -6,6 +6,10 @@
 class InputManager {
     constructor() {
         this.keys = new Map();
+        this.keysPressed = new Map(); // Single-frame key press detection
+        this.shiftDown = false;
+        this.ctrlDown = false;
+        this.altDown = false;
         this.mouseX = 0;
         this.mouseY = 0;
         this.mouseButtons = new Map();
@@ -35,7 +39,25 @@ class InputManager {
     }
 
     onKeyDown(e) {
-        this.keys.set(e.key.toLowerCase(), true);
+        const key = e.key.toLowerCase();
+
+        // Track modifier key states
+        if (e.key === 'Shift') {
+            this.shiftDown = true;
+        }
+        if (e.key === 'Control') {
+            this.ctrlDown = true;
+        }
+        if (e.key === 'Alt') {
+            this.altDown = true;
+        }
+
+        // Only set keysPressed if key wasn't already down (single press detection)
+        if (!this.keys.get(key)) {
+            this.keysPressed.set(key, true);
+        }
+
+        this.keys.set(key, true);
 
         // Handle spacebar press timing for mine deployment
         if (e.key === ' ' && this.spacebarReleased) {
@@ -44,7 +66,6 @@ class InputManager {
         }
 
         // Double-tap detection for boost (W, A, S, D keys)
-        const key = e.key.toLowerCase();
         if (key === 'w' || key === 'a' || key === 's' || key === 'd') {
             const currentTime = performance.now();
             const lastPressTime = this.lastKeyPressTimes.get(key) || 0;
@@ -60,11 +81,24 @@ class InputManager {
             }
         }
 
-        eventBus.emit('keydown', { key: e.key.toLowerCase(), event: e });
+        eventBus.emit('keydown', { key: key, event: e });
     }
 
     onKeyUp(e) {
-        this.keys.set(e.key.toLowerCase(), false);
+        const key = e.key.toLowerCase();
+
+        // Track modifier key states
+        if (e.key === 'Shift') {
+            this.shiftDown = false;
+        }
+        if (e.key === 'Control') {
+            this.ctrlDown = false;
+        }
+        if (e.key === 'Alt') {
+            this.altDown = false;
+        }
+
+        this.keys.set(key, false);
 
         // Handle spacebar release for decoy vs mine
         if (e.key === ' ') {
@@ -168,6 +202,28 @@ class InputManager {
 
     isKeyDown(key) {
         return this.keys.get(key.toLowerCase()) || false;
+    }
+
+    isKeyPressed(key) {
+        // Returns true only on the frame the key was first pressed
+        return this.keysPressed.get(key.toLowerCase()) || false;
+    }
+
+    isShiftDown() {
+        return this.shiftDown;
+    }
+
+    isCtrlDown() {
+        return this.ctrlDown;
+    }
+
+    isAltDown() {
+        return this.altDown;
+    }
+
+    clearPressedKeys() {
+        // Call this at the end of each frame to reset single-press detection
+        this.keysPressed.clear();
     }
 
     isMouseButtonDown(button) {

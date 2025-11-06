@@ -286,6 +286,7 @@ class Engine {
         this.powerManagementSystem = new PowerManagementSystem();
         this.baySystem = new BaySystem();
         this.transporterSystem = new TransporterSystem();
+        this.pingSystem = new PingSystem();
         this.balanceSystem = new BalanceSystem();
         this.testingSystem = new TestingSystem();
 
@@ -300,6 +301,7 @@ class Engine {
         this.enemyShips = [];
         this.environmentalHazards = [];
         this.projectiles = [];
+        this.selectedTarget = null; // TAB-selected target for tracking
 
         // Targeting system
         this.targetingSystem = new TargetingSystem();
@@ -348,6 +350,51 @@ class Engine {
             if (data.key === 'v' && this.playerShip) {
                 this.initiateWarp();
             }
+
+            // TAB key to cycle targets
+            if (data.key === 'tab' && this.playerShip && this.stateManager.isPlaying()) {
+                this.cycleTarget();
+            }
+
+            // NEW THROTTLE SYSTEM - W/S adjust throttle, X emergency stop
+            if (this.playerShip && this.stateManager.isPlaying()) {
+                // W key - increase throttle by 10%
+                if (data.key === 'w') {
+                    this.playerShip.throttle = Math.min(1.0, this.playerShip.throttle + 0.1);
+                    console.log(`Throttle increased to ${(this.playerShip.throttle * 100).toFixed(0)}%`);
+                }
+
+                // S key - decrease throttle by 10%
+                if (data.key === 's') {
+                    this.playerShip.throttle = Math.max(0.0, this.playerShip.throttle - 0.1);
+                    console.log(`Throttle decreased to ${(this.playerShip.throttle * 100).toFixed(0)}%`);
+                }
+
+                // X key - emergency stop + shield boost
+                if (data.key === 'x') {
+                    this.playerShip.emergencyStop();
+                    console.log('Emergency stop activated!');
+                }
+            }
+
+            // Consumable hotkeys (F1-F6) - keys 1-6 are used for bay operations
+            if (!this.stateManager.isPlaying() || !this.playerShip) return;
+
+            // F1-F6 for consumables
+            const consumableKeyMap = {
+                'f1': 'extraTorpedoes',
+                'f2': 'extraDecoys',
+                'f3': 'extraMines',
+                'f4': 'shieldBoost',
+                'f5': 'hullRepairKit',
+                'f6': 'energyCells'
+            };
+
+            if (consumableKeyMap[data.key]) {
+                if (this.playerShip.consumables) {
+                    this.playerShip.consumables.useConsumable(consumableKeyMap[data.key]);
+                }
+            }
         });
 
         // Mouse wheel zoom
@@ -363,11 +410,42 @@ class Engine {
                 return;
             }
             this.beamFiring = true;
-            console.log('✅ beamFiring set to TRUE');
+
+            // Get mouse world position for fixed start point calculation
+            const mousePos = this.inputManager.getMousePosition();
+            const worldPos = this.camera.screenToWorld(mousePos.x, mousePos.y);
+            const currentTime = performance.now() / 1000;
+
+            // Start firing all continuous beam weapons with FIXED start points
+            for (const weapon of this.playerShip.weapons) {
+                if (weapon instanceof ContinuousBeam) {
+                    weapon.startFiring(currentTime, this.playerShip, worldPos.x, worldPos.y);
+                }
+            }
+
+            // Start looping beam sound while firing
+            this.audioManager.startLoopingSound('fed-beam', { volume: 0.5 });
+
+            console.log('✅ beamFiring set to TRUE with fixed start point');
         });
 
         eventBus.on('beam-fire-stop', (data) => {
             this.beamFiring = false;
+
+            // Stop firing all continuous beam weapons
+            if (this.playerShip) {
+                const currentTime = performance.now() / 1000;
+                for (const weapon of this.playerShip.weapons) {
+                    if (weapon instanceof ContinuousBeam) {
+                        weapon.stopFiring(currentTime);
+                    }
+                }
+            }
+
+            // Stop looping beam sound
+            this.audioManager.stopLoopingSound('fed-beam');
+
+            console.log('✅ beamFiring set to FALSE');
         });
 
         eventBus.on('torpedo-fire-start', (data) => {
@@ -480,14 +558,32 @@ class Engine {
             }
         });
 
-        // Boost system
+        // Throttle boost system (double-tap W/S for speed boost)
         eventBus.on('boost-activated', (data) => {
             if (!this.stateManager.isPlaying() || !this.playerShip) return;
 
-            const success = this.playerShip.activateBoost(data.direction);
-            if (success) {
-                this.audioManager.playSound('boost'); // Boost sound effect
+            const currentTime = performance.now() / 1000;
+
+            // Check if boost is available (not already active, not on cooldown)
+            const lastBoostTime = this.playerShip.throttleBoost.endTime || 0;
+            const cooldownRemaining = this.playerShip.throttleBoost.rechargeDuration - (currentTime - lastBoostTime);
+
+            if (this.playerShip.throttleBoost.active) {
+                console.log('Boost already active');
+                return;
             }
+
+            if (cooldownRemaining > 0) {
+                console.log(`Boost on cooldown: ${cooldownRemaining.toFixed(1)}s remaining`);
+                return;
+            }
+
+            // Activate throttle boost
+            this.playerShip.throttleBoost.active = true;
+            this.playerShip.throttleBoost.endTime = currentTime + this.playerShip.throttleBoost.duration;
+
+            this.audioManager.playSound('boost'); // Boost sound effect
+            console.log(`Throttle boost activated! (+${this.playerShip.throttleBoost.amount} speed for ${this.playerShip.throttleBoost.duration}s)`);
         });
 
         // Lock-on events for reticle visuals
@@ -505,10 +601,18 @@ class Engine {
             }
         });
 
-        eventBus.on('lock-broken', (data) => {
+        eventBus.on('lock-degrading', (data) => {
             const reticle = document.getElementById('reticle');
             if (reticle) {
                 reticle.classList.remove('locked', 'locking');
+                reticle.classList.add('degrading');
+            }
+        });
+
+        eventBus.on('lock-broken', (data) => {
+            const reticle = document.getElementById('reticle');
+            if (reticle) {
+                reticle.classList.remove('locked', 'locking', 'degrading');
             }
         });
     }
@@ -517,7 +621,10 @@ class Engine {
         const bindClick = (id, handler) => {
             const el = document.getElementById(id);
             if (el) {
-                el.addEventListener('click', handler);
+                // Remove any existing listeners by cloning and replacing
+                const newEl = el.cloneNode(true);
+                el.parentNode.replaceChild(newEl, el);
+                newEl.addEventListener('click', handler);
             }
         };
 
@@ -633,7 +740,10 @@ class Engine {
                 if (data.projectiles.length > 0) {
                     const projectileType = data.projectiles[0].projectileType;
                     if (projectileType === 'disruptor') {
+                        // Play disruptor sound 3 times rapidly
                         this.audioManager.playSound('disruptor-fire', { volume: 0.5 });
+                        setTimeout(() => this.audioManager.playSound('disruptor-fire', { volume: 0.5 }), 50);
+                        setTimeout(() => this.audioManager.playSound('disruptor-fire', { volume: 0.5 }), 100);
                     } else {
                         this.audioManager.playSound('beam-fire', { volume: 0.5 });
                     }
@@ -646,13 +756,16 @@ class Engine {
                 this.projectiles.push(...data.projectiles);
                 this.entities.push(...data.projectiles);
 
-                // Play appropriate torpedo sound
+                // Play appropriate torpedo sound based on faction and type
                 if (data.projectiles.length > 0) {
                     const projectileType = data.projectiles[0].projectileType;
                     if (projectileType === 'plasma') {
                         this.audioManager.playSound('plasma-fire', { volume: 0.5 });
                     } else {
-                        this.audioManager.playSound('torpedo-fire', { volume: 0.5 });
+                        // Check faction for torpedo sound
+                        const isPirate = data.ship && data.ship.faction === 'PIRATE';
+                        const soundName = isPirate ? 'pirate-torpedo' : 'torpedo-fire';
+                        this.audioManager.playSound(soundName, { volume: 0.5 });
                     }
                 }
             }
@@ -719,7 +832,7 @@ class Engine {
     }
 
     createPlayerShipOptions() {
-        return PLAYER_SHIP_BASE_OPTIONS.map((base) => {
+        const options = PLAYER_SHIP_BASE_OPTIONS.map((base) => {
             const option = { ...base };
             option.classLabel = SHIP_CLASS_LABELS[option.shipClass] || option.shipClass;
             option.factionLabel = FACTION_DISPLAY_NAMES[option.faction] || option.faction;
@@ -728,6 +841,9 @@ class Engine {
             option.speed = stats.speed;
             return option;
         });
+        console.log('🚢 Player ship options created:', options.length, 'ships');
+        console.log('Ship IDs:', options.map(o => o.id).join(', '));
+        return options;
     }
 
     getClassStats(shipClass) {
@@ -817,12 +933,15 @@ class Engine {
 
         this.shipSelectElement = select;
         select.innerHTML = '';
+        console.log('📋 Populating ship dropdown with', this.playerShipOptions.length, 'ships:');
         for (const option of this.playerShipOptions) {
+            console.log('  -', option.id, ':', option.label);
             const opt = document.createElement('option');
             opt.value = option.id;
             opt.textContent = option.label;
             select.appendChild(opt);
         }
+        console.log('✅ Ship dropdown populated');
 
         select.value = selectedOption.id;
         this.updateShipSelectionSummary(selectedOption);
@@ -894,73 +1013,109 @@ class Engine {
         }, 800);
     }
     startNewGame() {
-        console.log('🚀 Starting new game...');
-        
-        // Initialize audio on first interaction (required by browsers)
-        this.audioManager.initialize();
-        console.log('✅ Audio initialized');
+        try {
+            console.log('🚀 Starting new game...');
 
-        // Clear entities
-        this.entities = [];
-        this.enemyShips = [];
-        this.environmentalHazards = [];
-        this.projectiles = [];
-        console.log('✅ Entities cleared');
+            // Initialize audio on first interaction (required by browsers)
+            this.audioManager.initialize();
+            console.log('✅ Audio initialized');
 
-        // Clear particle system
-        this.particleSystem.clear();
-        console.log('✅ Particle system cleared');
+            // Clear entities
+            this.entities = [];
+            this.enemyShips = [];
+            this.environmentalHazards = [];
+            this.projectiles = [];
+            console.log('✅ Entities cleared');
 
-        const selectedOption = this.findPlayerShipOptionById(this.playerShipSelectionId) || this.playerShipOptions[0];
-        console.log('✅ Selected ship option:', selectedOption);
-        this.applyPlayerShipOption(selectedOption, { skipSave: false, skipUI: true });
+            // Clear particle system
+            this.particleSystem.clear();
+            console.log('✅ Particle system cleared');
 
-        // Create player ship based on selection
-        console.log('🚀 Creating player ship...');
-        this.playerShip = new Ship({
-            x: 0,
-            y: 0,
-            shipClass: selectedOption.shipClass,
-            faction: selectedOption.faction,
-            name: selectedOption.name,
-            isPlayer: true,
-            physicsWorld: this.physicsWorld
-        });
-        console.log('✅ Player ship created:', this.playerShip);
+            const selectedOption = this.findPlayerShipOptionById(this.playerShipSelectionId) || this.playerShipOptions[0];
+            console.log('✅ Selected ship option:', selectedOption);
+            this.applyPlayerShipOption(selectedOption, { skipSave: false, skipUI: true });
 
-        this.entities.push(this.playerShip);
-        console.log('✅ Player ship added to entities');
+            // Create player ship based on selection
+            console.log('🚀 Creating player ship...');
+            this.playerShip = new Ship({
+                x: 0,
+                y: 0,
+                shipClass: selectedOption.shipClass,
+                faction: selectedOption.faction,
+                name: selectedOption.name,
+                isPlayer: true,
+                physicsWorld: this.physicsWorld
+            });
+            console.log('✅ Player ship created:', this.playerShip);
 
-        // Initialize advanced systems
-        console.log('🔧 Initializing advanced systems...');
-        this.tractorBeamSystem.init(this.playerShip);
-        this.powerManagementSystem.init(this.playerShip);
-        this.baySystem.init(this.playerShip);
-        this.transporterSystem.init(this.playerShip);
-        // this.balanceSystem.init(this); // Disabled for performance
-        this.testingSystem.init(this);
-        console.log('✅ Advanced systems initialized');
+            this.entities.push(this.playerShip);
+            console.log('✅ Player ship added to entities');
 
-        // Start game loop
-        console.log('🎮 Starting game loop...');
-        this.stateManager.setState('PLAYING');
-        if (!this.gameLoop.running) {
-            this.gameLoop.start();
+            // Initialize advanced systems
+            console.log('🔧 Initializing advanced systems...');
+            try {
+                console.log('  → Initializing tractor beam system...');
+                this.tractorBeamSystem.init(this.playerShip);
+                console.log('  ✓ Tractor beam system initialized');
+
+                console.log('  → Initializing power management system...');
+                this.powerManagementSystem.init(this.playerShip);
+                console.log('  ✓ Power management system initialized');
+
+                console.log('  → Initializing bay system...');
+                this.baySystem.init(this.playerShip);
+                console.log('  ✓ Bay system initialized');
+
+                console.log('  → Initializing transporter system...');
+                this.transporterSystem.init(this.playerShip);
+                console.log('  ✓ Transporter system initialized');
+
+                console.log('  → Initializing ping system...');
+                this.pingSystem.init(this.playerShip);
+                console.log('  ✓ Ping system initialized');
+
+                console.log('  → Initializing testing system...');
+                this.testingSystem.init(this);
+                console.log('  ✓ Testing system initialized');
+
+                console.log('✅ Advanced systems initialized');
+            } catch (error) {
+                console.error('❌ ERROR during system initialization:', error);
+                console.error('Error stack:', error.stack);
+                throw error; // Re-throw to see full error in console
+            }
+
+            // Start game loop
+            console.log('🎮 Starting game loop...');
+            this.stateManager.setState('PLAYING');
+            if (!this.gameLoop.running) {
+                this.gameLoop.start();
+            }
+            console.log('✅ Game loop started');
+
+            // Load first mission
+            console.log('📋 Loading first mission...');
+            this.loadMission('mission-01');
+            console.log('✅ Mission loaded');
+
+            // Spawn some test entities for immediate gameplay
+            console.log('🌌 Spawning test environment...');
+            this.spawnTestAsteroids();
+            // TEMPORARILY DISABLED TO FIX NaN BUG
+            // this.spawnPlanets(); // Spawn 2-3 planets
+            // this.spawnStars(1); // Spawn 1 star
+            // this.spawnBlackHoles(0.5, 1); // 50% chance of 1 black hole
+            // this.spawnNebulas(); // Spawn 1-3 nebula regions
+            this.spawnTestEnemies();
+            console.log('✅ Test environment spawned');
+
+            console.log('🎉 New game started successfully!');
+        } catch (error) {
+            console.error('❌ FATAL ERROR in startNewGame:', error);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+            alert('Failed to start new game. Check console for details.\nError: ' + error.message);
         }
-        console.log('✅ Game loop started');
-
-        // Load first mission
-        console.log('📋 Loading first mission...');
-        this.loadMission('mission-01');
-        console.log('✅ Mission loaded');
-
-        // Spawn some test entities for immediate gameplay
-        console.log('🌌 Spawning test environment...');
-        this.spawnTestAsteroids();
-        this.spawnTestEnemies();
-        console.log('✅ Test environment spawned');
-        
-        console.log('🎉 New game started successfully!');
     }
     spawnTestAsteroids() {
         // Spawn a few test asteroids around the player
@@ -976,6 +1131,371 @@ class Engine {
         for (const config of asteroidConfigs) {
             const asteroid = new Asteroid(config.x, config.y, config.size, this.physicsWorld);
             this.entities.push(asteroid);
+        }
+    }
+
+    /**
+     * Spawn an asteroid field (for mission generation)
+     * @param {Object} fieldConfig - Configuration for the asteroid field
+     * @param {Object} fieldConfig.center - {x, y} center position
+     * @param {number} fieldConfig.radius - Radius of the field
+     * @param {number} fieldConfig.density - Number of asteroids (10-50 recommended)
+     * @param {Object} fieldConfig.sizeDistribution - {large: 0.2, medium: 0.5, small: 0.3}
+     */
+    spawnAsteroidField(fieldConfig) {
+        const {
+            center = { x: 0, y: 0 },
+            radius = 2000,
+            density = 20,
+            sizeDistribution = { large: 0.2, medium: 0.5, small: 0.3 }
+        } = fieldConfig;
+
+        console.log(`🪨 Spawning asteroid field: ${density} asteroids, radius ${radius}px`);
+
+        for (let i = 0; i < density; i++) {
+            // Random position within radius
+            const angle = Math.random() * Math.PI * 2;
+            const distance = Math.sqrt(Math.random()) * radius; // sqrt for uniform distribution
+            const x = center.x + Math.cos(angle) * distance;
+            const y = center.y + Math.sin(angle) * distance;
+
+            // Determine size based on distribution
+            const roll = Math.random();
+            let size;
+            if (roll < sizeDistribution.large) {
+                size = 'large';
+            } else if (roll < sizeDistribution.large + sizeDistribution.medium) {
+                size = 'medium';
+            } else {
+                size = 'small';
+            }
+
+            const asteroid = new Asteroid(x, y, size, this.physicsWorld);
+            this.entities.push(asteroid);
+        }
+
+        console.log(`✅ Asteroid field spawned: ${density} asteroids`);
+    }
+
+    /**
+     * Spawn planets for mission environment
+     * @param {number} count - Number of planets to spawn (default: 2-3)
+     */
+    spawnPlanets(count = null) {
+        // Default to 2-3 planets if not specified
+        if (count === null) {
+            count = 2 + Math.floor(Math.random() * 2);
+        }
+
+        console.log(`🪐 Spawning ${count} planets...`);
+
+        // Planet color variations
+        const planetColors = [
+            '#8B7355', // Brown/tan (default)
+            '#4169E1', // Blue (water world)
+            '#CD853F', // Orange/tan (desert)
+            '#90EE90', // Light green (vegetation)
+            '#A9A9A9', // Gray (rocky/barren)
+            '#FF6347'  // Red (volcanic)
+        ];
+
+        const minDistance = 3000; // Minimum distance from center (player spawn)
+        const maxDistance = 8000; // Maximum distance from center
+
+        for (let i = 0; i < count; i++) {
+            // Random position far from center
+            const angle = Math.random() * Math.PI * 2;
+            const distance = minDistance + Math.random() * (maxDistance - minDistance);
+            const x = Math.cos(angle) * distance;
+            const y = Math.sin(angle) * distance;
+
+            // Vary planet sizes
+            const radiusVariation = 0.7 + Math.random() * 0.6; // 0.7x to 1.3x
+            const radius = CONFIG.PLANET_RADIUS * radiusVariation;
+
+            // Random color
+            const color = planetColors[Math.floor(Math.random() * planetColors.length)];
+
+            const planet = new Planet(x, y, {
+                radius: radius,
+                gravityStrength: CONFIG.PLANET_GRAVITY_STRENGTH,
+                gravityMaxRange: CONFIG.PLANET_GRAVITY_MAX_RANGE,
+                color: color
+            });
+
+            this.entities.push(planet);
+        }
+
+        console.log(`✅ Spawned ${count} planets`);
+    }
+
+    /**
+     * Spawn stars for mission environment
+     * @param {number} count - Number of stars to spawn (default: 1)
+     */
+    spawnStars(count = 1) {
+        console.log(`⭐ Spawning ${count} star(s)...`);
+
+        const minDistance = 4000; // Minimum distance from center (player spawn)
+        const maxDistance = 10000; // Maximum distance from center
+
+        for (let i = 0; i < count; i++) {
+            // Random position far from center
+            const angle = Math.random() * Math.PI * 2;
+            const distance = minDistance + Math.random() * (maxDistance - minDistance);
+            const x = Math.cos(angle) * distance;
+            const y = Math.sin(angle) * distance;
+
+            const star = new Star(x, y);
+            this.entities.push(star);
+        }
+
+        console.log(`✅ Spawned ${count} star(s)`);
+    }
+
+    /**
+     * Spawn black holes for mission environment
+     * @param {number} probability - Probability of spawning (0.0 to 1.0, default: 0.5)
+     * @param {number} maxCount - Maximum black holes to spawn (default: 2)
+     */
+    spawnBlackHoles(probability = 0.5, maxCount = 2) {
+        if (Math.random() > probability) {
+            console.log('🕳️ No black holes spawned (random chance)');
+            return;
+        }
+
+        const count = 1 + Math.floor(Math.random() * maxCount);
+        console.log(`🕳️ Spawning ${count} black hole(s)...`);
+
+        const minDistance = 5000; // Minimum distance from center
+        const maxDistance = 12000; // Maximum distance from center
+
+        for (let i = 0; i < count; i++) {
+            // Random position very far from center
+            const angle = Math.random() * Math.PI * 2;
+            const distance = minDistance + Math.random() * (maxDistance - minDistance);
+            const x = Math.cos(angle) * distance;
+            const y = Math.sin(angle) * distance;
+
+            const blackHole = new BlackHole(x, y);
+            this.entities.push(blackHole);
+        }
+
+        console.log(`✅ Spawned ${count} black hole(s)`);
+    }
+
+    /**
+     * Spawn nebula regions for mission environment
+     * @param {number} count - Number of nebula regions (default: 1-3)
+     */
+    spawnNebulas(count = null) {
+        if (count === null) {
+            count = 1 + Math.floor(Math.random() * 3); // 1-3 nebulas
+        }
+
+        console.log(`☁️ Spawning ${count} nebula region(s)...`);
+
+        const nebulaColors = [
+            '#FF00FF', // Magenta
+            '#FF0088', // Pink
+            '#8800FF', // Purple
+            '#00FF88', // Cyan-green
+            '#FF8800'  // Orange
+        ];
+
+        const minDistance = 2000; // Can be closer than other hazards
+        const maxDistance = 8000;
+
+        for (let i = 0; i < count; i++) {
+            // Random position
+            const angle = Math.random() * Math.PI * 2;
+            const distance = minDistance + Math.random() * (maxDistance - minDistance);
+            const x = Math.cos(angle) * distance;
+            const y = Math.sin(angle) * distance;
+
+            // Large circular regions
+            const radiusVariation = 0.8 + Math.random() * 0.8; // 0.8x to 1.6x
+            const radius = CONFIG.NEBULA_RADIUS * radiusVariation;
+
+            const color = nebulaColors[Math.floor(Math.random() * nebulaColors.length)];
+
+            const nebula = new Nebula(x, y, { radius: radius, color: color });
+            this.entities.push(nebula);
+        }
+
+        console.log(`✅ Spawned ${count} nebula region(s)`);
+    }
+
+    /**
+     * Apply environmental effects (gravity, damage, etc.) from planets, stars, black holes
+     * @param {number} deltaTime - Time since last frame in seconds
+     */
+    applyEnvironmentalEffects(deltaTime) {
+        // SAFETY: Skip if deltaTime is invalid
+        if (!deltaTime || isNaN(deltaTime) || deltaTime <= 0 || deltaTime > 1) {
+            return;
+        }
+
+        // Separate entities by type for efficient processing
+        const planets = [];
+        const stars = [];
+        const blackHoles = [];
+        const nebulas = [];
+        const ships = [];
+
+        for (const entity of this.entities) {
+            if (!entity.active) continue;
+
+            // SAFETY: Skip entities with invalid positions
+            if (isNaN(entity.x) || isNaN(entity.y)) {
+                console.error(`Entity ${entity.type} has invalid position, skipping:`, entity);
+                continue;
+            }
+
+            switch (entity.type) {
+                case 'planet':
+                    planets.push(entity);
+                    break;
+                case 'star':
+                    stars.push(entity);
+                    break;
+                case 'blackhole':
+                    blackHoles.push(entity);
+                    break;
+                case 'nebula':
+                    nebulas.push(entity);
+                    break;
+                case 'ship':
+                    ships.push(entity);
+                    break;
+            }
+        }
+
+        // Apply planet gravity and check landing
+        for (const planet of planets) {
+            for (const ship of ships) {
+                // SAFETY: Verify positions are valid before calculating gravity
+                if (isNaN(planet.x) || isNaN(planet.y) || isNaN(ship.x) || isNaN(ship.y)) {
+                    console.error('Invalid positions in planet gravity:', {planet: {x: planet.x, y: planet.y}, ship: {x: ship.x, y: ship.y}});
+                    continue;
+                }
+
+                // Apply gravity
+                const gravity = planet.applyGravity(ship);
+
+                // SAFETY: Verify gravity values are valid
+                if (isNaN(gravity.x) || isNaN(gravity.y)) {
+                    console.error('Gravity calculation produced NaN:', {planet: {x: planet.x, y: planet.y}, ship: {x: ship.x, y: ship.y}, gravity});
+                    continue;
+                }
+
+                if (gravity.x !== 0 || gravity.y !== 0) {
+                    ship.vx += gravity.x * deltaTime;
+                    ship.vy += gravity.y * deltaTime;
+
+                    // SAFETY: Verify velocities are still valid after gravity
+                    if (isNaN(ship.vx) || isNaN(ship.vy)) {
+                        console.error('Ship velocity became NaN after gravity!', {vx: ship.vx, vy: ship.vy});
+                        ship.vx = 0;
+                        ship.vy = 0;
+                    }
+
+                    if (ship.physicsComponent) {
+                        ship.physicsComponent.setVelocity(ship.vx, ship.vy);
+                    }
+                }
+
+                // Check landing/collision
+                const landingResult = planet.checkLanding(ship);
+                if (landingResult === 'landed' && ship.isPlayer) {
+                    // Player successfully landed - mission complete or disengagement
+                    this.hud.addCriticalMessage('LANDED ON PLANET - MISSION DISENGAGED');
+                } else if (landingResult === 'bounced') {
+                    // Ship bounced off planet surface
+                    if (ship.isPlayer) {
+                        this.hud.addCriticalMessage(`PLANET COLLISION! -${CONFIG.PLANET_BOUNCE_DAMAGE} HP`);
+                    }
+                }
+            }
+        }
+
+        // Apply star gravity and proximity damage
+        for (const star of stars) {
+            for (const ship of ships) {
+                // Apply gravity (stronger than planets)
+                const gravity = star.applyGravity(ship);
+                if (gravity.x !== 0 || gravity.y !== 0) {
+                    ship.vx += gravity.x * deltaTime;
+                    ship.vy += gravity.y * deltaTime;
+                    if (ship.physicsComponent) {
+                        ship.physicsComponent.setVelocity(ship.vx, ship.vy);
+                    }
+                }
+
+                // Apply heat damage if close
+                const damage = star.applyProximityDamage(ship, deltaTime);
+                if (damage > 0 && ship.isPlayer) {
+                    this.hud.addCriticalMessage(`STAR HEAT DAMAGE! -${Math.round(damage)} HP`);
+                }
+            }
+        }
+
+        // Apply black hole gravity and check event horizon
+        for (const blackHole of blackHoles) {
+            for (const entity of this.entities) {
+                if (!entity.active) continue;
+
+                // Apply extreme gravity to all entities
+                const gravity = blackHole.applyGravity(entity);
+                if (gravity.x !== 0 || gravity.y !== 0) {
+                    if (entity.type === 'ship' || entity.type === 'projectile') {
+                        entity.vx += gravity.x * deltaTime;
+                        entity.vy += gravity.y * deltaTime;
+                        if (entity.physicsComponent) {
+                            entity.physicsComponent.setVelocity(entity.vx, entity.vy);
+                        }
+                    }
+                }
+
+                // Check event horizon (instant death)
+                const dx = blackHole.x - entity.x;
+                const dy = blackHole.y - entity.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < blackHole.eventHorizon) {
+                    entity.active = false;
+                    if (entity.type === 'ship') {
+                        if (entity.isPlayer) {
+                            this.hud.addCriticalMessage('CROSSED EVENT HORIZON - SHIP DESTROYED');
+                            // Trigger game over
+                            setTimeout(() => {
+                                this.stateManager.setState('game-over');
+                            }, 2000);
+                        } else {
+                            console.log(`${entity.name || 'Ship'} destroyed by black hole`);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Check nebula effects on ships
+        for (const ship of ships) {
+            ship.inNebula = false;
+
+            for (const nebula of nebulas) {
+                if (nebula.isInside(ship.x, ship.y)) {
+                    ship.inNebula = true;
+                    // Store nebula reference for weapon accuracy penalty
+                    ship.currentNebula = nebula;
+                    break;
+                }
+            }
+
+            // Clear nebula reference if not inside any
+            if (!ship.inNebula) {
+                ship.currentNebula = null;
+            }
         }
     }
 
@@ -1098,6 +1618,11 @@ class Engine {
         }
         perf.targeting = Date.now() - perf.start - perf.input;
 
+        // Update ping system
+        if (this.pingSystem) {
+            this.pingSystem.update(deltaTime);
+        }
+
         // Handle continuous beam firing
         const beamStart = Date.now();
         if (this.beamFiring && this.playerShip && !this.warpingOut) {
@@ -1105,21 +1630,36 @@ class Engine {
             const worldPos = this.camera.screenToWorld(mousePos.x, mousePos.y);
             const currentTime = performance.now() / 1000;
 
-            const projectiles = this.playerShip.fireBeams(worldPos.x, worldPos.y, currentTime);
+            const projectiles = this.playerShip.fireContinuousBeams(worldPos.x, worldPos.y, currentTime);
             if (projectiles && projectiles.length > 0) {
-                console.log(`🔫 Firing ${projectiles.length} beams`);
                 this.projectiles.push(...projectiles);
                 this.entities.push(...projectiles);
 
-                // Only play sound for first beam fired per frame to avoid audio spam
-                if (projectiles.length > 0) {
-                    this.audioManager.playSound('beam-fire');
-                }
-            } else {
-                console.log('⚠️ fireBeams returned no projectiles or null');
+                // Note: Beam sound is now handled by looping audio in beam-fire-start/stop events
+                // Removed per-frame playSound call to avoid audio spam
             }
         }
         perf.beamFiring = Date.now() - beamStart;
+
+        // Handle streak beam second shots (for player and AI)
+        for (const entity of this.entities) {
+            if (entity.type === 'ship' && entity.active && entity.weapons) {
+                const currentTime = performance.now() / 1000;
+
+                for (const weapon of entity.weapons) {
+                    if (weapon instanceof StreakBeam) {
+                        const secondShot = weapon.getNextStreakShot(entity, currentTime);
+                        if (secondShot) {
+                            this.projectiles.push(secondShot);
+                            this.entities.push(secondShot);
+                            if (entity.isPlayer) {
+                                this.audioManager.playSound('streak-beam');
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         // Handle disruptor burst shots (for player and AI)
         for (const entity of this.entities) {
@@ -1143,7 +1683,10 @@ class Engine {
                     this.projectiles.push(...burstShots);
                     this.entities.push(...burstShots);
                     if (entity.isPlayer) {
+                        // Play disruptor sound 3 times rapidly
                         this.audioManager.playSound('disruptor-fire');
+                        setTimeout(() => this.audioManager.playSound('disruptor-fire'), 50);
+                        setTimeout(() => this.audioManager.playSound('disruptor-fire'), 100);
                     }
                 }
             }
@@ -1215,6 +1758,12 @@ class Engine {
         }
         perf.trails = Date.now() - trailsStart;
 
+        // Apply environmental hazards (gravity, damage, etc.)
+        // TEMPORARILY DISABLED TO FIX NaN BUG
+        // const environmentStart = Date.now();
+        // this.applyEnvironmentalEffects(deltaTime);
+        // perf.environment = Date.now() - environmentStart;
+
         // Update AI controllers
         const aiStart = Date.now();
         if (!CONFIG.DISABLE_AI) {
@@ -1282,11 +1831,16 @@ class Engine {
 
             // Handle asteroid breaking
             this.handleAsteroidBreaking();
+        } else {
+            // Simple ship collision detection (when physics disabled)
+            this.handleSimpleShipCollisions();
         }
 
-        // Remove destroyed entities
+        // Remove destroyed entities (measure cleanup separately)
+        const cleanupStart = Date.now();
         this.cleanupEntities();
-        perf.physics = Date.now() - physicsStart;
+        const cleanupTime = Date.now() - cleanupStart;
+        perf.physics = Date.now() - physicsStart - cleanupTime; // Subtract cleanup time
 
         // Update particle system
         const particlesStart = Date.now();
@@ -1295,8 +1849,9 @@ class Engine {
         }
         perf.particles = Date.now() - particlesStart;
 
-        // Update HUD
-        this.hud.update(this.playerShip, this.entities);
+        // Update HUD (start measurement)
+        const hudStart = Date.now();
+        this.hud.update(this.playerShip, this.entities, this.selectedTarget);
 
         // Update mission objectives in HUD
         if (this.missionManager.missionActive) {
@@ -1310,29 +1865,34 @@ class Engine {
         const worldPos = this.camera.screenToWorld(mousePos.x, mousePos.y);
         const hoveredShip = this.findShipAtPosition(worldPos.x, worldPos.y);
         this.hud.updateTooltip(mousePos.x, mousePos.y, hoveredShip);
-        perf.hud = Date.now() - perf.start - perf.particles;
+        perf.hud = Date.now() - hudStart;
+
+        // Clear single-press key detection for next frame
+        this.inputManager.clearPressedKeys();
 
         // Log performance breakdown every 60 frames if slow
         this.lastUpdateTime = Date.now();
         const totalTime = this.lastUpdateTime - updateStartTime;
 
         if (this.updateCounter % 60 === 0) {
-            console.log('🐌 PERFORMANCE BREAKDOWN:', {
-                total: totalTime + 'ms',
-                camera: perf.camera + 'ms',
-                input: perf.input + 'ms',
-                advancedSystems: perf.advancedSystems + 'ms',
-                targeting: perf.targeting + 'ms',
-                beamFiring: perf.beamFiring + 'ms',
-                entities: perf.entities + 'ms',
-                trails: perf.trails + 'ms',
-                ai: perf.ai + 'ms',
-                mission: perf.mission + 'ms',
-                collisions: perf.collisions + 'ms',
-                physics: perf.physics + 'ms',
-                particles: perf.particles + 'ms',
-                hud: perf.hud + 'ms'
-            });
+            // Show top 5 slowest systems
+            const perfEntries = [
+                ['camera', perf.camera],
+                ['input', perf.input],
+                ['advSys', perf.advancedSystems],
+                ['target', perf.targeting],
+                ['beam', perf.beamFiring],
+                ['entities', perf.entities],
+                ['trails', perf.trails],
+                ['ai', perf.ai],
+                ['mission', perf.mission],
+                ['collisions', perf.collisions],
+                ['physics', perf.physics],
+                ['particles', perf.particles],
+                ['hud', perf.hud]
+            ].sort((a, b) => b[1] - a[1]);
+
+            console.log(`🐌 TOTAL: ${totalTime}ms | TOP 5: ${perfEntries.slice(0, 5).map(([name, time]) => `${name}:${time}ms`).join(', ')}`);
 
             // Calculate unaccounted time
             const accountedTime = perf.camera + perf.input + perf.advancedSystems + perf.targeting + perf.beamFiring +
@@ -1362,15 +1922,7 @@ class Engine {
                 const isSourceShip = (entity === projectile.sourceShip || entity.id === projectile.sourceShip?.id);
 
                 if (isSourceShip) {
-                    // Log if we're trying to hit the source ship
-                    if (projectile.projectileType === 'beam' && projectileAge < 0.2) {
-                        console.log('🛡️ Blocked hit on source ship:', {
-                            age: projectileAge.toFixed(3),
-                            projectilePos: `(${projectile.x.toFixed(0)}, ${projectile.y.toFixed(0)})`,
-                            shipPos: `(${entity.x.toFixed(0)}, ${entity.y.toFixed(0)})`,
-                            distance: MathUtils.distance(projectile.x, projectile.y, entity.x, entity.y).toFixed(1)
-                        });
-                    }
+                    // Removed console.log for performance - was called every frame in collision loop
                     continue; // Don't hit source
                 }
 
@@ -1385,25 +1937,50 @@ class Engine {
                 if (distance <= hitRadius) {
                     // Hit!
                     if (projectile.projectileType === 'beam' || projectile.projectileType === 'disruptor') {
-                        // Debug logging for beam hits
-                        if (projectile.projectileType === 'beam' && projectileAge < 0.2) {
-                            console.log('⚠️ BEAM HIT IMMEDIATELY:', {
-                                age: projectileAge.toFixed(3),
-                                distance: distance.toFixed(1),
-                                hitRadius: hitRadius.toFixed(1),
-                                projectilePos: `(${projectile.x.toFixed(0)}, ${projectile.y.toFixed(0)})`,
-                                entityPos: `(${entity.x.toFixed(0)}, ${entity.y.toFixed(0)})`,
-                                entityType: entity.type,
-                                isSourceShip: entity === projectile.sourceShip,
-                                sourceShipId: projectile.sourceShip?.id,
-                                entityId: entity.id
-                            });
+                        // Beam/Disruptor hit - SYSTEM KILLERS (Shields → Single System → Hull overflow)
+                        if (entity.type === 'ship' && entity.systems) {
+                            // Convert to ship-local coordinates
+                            const dx = projectile.x - entity.x;
+                            const dy = projectile.y - entity.y;
+                            const rad = MathUtils.toRadians(-entity.rotation);
+                            const localX = dx * Math.cos(rad) - dy * Math.sin(rad);
+                            const localY = dx * Math.sin(rad) + dy * Math.cos(rad);
+
+                            // Shields absorb first
+                            let remainingDamage = projectile.damage;
+                            if (entity.shields && !entity.isCloaked()) {
+                                const impactAngle = MathUtils.angleBetween(entity.x, entity.y, projectile.x, projectile.y);
+                                const currentTime = performance.now() / 1000;
+                                remainingDamage = entity.shields.applyDamage(entity.rotation, impactAngle, remainingDamage, currentTime);
+                            }
+
+                            // Apply to single nearest system (overflow automatically goes to hull)
+                            if (remainingDamage > 0) {
+                                const systemDamage = entity.systems.applyDamageToNearestSystem(localX, localY, remainingDamage);
+                                entity.damageFlashAlpha = 0.8;
+
+                                // Emit system damage event for player
+                                if (entity.isPlayer && systemDamage.system) {
+                                    eventBus.emit('system-damage', {
+                                        system: systemDamage.system.name,
+                                        damage: systemDamage.damage,
+                                        hp: systemDamage.system.hp,
+                                        maxHp: systemDamage.system.maxHp
+                                    });
+                                }
+                            }
+
+                            // Check if hull destroyed
+                            if (entity.systems.hull.destroyed) {
+                                entity.destroy();
+                            }
+                        } else {
+                            // Not a ship - normal damage
+                            if (entity.takeDamage) {
+                                entity.takeDamage(projectile.damage, { x: projectile.x, y: projectile.y });
+                            }
                         }
 
-                        // Beam/Disruptor hit
-                        if (entity.takeDamage) {
-                            entity.takeDamage(projectile.damage, { x: projectile.x, y: projectile.y });
-                        }
                         // Impact effect
                         const impactAngle = Math.atan2(projectile.vy, projectile.vx);
                         const color = projectile.projectileType === 'beam' ? '#00aaff' : '#ff00ff';
@@ -1414,7 +1991,7 @@ class Engine {
                         this.audioManager.playSound('beam-hit');
                         projectile.destroy();
                     } else if (projectile.projectileType === 'torpedo') {
-                        // Torpedo hit - use blast radius damage system
+                        // Torpedo hit - HULL KILLERS (75% Hull/Shields + 25% Systems)
                         const impactAngle = MathUtils.angleBetween(entity.x, entity.y, projectile.x, projectile.y);
 
                         if (entity.type === 'ship' && entity.systems) {
@@ -1425,19 +2002,19 @@ class Engine {
                             const localX = dx * Math.cos(rad) - dy * Math.sin(rad);
                             const localY = dx * Math.sin(rad) + dy * Math.cos(rad);
 
-                            // Check if shields are down for this impact facing
-                            const shieldsDown = entity.areShieldsDown && entity.areShieldsDown(impactAngle, entity.rotation);
+                            // Shields absorb first
+                            let remainingDamage = projectile.damage;
+                            if (entity.shields && !entity.isCloaked()) {
+                                const currentTime = performance.now() / 1000;
+                                remainingDamage = entity.shields.applyDamage(entity.rotation, impactAngle, remainingDamage, currentTime);
+                            }
 
-                            if (shieldsDown) {
-                                // Shields down - apply blast damage to system boxes
-                                const damagedSystems = entity.systems.applyBlastDamageToSystems(
-                                    localX, localY,
-                                    CONFIG.TORPEDO_BLAST_RADIUS_PIXELS,
-                                    entity.faction,
-                                    entity.shipClass
-                                );
+                            // Apply to 2-3 systems (overflow automatically goes to hull)
+                            if (remainingDamage > 0) {
+                                const damagedSystems = entity.systems.applyTorpedoToMultipleSystems(localX, localY, remainingDamage);
+                                entity.damageFlashAlpha = 0.8;
 
-                                // Emit events for player ship
+                                // Emit system damage events for player
                                 if (entity.isPlayer) {
                                     for (const damageInfo of damagedSystems) {
                                         eventBus.emit('system-damage', {
@@ -1448,11 +2025,11 @@ class Engine {
                                         });
                                     }
                                 }
-                            } else {
-                                // Shields up - normal damage to shields/hull
-                                if (entity.takeDamage) {
-                                    entity.takeDamage(projectile.damage, { x: projectile.x, y: projectile.y });
-                                }
+                            }
+
+                            // Check if hull destroyed
+                            if (entity.systems.hull.destroyed) {
+                                entity.destroy();
                             }
                         } else {
                             // Not a ship or no systems - normal damage
@@ -1547,6 +2124,84 @@ class Engine {
         }
     }
 
+    handleSimpleShipCollisions() {
+        // Simple distance-based ship collision (no physics engine needed)
+        const ships = this.entities.filter(e => e.active && e.type === 'ship');
+        const MIN_COLLISION_SPEED = 25; // Same as CollisionHandler
+
+        for (let i = 0; i < ships.length; i++) {
+            for (let j = i + 1; j < ships.length; j++) {
+                const ship1 = ships[i];
+                const ship2 = ships[j];
+
+                // Calculate distance
+                const dx = ship2.x - ship1.x;
+                const dy = ship2.y - ship1.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                // Calculate collision radii
+                const radius1 = ship1.getShipSize ? ship1.getShipSize() * 0.5 : 20;
+                const radius2 = ship2.getShipSize ? ship2.getShipSize() * 0.5 : 20;
+                const collisionDistance = radius1 + radius2;
+
+                // Check collision
+                if (distance < collisionDistance && distance > 0) {
+                    // Calculate relative velocity
+                    const vx1 = ship1.vx || 0;
+                    const vy1 = ship1.vy || 0;
+                    const vx2 = ship2.vx || 0;
+                    const vy2 = ship2.vy || 0;
+                    const relativeSpeed = Math.sqrt((vx2 - vx1) ** 2 + (vy2 - vy1) ** 2);
+
+                    // Only apply collision if ships are moving fast enough
+                    if (relativeSpeed >= MIN_COLLISION_SPEED) {
+                        // Calculate damage (1-10 HP based on speed)
+                        const damage = Math.max(1, Math.floor(relativeSpeed / 50));
+
+                        // Apply damage to both ships
+                        if (ship1.systems?.hull) {
+                            ship1.systems.hull.hp -= damage;
+                            if (ship1.systems.hull.hp <= 0) {
+                                ship1.systems.hull.destroyed = true;
+                                ship1.destroy();
+                            }
+                        }
+                        if (ship2.systems?.hull) {
+                            ship2.systems.hull.hp -= damage;
+                            if (ship2.systems.hull.hp <= 0) {
+                                ship2.systems.hull.destroyed = true;
+                                ship2.destroy();
+                            }
+                        }
+
+                        // Simple bounce - push ships apart
+                        const nx = dx / distance; // Normalized collision normal
+                        const ny = dy / distance;
+                        const pushDistance = (collisionDistance - distance) * 0.5;
+
+                        ship1.x -= nx * pushDistance;
+                        ship1.y -= ny * pushDistance;
+                        ship2.x += nx * pushDistance;
+                        ship2.y += ny * pushDistance;
+
+                        // Reverse velocity components along collision normal
+                        const bounceStrength = 0.5; // 50% bounce
+                        const relativeVelocity = (vx2 - vx1) * nx + (vy2 - vy1) * ny;
+
+                        if (ship1.vx !== undefined) {
+                            ship1.vx += nx * relativeVelocity * bounceStrength;
+                            ship1.vy += ny * relativeVelocity * bounceStrength;
+                        }
+                        if (ship2.vx !== undefined) {
+                            ship2.vx -= nx * relativeVelocity * bounceStrength;
+                            ship2.vy -= ny * relativeVelocity * bounceStrength;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     handleAsteroidBreaking() {
         const newAsteroids = [];
 
@@ -1562,6 +2217,11 @@ class Engine {
     }
 
     cleanupEntities() {
+        // Clear selectedTarget if it becomes inactive
+        if (this.selectedTarget && !this.selectedTarget.active) {
+            this.selectedTarget = null;
+        }
+
         this.entities = this.entities.filter(e => e.active);
         this.enemyShips = this.enemyShips.filter(e => e.active);
         this.environmentalHazards = this.environmentalHazards.filter(e => e.active);
@@ -1571,20 +2231,11 @@ class Engine {
     handlePlayerInput(deltaTime) {
         const ship = this.playerShip;
 
-        // Movement (WASD)
-        const wPressed = this.inputManager.isKeyDown('w');
-        const sPressed = this.inputManager.isKeyDown('s');
+        // Movement (A/D for turning)
+        // NOTE: W/S throttle adjustment now handled in keydown event listener (setupEventListeners)
+        // Ship maintains speed automatically via updateThrottle() in Ship.update()
         const aPressed = this.inputManager.isKeyDown('a');
         const dPressed = this.inputManager.isKeyDown('d');
-
-        if (wPressed) {
-            ship.thrust(1, deltaTime);
-        } else if (sPressed) {
-            ship.thrust(-1, deltaTime);
-        } else {
-            // No thrust input - apply natural deceleration
-            ship.applyDeceleration(deltaTime);
-        }
 
         if (aPressed) {
             ship.turn(-1, deltaTime);
@@ -1603,29 +2254,43 @@ class Engine {
         const advStart = Date.now();
         const currentTime = performance.now() / 1000;
 
-        // Tractor Beam (Q key)
-        if (this.inputManager.isKeyDown('q')) {
-            this.tractorBeamSystem.toggle(this.playerShip, this.entities);
+        // Tractor Beam (G key) - hold to pull target
+        if (this.inputManager.isKeyDown('g')) {
+            if (this.playerShip && this.playerShip.tractorBeam) {
+                if (!this.playerShip.tractorBeam.isActive) {
+                    this.playerShip.tractorBeam.activate(this.entities, currentTime);
+                }
+            }
+        } else {
+            // Release G key deactivates tractor beam
+            if (this.playerShip && this.playerShip.tractorBeam && this.playerShip.tractorBeam.isActive) {
+                this.playerShip.tractorBeam.deactivate();
+            }
         }
 
-        // Transporter (T key)
-        if (this.inputManager.isKeyDown('t')) {
-            this.transporterSystem.toggleTransporter();
+        // Transporter (T key) - toggle mode
+        if (this.inputManager.isKeyPressed('t')) {
+            if (this.playerShip && this.playerShip.transporter) {
+                this.playerShip.transporter.toggle();
+            }
         }
 
-        // Power Management (TAB key)
-        if (this.inputManager.isKeyDown('tab')) {
-            this.powerManagementSystem.handleTabPress(currentTime);
-        }
+        // Target Selection (TAB key) - handled by event listener in setupEventListeners()
 
         // Bay System (1-6 keys for shuttles, 7-8 for fighters/bombers)
         this.handleBaySystemInput(currentTime);
 
-        // Update advanced systems
-        this.tractorBeamSystem.update(deltaTime, currentTime, this.playerShip);
+        // Update tractor beam and transporter systems
+        if (this.playerShip && this.playerShip.tractorBeam) {
+            this.playerShip.tractorBeam.update(deltaTime, this.entities, currentTime);
+        }
+        if (this.playerShip && this.playerShip.transporter) {
+            this.playerShip.transporter.update(deltaTime, this.entities, currentTime);
+        }
+
+        // Update other advanced systems
         this.powerManagementSystem.update(deltaTime, currentTime, this.playerShip);
         this.baySystem.update(deltaTime, currentTime, this.entities);
-        this.transporterSystem.update(deltaTime, currentTime);
         // Note: balanceSystem disabled for performance - enable if needed for balancing
 
         // Store advanced systems time in a property we can access
@@ -1633,33 +2298,190 @@ class Engine {
     }
 
     handleBaySystemInput(currentTime) {
-        // Shuttle missions (1-6 keys)
-        if (this.inputManager.isKeyDown('1')) {
-            this.baySystem.launchShuttle('ATTACK');
-        }
-        if (this.inputManager.isKeyDown('2')) {
-            this.baySystem.launchShuttle('DEFENSE');
-        }
-        if (this.inputManager.isKeyDown('3')) {
-            this.baySystem.launchShuttle('WILD_WEASEL');
-        }
-        if (this.inputManager.isKeyDown('4')) {
-            this.baySystem.launchShuttle('SUICIDE');
-        }
-        if (this.inputManager.isKeyDown('5')) {
-            this.baySystem.launchShuttle('TRANSPORT');
-        }
-        if (this.inputManager.isKeyDown('6')) {
-            this.baySystem.launchShuttle('SCAN');
+        // Initialize bay mission state if needed (separate state per craft type)
+        if (!this.bayMissionState) {
+            this.bayMissionState = {
+                shuttle: {}, // Keys 1-6 alone
+                fighter: {}, // CTRL + 1-6
+                bomber: {},  // ALT + 1-6
+                drone: {}    // SHIFT + 1-6
+            };
+
+            // Initialize each craft type's mission states
+            for (const craftType of ['shuttle', 'fighter', 'bomber', 'drone']) {
+                for (let i = 1; i <= 6; i++) {
+                    this.bayMissionState[craftType][i] = {
+                        mission: null,
+                        missionIndex: 0
+                    };
+                }
+            }
         }
 
-        // Fighter/Bomber launches (7-8 keys)
-        if (this.inputManager.isKeyDown('7')) {
-            this.baySystem.launchFighter();
+        // Mission types per craft (from Option A)
+        const missionsByType = {
+            shuttle: ['ATTACK', 'DEFENSE', 'WILD_WEASEL', 'SUICIDE', 'SCAN', 'TRANSPORT'],
+            fighter: ['ATTACK', 'DEFENSE', 'SCAN'],
+            bomber: ['ATTACK', 'DEFENSE', 'SUICIDE'],
+            drone: ['ATTACK', 'DEFENSE', 'WILD_WEASEL']
+        };
+
+        // Handle Keys 1-6 with modifiers
+        for (let i = 1; i <= 6; i++) {
+            const keyStr = i.toString();
+
+            if (!this.inputManager.isKeyPressed(keyStr)) continue;
+
+            // Determine craft type based on modifiers
+            let craftType = null;
+            let launchMethod = null;
+            let craftName = null;
+
+            if (this.inputManager.isShiftDown()) {
+                // SHIFT + key = Drone
+                craftType = 'drone';
+                launchMethod = 'launchDrone';
+                craftName = 'Drone';
+            } else if (this.inputManager.isCtrlDown()) {
+                // CTRL + key = Fighter
+                craftType = 'fighter';
+                launchMethod = 'launchFighter';
+                craftName = 'Fighter';
+            } else if (this.inputManager.isAltDown()) {
+                // ALT + key = Bomber
+                craftType = 'bomber';
+                launchMethod = 'launchBomber';
+                craftName = 'Bomber';
+            } else {
+                // No modifier = Shuttle
+                craftType = 'shuttle';
+                launchMethod = 'launchShuttle';
+                craftName = 'Shuttle';
+            }
+
+            const state = this.bayMissionState[craftType][i];
+            const missions = missionsByType[craftType];
+
+            if (!state.mission) {
+                // First press: Cycle mission
+                state.missionIndex = (state.missionIndex) % missions.length;
+                state.mission = missions[state.missionIndex];
+                state.missionIndex++; // Prepare next mission for next cycle
+                console.log(`${craftName} ${i}: Mission set to ${state.mission} (press again to launch)`);
+            } else {
+                // Second press: Launch craft with assigned mission
+                let craft = null;
+
+                // Launch the appropriate craft type
+                if (this.baySystem[launchMethod]) {
+                    craft = this.baySystem[launchMethod](state.mission);
+                } else {
+                    console.warn(`Bay system method ${launchMethod} not found`);
+                }
+
+                if (craft) {
+                    this.entities.push(craft);
+                    console.log(`Launched ${craftName} with ${state.mission} mission from slot ${i}`);
+                } else {
+                    console.warn(`Failed to launch ${craftName} - check bay space`);
+                }
+
+                // Reset mission state after launch
+                state.mission = null;
+            }
         }
-        if (this.inputManager.isKeyDown('8')) {
-            this.baySystem.launchBomber();
+
+        // L key: Launch probe towards reticle
+        if (this.inputManager.isKeyPressed('l')) {
+            const mousePos = this.inputManager.getMousePosition();
+            const worldPos = this.camera.screenToWorld(mousePos.x, mousePos.y);
+
+            if (this.baySystem.launchProbe) {
+                const probe = this.baySystem.launchProbe(worldPos.x, worldPos.y);
+                if (probe) {
+                    this.entities.push(probe);
+                    console.log('Launched probe towards reticle');
+                } else {
+                    console.warn('Failed to launch probe - check bay space');
+                }
+            } else {
+                console.warn('Probe launch not yet implemented');
+            }
         }
+
+        // P key: Activate ping
+        if (this.inputManager.isKeyPressed('p')) {
+            if (this.pingSystem.activate()) {
+                console.log('Ping activated - sensor range doubled for 20 seconds');
+            } else if (this.pingSystem.isCooldown) {
+                const remaining = Math.ceil(this.pingSystem.cooldownTimeRemaining);
+                console.log(`Ping on cooldown - ${remaining}s remaining`);
+            }
+        }
+    }
+
+    /**
+     * Cycle through enemy targets within detection range (TAB key)
+     */
+    cycleTarget() {
+        if (!this.playerShip) return;
+
+        // Get detection radius for player's ship class (with ping multiplier if active)
+        let detectionRadius = CONFIG.DETECTION_RADIUS_CA_PIXELS;
+        const detectionKey = `DETECTION_RADIUS_${this.playerShip.shipClass}_PIXELS`;
+        if (CONFIG[detectionKey] !== undefined) {
+            detectionRadius = CONFIG[detectionKey];
+        }
+
+        // Apply ping system multiplier if active
+        if (this.pingSystem && this.pingSystem.isActive) {
+            detectionRadius *= this.pingSystem.sensorRangeMultiplier;
+        }
+
+        // Filter for enemy ships within detection range
+        const enemyTargets = this.entities.filter(entity => {
+            if (!entity || !entity.active || entity.type !== 'ship') return false;
+            if (entity === this.playerShip || entity.isPlayer) return false;
+            if (entity.faction === 'PLAYER') return false;
+
+            // Check distance
+            const dx = entity.x - this.playerShip.x;
+            const dy = entity.y - this.playerShip.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            return dist <= detectionRadius;
+        });
+
+        // Sort by distance (closest first)
+        enemyTargets.sort((a, b) => {
+            const distA = Math.sqrt(
+                (a.x - this.playerShip.x) ** 2 + (a.y - this.playerShip.y) ** 2
+            );
+            const distB = Math.sqrt(
+                (b.x - this.playerShip.x) ** 2 + (b.y - this.playerShip.y) ** 2
+            );
+            return distA - distB;
+        });
+
+        if (enemyTargets.length === 0) {
+            this.selectedTarget = null;
+            console.log('No targets within detection range');
+            return;
+        }
+
+        // Find current target index
+        let currentIndex = -1;
+        if (this.selectedTarget) {
+            currentIndex = enemyTargets.indexOf(this.selectedTarget);
+        }
+
+        // Cycle to next target (wrap around)
+        const nextIndex = (currentIndex + 1) % enemyTargets.length;
+        this.selectedTarget = enemyTargets[nextIndex];
+
+        // Log selected target
+        const factionLabel = FACTION_DISPLAY_NAMES[this.selectedTarget.faction] || this.selectedTarget.faction;
+        const classLabel = SHIP_CLASS_LABELS[this.selectedTarget.shipClass] || this.selectedTarget.shipClass;
+        console.log(`Target selected: ${factionLabel} ${classLabel}`);
     }
 
     initiateWarp() {
@@ -1816,6 +2638,14 @@ class Engine {
                 // Render game world
                 this.renderer.render(this.entities, warpProgress);
 
+                // Render ping wave effect (if active)
+                if (this.pingSystem) {
+                    const pingWaveData = this.pingSystem.getPingWaveData();
+                    if (pingWaveData) {
+                        this.renderer.renderPingWave(pingWaveData);
+                    }
+                }
+
                 // Render particle effects
                 this.particleSystem.render(this.ctx, this.camera);
 
@@ -1878,8 +2708,8 @@ class Engine {
             return;
         }
 
-        // Show mission briefing
-        this.missionUI.showBriefing(mission);
+        // Show mission briefing with player ship for loadout bay capacity
+        this.missionUI.showBriefing(mission, this.playerShip);
     }
 
     /**
@@ -2044,6 +2874,69 @@ class Engine {
                             radius: config.radius,
                             name: config.name
                         });
+                        break;
+
+                    case 'asteroid':
+                        entity = new Asteroid(
+                            config.position.x,
+                            config.position.y,
+                            config.size || 'medium',
+                            this.physicsWorld,
+                            config.velocity ? config.velocity.x : null,
+                            config.velocity ? config.velocity.y : null
+                        );
+                        break;
+
+                    case 'planet':
+                        entity = new Planet(
+                            config.position.x,
+                            config.position.y,
+                            {
+                                radius: config.radius,
+                                gravityStrength: config.gravityStrength,
+                                gravityMaxRange: config.gravityMaxRange,
+                                color: config.color
+                            }
+                        );
+                        break;
+
+                    case 'star':
+                        entity = new Star(
+                            config.position.x,
+                            config.position.y,
+                            {
+                                radius: config.radius,
+                                gravityStrength: config.gravityStrength,
+                                damageRange: config.damageRange,
+                                damagePerSecond: config.damagePerSecond
+                            }
+                        );
+                        break;
+
+                    case 'blackhole':
+                        entity = new BlackHole(
+                            config.position.x,
+                            config.position.y,
+                            {
+                                eventHorizon: config.eventHorizon,
+                                gravityStrength: config.gravityStrength,
+                                gravityMaxRange: config.gravityMaxRange
+                            }
+                        );
+                        break;
+
+                    case 'nebula':
+                        entity = new Nebula(
+                            config.position.x,
+                            config.position.y,
+                            {
+                                radius: config.radius || 1500,
+                                color: config.color,
+                                sensorInterference: config.sensorInterference,
+                                beamInterference: config.beamInterference,
+                                shieldInterference: config.shieldInterference
+                            }
+                        );
                         break;
 
                     default:

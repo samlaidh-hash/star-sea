@@ -11,17 +11,24 @@ class BeamWeapon extends Weapon {
         this.cooldown = config.cooldown || CONFIG.BEAM_COOLDOWN; // 1 second
     }
 
-    canFire(currentTime) {
+    canFire(currentTime, ship = null) {
         if (!super.canFire()) return false;
 
-        // Check cooldown (1 second between shots)
-        if (currentTime - this.lastFireTime < this.cooldown) return false;
+        // Apply crew skill tactical bonus to cooldown (faster reload)
+        let effectiveCooldown = this.cooldown;
+        if (ship && ship.crewSkills) {
+            const bonuses = ship.crewSkills.getTacticalBonuses();
+            effectiveCooldown = this.cooldown / bonuses.reloadMult;
+        }
+
+        // Check cooldown (1 second between shots by default)
+        if (currentTime - this.lastFireTime < effectiveCooldown) return false;
 
         return true;
     }
 
     fire(ship, targetX, targetY, currentTime) {
-        if (!this.canFire(currentTime)) return null;
+        if (!this.canFire(currentTime, ship)) return null;
 
         this.lastFireTime = currentTime;
 
@@ -64,6 +71,12 @@ class BeamWeapon extends Weapon {
         } else if (this.arcCenter === 180 && ship.weaponPoints.aftBeamPoint) {
             // Aft-facing weapon
             band = ship.weaponPoints.aftBeamPoint;
+        } else if (this.arcCenter === 270 && ship.weaponPoints.portBeamPoint) {
+            // Port-facing weapon (Strike Cruiser)
+            band = ship.weaponPoints.portBeamPoint;
+        } else if (this.arcCenter === 90 && ship.weaponPoints.starboardBeamPoint) {
+            // Starboard-facing weapon (Strike Cruiser)
+            band = ship.weaponPoints.starboardBeamPoint;
         }
 
         // Handle different band types

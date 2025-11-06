@@ -29,8 +29,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
     console.log('Star Sea - Ready!');
 
-    // Make engine globally accessible for debugging
-    if (CONFIG.DEBUG_MODE) {
-        window.game = engine;
-    }
+    // Make engine globally accessible for debugging and testing
+    window.game = engine;
 });

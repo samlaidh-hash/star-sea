@@ -181,4 +181,46 @@ class Renderer {
 
         this.ctx.restore();
     }
+
+    /**
+     * Render ping wave effect
+     * @param {Object} pingWaveData - { x, y, radius, maxRadius, alpha }
+     */
+    renderPingWave(pingWaveData) {
+        if (!pingWaveData) return;
+
+        // Apply camera transform
+        if (this.camera) {
+            this.camera.applyTransform(this.ctx);
+        }
+
+        this.ctx.save();
+
+        // Cyan ping wave with glow effect
+        this.ctx.globalAlpha = pingWaveData.alpha * 0.6;
+        this.ctx.strokeStyle = '#00ffff';
+        this.ctx.lineWidth = 3;
+        this.ctx.shadowBlur = 15;
+        this.ctx.shadowColor = '#00ffff';
+
+        // Draw expanding circle
+        this.ctx.beginPath();
+        this.ctx.arc(pingWaveData.x, pingWaveData.y, pingWaveData.radius, 0, Math.PI * 2);
+        this.ctx.stroke();
+
+        // Draw inner glow ring
+        this.ctx.globalAlpha = pingWaveData.alpha * 0.3;
+        this.ctx.lineWidth = 8;
+        this.ctx.shadowBlur = 25;
+        this.ctx.beginPath();
+        this.ctx.arc(pingWaveData.x, pingWaveData.y, pingWaveData.radius, 0, Math.PI * 2);
+        this.ctx.stroke();
+
+        this.ctx.restore();
+
+        // Remove camera transform
+        if (this.camera) {
+            this.camera.removeTransform(this.ctx);
+        }
+    }
 }

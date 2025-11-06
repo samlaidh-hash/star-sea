@@ -8,6 +8,23 @@ class MissionUI {
         this.briefingScreen = document.getElementById('briefing-screen');
         this.debriefingScreen = document.getElementById('debriefing-screen');
         this.currentMission = null;
+        this.playerShip = null;
+
+        // Loadout system for consumables (all 11 types)
+        this.loadout = {
+            hullRepairKit: 0,
+            energyCells: 0,
+            extraTorpedoes: 0,
+            extraDecoys: 0,
+            extraMines: 0,
+            shieldBoost: 0,
+            extraShuttles: 0,
+            extraFighters: 0,
+            extraBombers: 0,
+            extraDrones: 0,
+            extraProbes: 0
+        };
+        this.bayMax = 10; // Default, will be updated from ship class
 
         this.setupEventListeners();
     }
@@ -39,8 +56,9 @@ class MissionUI {
     /**
      * Show mission briefing
      * @param {Object} mission - Mission data from MISSIONS
+     * @param {Object} playerShip - Player ship for bay capacity
      */
-    showBriefing(mission) {
+    showBriefing(mission, playerShip = null) {
         if (!mission || !this.briefingScreen) {
             console.log('MissionUI: Cannot show briefing - mission:', mission, 'screen:', this.briefingScreen);
             return;
@@ -48,6 +66,7 @@ class MissionUI {
 
         console.log('MissionUI: Showing briefing for mission:', mission.id);
         this.currentMission = mission;
+        this.playerShip = playerShip;
 
         // Populate briefing data
         const titleElement = document.getElementById('briefing-title');
@@ -80,6 +99,9 @@ class MissionUI {
                 objectivesList.appendChild(li);
             }
         }
+
+        // Setup loadout selection
+        this.setupLoadoutSelection();
 
         // Show the screen
         this.briefingScreen.classList.remove('hidden');
@@ -204,6 +226,15 @@ class MissionUI {
      */
     onAcceptMission() {
         console.log('MissionUI: Accept mission clicked for:', this.currentMission?.id);
+
+        // Apply loadout to player ship
+        if (this.playerShip && this.playerShip.consumables) {
+            this.playerShip.consumables.loadFromMissionBriefing(this.loadout);
+            console.log('MissionUI: Loaded consumables:', this.loadout);
+        } else {
+            console.warn('MissionUI: No consumables system on player ship');
+        }
+
         this.hideBriefing();
         eventBus.emit('mission-accepted', { mission: this.currentMission });
         eventBus.emit('game-resumed');
@@ -241,5 +272,131 @@ class MissionUI {
         this.hideDebriefing();
         eventBus.emit('return-to-base');
         eventBus.emit('game-resumed');
+    }
+
+    /**
+     * Setup loadout selection UI
+     */
+    setupLoadoutSelection() {
+        // Get bay size from ship class or BaySystem
+        if (window.game && window.game.baySystem) {
+            this.bayMax = window.game.baySystem.maxBaySpace;
+        } else if (this.playerShip && this.playerShip.shipClass) {
+            // Get bay size from ship class (FG=2, DD=3, CL=4, CA=5, BC=6, BB=7, DN=8, SD=9)
+            const bayByClass = {
+                'FG': 2,
+                'DD': 3,
+                'CL': 4,
+                'CS': 5, // Strike Cruiser same as CA
+                'CA': 5,
+                'BC': 6,
+                'BB': 7,
+                'DN': 8,
+                'SD': 9
+            };
+            this.bayMax = bayByClass[this.playerShip.shipClass] || 5;
+        } else {
+            this.bayMax = 5; // Default bay capacity
+        }
+
+        // Load saved loadout from localStorage
+        this.loadLoadout();
+
+        // Attach event listeners to + and - buttons
+        document.querySelectorAll('.btn-plus').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const type = e.target.closest('.consumable-item').dataset.type;
+                this.incrementConsumable(type);
+            });
+        });
+
+        document.querySelectorAll('.btn-minus').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const type = e.target.closest('.consumable-item').dataset.type;
+                this.decrementConsumable(type);
+            });
+        });
+
+        // Update display
+        this.updateLoadoutDisplay();
+    }
+
+    /**
+     * Increment consumable count
+     */
+    incrementConsumable(type) {
+        const total = this.getTotalBayUsage();
+        if (total < this.bayMax) {
+            this.loadout[type]++;
+            this.updateLoadoutDisplay();
+            this.saveLoadout();
+        }
+    }
+
+    /**
+     * Decrement consumable count
+     */
+    decrementConsumable(type) {
+        if (this.loadout[type] > 0) {
+            this.loadout[type]--;
+            this.updateLoadoutDisplay();
+            this.saveLoadout();
+        }
+    }
+
+    /**
+     * Get total bay usage
+     */
+    getTotalBayUsage() {
+        return Object.values(this.loadout).reduce((sum, count) => sum + count, 0);
+    }
+
+    /**
+     * Update loadout display
+     */
+    updateLoadoutDisplay() {
+        // Update bay capacity display
+        const bayUsed = this.getTotalBayUsage();
+        const bayUsedElement = document.getElementById('bay-used');
+        const bayMaxElement = document.getElementById('bay-max');
+
+        if (bayUsedElement) bayUsedElement.textContent = bayUsed;
+        if (bayMaxElement) bayMaxElement.textContent = this.bayMax;
+
+        // Update each consumable count display
+        document.querySelectorAll('.consumable-item').forEach(item => {
+            const type = item.dataset.type;
+            const countElement = item.querySelector('.consumable-count');
+            if (countElement && this.loadout[type] !== undefined) {
+                countElement.textContent = this.loadout[type];
+            }
+        });
+
+        // Disable + buttons if bay full
+        const isFull = bayUsed >= this.bayMax;
+        document.querySelectorAll('.btn-plus').forEach(btn => {
+            btn.disabled = isFull;
+        });
+    }
+
+    /**
+     * Save loadout to localStorage
+     */
+    saveLoadout() {
+        localStorage.setItem('starSea_loadout', JSON.stringify(this.loadout));
+    }
+
+    /**
+     * Load loadout from localStorage
+     */
+    loadLoadout() {
+        const saved = localStorage.getItem('starSea_loadout');
+        if (saved) {
+            try {
+                this.loadout = JSON.parse(saved);
+            } catch (e) {
+                console.warn('MissionUI: Failed to parse saved loadout', e);
+            }
+        }
     }
 }

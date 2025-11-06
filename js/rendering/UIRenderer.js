@@ -9,7 +9,7 @@ class UIRenderer {
         this.minimapCtx = this.minimapCanvas ? this.minimapCanvas.getContext('2d') : null;
     }
 
-    renderMinimap(playerShip, entities, detectionRadius) {
+    renderMinimap(playerShip, entities, detectionRadius, camera = null) {
         if (!this.minimapCtx || !playerShip) return;
 
         const ctx = this.minimapCtx;
@@ -20,8 +20,8 @@ class UIRenderer {
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, width, height);
 
-        // Scale: show 2x detection radius
-        const worldRadius = detectionRadius * 2;
+        // Scale: show 3x detection radius (increased from 2x)
+        const worldRadius = detectionRadius * 3;
         const scale = Math.min(width, height) / (worldRadius * 2);
 
         // Center on player
@@ -43,6 +43,21 @@ class UIRenderer {
         ctx.beginPath();
         ctx.arc(0, 0, detectionRadius * 2, 0, Math.PI * 2);
         ctx.stroke();
+
+        // Draw viewport rectangle (shows visible camera area)
+        if (camera) {
+            const bounds = camera.getViewportBounds();
+            const viewportWidth = bounds.right - bounds.left;
+            const viewportHeight = bounds.bottom - bounds.top;
+
+            // Calculate viewport corners relative to player ship
+            const vpLeft = bounds.left - playerShip.x;
+            const vpTop = bounds.top - playerShip.y;
+
+            ctx.strokeStyle = 'rgba(0, 255, 255, 0.8)'; // Bright cyan
+            ctx.lineWidth = 2 / scale;
+            ctx.strokeRect(vpLeft, vpTop, viewportWidth, viewportHeight);
+        }
 
         // Draw entities
         for (const entity of entities) {
@@ -74,7 +89,45 @@ class UIRenderer {
                 ctx.beginPath();
                 ctx.arc(dx, dy, inDetection ? 4 / scale : 6 / scale, 0, Math.PI * 2);
                 ctx.fill();
+            } else if (entity.type === 'planet') {
+                // Planets - always show (green circles)
+                ctx.fillStyle = 'rgba(139, 115, 85, 0.8)'; // Brown/tan
+                ctx.strokeStyle = '#8B7355';
+                ctx.lineWidth = 1 / scale;
+                ctx.beginPath();
+                ctx.arc(dx, dy, 8 / scale, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            } else if (entity.type === 'star') {
+                // Stars - always show (yellow/orange circles with glow)
+                ctx.fillStyle = 'rgba(255, 255, 0, 0.9)';
+                ctx.shadowColor = '#ffff00';
+                ctx.shadowBlur = 4 / scale;
+                ctx.beginPath();
+                ctx.arc(dx, dy, 6 / scale, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0; // Reset shadow
+            } else if (entity.type === 'nebula') {
+                // Nebulas - always show (purple/magenta semi-transparent regions)
+                const nebulaRadius = entity.radius || 1500;
+                ctx.fillStyle = 'rgba(255, 0, 255, 0.3)';
+                ctx.strokeStyle = 'rgba(255, 0, 255, 0.5)';
+                ctx.lineWidth = 1 / scale;
+                ctx.beginPath();
+                ctx.arc(dx, dy, nebulaRadius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            } else if (entity.type === 'asteroid') {
+                // Asteroids - only show when within sensor range (gray dots)
+                const inDetection = dist <= detectionRadius;
+                if (inDetection) {
+                    ctx.fillStyle = '#888888';
+                    ctx.beginPath();
+                    ctx.arc(dx, dy, 2 / scale, 0, Math.PI * 2);
+                    ctx.fill();
+                }
             }
+            // Black holes - never show on minimap (intentionally skipped)
         }
 
         ctx.restore();

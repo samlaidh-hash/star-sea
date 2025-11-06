@@ -5,6 +5,62 @@
 
 ## Recently Fixed Bugs
 
+### ✅ Consumables Loadout Now Varies by Ship Class (2025-10-28)
+**Status:** FIXED
+**Priority:** MEDIUM
+**Description:** Consumables were using fixed CONFIG values (6 decoys, 6 mines) regardless of ship class. Now properly varies by ship class based on design document specifications.
+
+**Implementation:**
+- Added `loadDefaultConsumables()` method to ConsumableSystem.js
+- Added `getDefaultLoadout(shipClass)` method with per-class loadouts:
+  - **FG (Frigate)**: 1 torpedo, 1 decoy, 1 mine, 0 shield boost, 1 repair kit, 0 energy cells
+  - **DD (Destroyer)**: 2 torpedoes, 2 decoys, 1 mine, 1 shield boost, 1 repair kit, 1 energy cell
+  - **CL (Light Cruiser)**: 2 torpedoes, 2 decoys, 2 mines, 1 shield boost, 2 repair kits, 1 energy cell
+  - **CS (Strike Cruiser)**: 3 torpedoes, 2 decoys, 2 mines, 1 shield boost, 2 repair kits, 2 energy cells
+  - **CA (Heavy Cruiser)**: 3 torpedoes, 3 decoys, 2 mines, 2 shield boosts, 2 repair kits, 2 energy cells
+  - **BC (Battlecruiser)**: 4 torpedoes, 3 decoys, 3 mines, 2 shield boosts, 3 repair kits, 2 energy cells
+  - **BB (Battleship)**: 5 torpedoes, 4 decoys, 3 mines, 3 shield boosts, 3 repair kits, 3 energy cells
+  - **DN (Dreadnought)**: 6 torpedoes, 4 decoys, 4 mines, 3 shield boosts, 4 repair kits, 3 energy cells
+  - **SD (Super Dreadnought)**: 7 torpedoes, 5 decoys, 4 mines, 4 shield boosts, 4 repair kits, 4 energy cells
+
+**Files Modified:**
+- `js/systems/ConsumableSystem.js` (lines 15-186) - Added default consumable loadouts by ship class
+- `js/systems/BaySystem.js` (lines 24-103) - Fixed bay space calculations and loadouts to match design doc
+
+**Bay Space Corrections:**
+- Updated BaySystem to use correct bay spaces from Design Document Part 3:
+  - FG: 2 (was 2) ✓
+  - DD: 3 (was 4) **FIXED**
+  - CL: 4 (was 6) **FIXED**
+  - CA: 5 (was 8) **FIXED**
+  - BC: 6 (was 10) **FIXED**
+  - BB: 7 (was 12) **FIXED**
+  - DN: 8 (was 14) **FIXED**
+  - SD: 9 (was 16) **FIXED**
+
+---
+
+### ✅ Ship Damage at Game Start (2025-10-22)
+**Status:** FIXED
+**Priority:** HIGH
+**Description:** Ships were taking damage immediately when the game started, before any combat or movement occurred.
+
+**Root Cause:**
+- `CollisionHandler.js:48` had `Math.max(1, Math.floor(relativeSpeed / 50))` which applied minimum 1 damage even to stationary ships
+- During spawn, physics body initialization could cause slight overlaps or near-zero velocities
+- Any collision triggered at least 1 damage to both ships, regardless of speed
+
+**Fix Applied:**
+- Added minimum speed threshold (25 units/s) before applying collision damage
+- Ships now only take damage when actually moving fast enough to cause impact
+- Early return if `relativeSpeed < MIN_COLLISION_SPEED`
+- Preserves realistic collision damage during gameplay while preventing spawn damage
+
+**Files Modified:**
+- `js/physics/CollisionHandler.js` (lines 47-52) - Added MIN_COLLISION_SPEED threshold check
+
+---
+
 ### ✅ Waypoint Direction Arrows Added (2025-10-04)
 **Status:** IMPLEMENTED
 **Priority:** MEDIUM
@@ -104,7 +160,38 @@
 
 ## Active Bugs
 
-### 1. Lock-On System Not Working
+### 1. New Game Not Starting (2025-10-28) → FIXED
+**Status:** FIXED
+**Priority:** CRITICAL
+**Description:** Game initialization stopped at "Initializing advanced systems..." because TractorBeamSystem and TransporterSystem were missing `init()` methods.
+
+**Root Cause:**
+- Engine.js calls `this.tractorBeamSystem.init(this.playerShip)` at line 1049
+- Engine.js calls `this.transporterSystem.init(this.playerShip)` at line 1061
+- TractorBeamSystem.js had NO `init()` method → TypeError: init is not a function
+- TransporterSystem.js had NO `init()` method → Would fail after tractor beam fixed
+
+**Diagnosis Process:**
+1. Added detailed per-system initialization logging
+2. Console showed failure at "→ Initializing tractor beam system..."
+3. Discovered TractorBeamSystem.init() doesn't exist
+4. Also found TransporterSystem.init() doesn't exist
+
+**Fix Applied:**
+- Added `init(ship)` method to TractorBeamSystem.js (line 20-22)
+- Added `init(ship)` method to TransporterSystem.js (line 20-22)
+- Both methods simply set `this.ship = ship`
+
+**Files Modified:**
+- `js/core/Engine.js` (lines 611-620, 1006-1101) - Added error handling and logging
+- `js/systems/TractorBeamSystem.js` (lines 20-22) - Added missing init() method
+- `js/systems/TransporterSystem.js` (lines 20-22) - Added missing init() method
+
+**Testing:** User should reload page, clear console, click "New Game" - should now complete initialization
+
+---
+
+### 2. Lock-On System Not Working
 **Status:** ACTIVE
 **Priority:** HIGH
 **Description:** Lock-on system not functioning as intended. Reticle should:
@@ -345,3 +432,7 @@
 ### Pattern 5: Incomplete Features
 **Issue:** Weapon firing points were simplified and never restored (calculateFiringPoint() had TODO)
 **Prevention:** Track TODOs and complete them before considering features done
+
+### Pattern 6: Physics Damage Thresholds (ADDED 2025-10-22)
+**Issue:** Collision damage applied minimum damage even to stationary ships, causing spawn damage
+**Prevention:** When implementing damage from physics events (collisions, forces, impacts), always check for minimum velocity/speed thresholds before applying damage. Zero or near-zero speed events should not cause damage. Use early returns to avoid unnecessary calculations

@@ -48,7 +48,8 @@ class PlasmaTorpedo extends Weapon {
             speed: this.speed,
             lifetime: this.lifetime,
             sourceShip: ship,
-            lockOnTarget: lockOnTarget // Auto-home to nearest target
+            lockOnTarget: lockOnTarget, // Auto-home to nearest target
+            trackReticle: false // Torpedoes no longer track reticle
         });
 
         return plasmaTorp;
@@ -100,21 +101,31 @@ class PlasmaTorpedo extends Weapon {
             const worldSin = Math.sin(worldRad);
 
             // Apply weapon mount position with additional forward offset to clear ship hull
-            const forwardOffset = shipSize * 0.9; // 90% of ship size forward (increased from 60%)
+            const forwardOffset = shipSize * 1.5; // 150% of ship size forward - prevents stuck torpedoes
             const totalX = this.position.x;
             const totalY = this.position.y - forwardOffset; // Negative Y = forward
 
-            const worldX = ship.x + (totalX * worldCos - totalY * worldSin);
-            const worldY = ship.y + (totalX * worldSin + totalY * worldCos);
+            let worldX = ship.x + (totalX * worldCos - totalY * worldSin);
+            let worldY = ship.y + (totalX * worldSin + totalY * worldCos);
+
+            // Add velocity compensation for fast-moving ships
+            worldX += (ship.vx || 0) * 0.15;
+            worldY += (ship.vy || 0) * 0.15;
+
             return { x: worldX, y: worldY };
         }
 
         // Fallback: offset forward from ship center (large offset to clear ship)
-        const offset = shipSize * 1.1; // 110% of ship size forward (increased from 75%)
+        const offset = shipSize * 1.5; // 150% of ship size forward - prevents stuck torpedoes
         const worldRad = MathUtils.toRadians(ship.rotation);
-        return {
-            x: ship.x + Math.sin(worldRad) * offset,
-            y: ship.y - Math.cos(worldRad) * offset
-        };
+
+        let x = ship.x + Math.sin(worldRad) * offset;
+        let y = ship.y - Math.cos(worldRad) * offset;
+
+        // Add velocity compensation for fast-moving ships
+        x += (ship.vx || 0) * 0.15;
+        y += (ship.vy || 0) * 0.15;
+
+        return { x, y };
     }
 }

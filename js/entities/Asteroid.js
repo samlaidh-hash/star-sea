@@ -3,11 +3,20 @@
  */
 
 class Asteroid extends Entity {
-    constructor(x, y, size, physicsWorld) {
+    constructor(x, y, size, physicsWorld, vx = null, vy = null) {
         super(x, y);
         this.type = 'asteroid';
         this.size = size; // 'large', 'medium', 'small'
         this.physicsWorld = physicsWorld;
+
+        // HP based on size
+        const hpMap = { large: 12, medium: 8, small: 6 };
+        this.maxHp = hpMap[size] || 8;
+        this.hp = this.maxHp;
+
+        // Tractor beam mass category
+        const tractorMap = { large: 'DN', medium: 'BB', small: 'CL' };
+        this.tractorSize = tractorMap[size] || 'BB';
 
         // Visuals
         this.radius = this.getRadius();
@@ -17,13 +26,19 @@ class Asteroid extends Entity {
         // Physics
         this.createPhysicsBody();
 
-        // Set initial velocity
-        const speed = this.getSpeed();
-        const angle = MathUtils.random(0, 360);
-        const vec = MathUtils.vectorFromAngle(angle, speed);
-        this.vx = vec.x;
-        this.vy = vec.y;
-        this.physicsComponent.setVelocity(vec.x, vec.y);
+        // Set initial velocity (use provided or random)
+        if (vx !== null && vy !== null) {
+            this.vx = vx;
+            this.vy = vy;
+            this.physicsComponent.setVelocity(vx, vy);
+        } else {
+            const speed = this.getSpeed();
+            const angle = MathUtils.random(0, 360);
+            const vec = MathUtils.vectorFromAngle(angle, speed);
+            this.vx = vec.x;
+            this.vy = vec.y;
+            this.physicsComponent.setVelocity(vec.x, vec.y);
+        }
 
         // Breaking
         this.shouldBreak = false;
@@ -88,36 +103,94 @@ class Asteroid extends Entity {
     }
 
     /**
-     * Break asteroid into smaller pieces
+     * Take damage and split if HP reaches 0
+     * @param {number} damage - Amount of damage
+     * @param {object} impactPoint - {x, y} position of impact
+     * @returns {Array|null} - Array of child asteroids/gravel cloud or null
+     */
+    takeDamage(damage, impactPoint) {
+        this.hp -= damage;
+
+        if (this.hp <= 0) {
+            this.breakPosition = impactPoint || { x: this.x, y: this.y };
+            return this.split();
+        }
+
+        return null;
+    }
+
+    /**
+     * Split asteroid into smaller pieces
+     * @returns {Array} - Array of child asteroids or gravel cloud
+     */
+    split() {
+        if (this.size === 'large') {
+            // Split into 2 medium asteroids
+            const fragments = [];
+            const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy) * 1.3;
+
+            for (let i = 0; i < 2; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const vx = this.vx + Math.cos(angle) * speed;
+                const vy = this.vy + Math.sin(angle) * speed;
+                const offsetAngle = angle + (i === 0 ? 0 : Math.PI);
+                const offset = 20;
+
+                fragments.push(new Asteroid(
+                    this.breakPosition.x + Math.cos(offsetAngle) * offset,
+                    this.breakPosition.y + Math.sin(offsetAngle) * offset,
+                    'medium',
+                    this.physicsWorld,
+                    vx,
+                    vy
+                ));
+            }
+
+            return fragments;
+        } else if (this.size === 'medium') {
+            // Split into 2 small asteroids
+            const fragments = [];
+            const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy) * 1.3;
+
+            for (let i = 0; i < 2; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const vx = this.vx + Math.cos(angle) * speed;
+                const vy = this.vy + Math.sin(angle) * speed;
+                const offsetAngle = angle + (i === 0 ? 0 : Math.PI);
+                const offset = 15;
+
+                fragments.push(new Asteroid(
+                    this.breakPosition.x + Math.cos(offsetAngle) * offset,
+                    this.breakPosition.y + Math.sin(offsetAngle) * offset,
+                    'small',
+                    this.physicsWorld,
+                    vx,
+                    vy
+                ));
+            }
+
+            return fragments;
+        } else {
+            // Small asteroid - create gravel cloud
+            return [new GravelCloud(
+                this.breakPosition.x,
+                this.breakPosition.y,
+                this.vx,
+                this.vy
+            )];
+        }
+    }
+
+    /**
+     * Break asteroid into smaller pieces (legacy method for compatibility)
+     * Now uses split() method internally
      */
     break() {
-        if (this.size === 'small') {
-            this.destroy();
-            return [];
+        if (!this.breakPosition) {
+            this.breakPosition = { x: this.x, y: this.y };
         }
 
-        const newSize = this.size === 'large' ? 'medium' : 'small';
-        const fragments = [];
-
-        // Create two fragments
-        for (let i = 0; i < 2; i++) {
-            const offset = i === 0 ? -20 : 20;
-            const fragment = new Asteroid(
-                this.breakPosition.x + offset,
-                this.breakPosition.y + offset,
-                newSize,
-                this.physicsWorld
-            );
-
-            // Give fragments velocity based on parent
-            const angle = MathUtils.random(0, 360);
-            const speed = fragment.getSpeed();
-            const vec = MathUtils.vectorFromAngle(angle, speed);
-            fragment.physicsComponent.setVelocity(vec.x + this.vx * 0.5, vec.y + this.vy * 0.5);
-
-            fragments.push(fragment);
-        }
-
+        const fragments = this.split();
         this.destroy();
         return fragments;
     }

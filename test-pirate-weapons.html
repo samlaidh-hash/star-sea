@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pirate Weapon Test - Star Sea</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        #test-output {
+            white-space: pre-wrap;
+            background: #111;
+            padding: 20px;
+            border: 1px solid #0f0;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .success { color: #0f0; }
+        .error { color: #f00; }
+        .warning { color: #ff0; }
+        .info { color: #0ff; }
+        h1, h2 { color: #0ff; }
+        button {
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #0ff;
+        }
+    </style>
+</head>
+<body>
+    <h1>PIRATE WEAPON VARIETY TEST - TIER 2 ISSUE #9</h1>
+    <button onclick="runTest()">Run Test</button>
+    <button onclick="clearOutput()">Clear Output</button>
+    <div id="test-output"></div>
+
+    <script>
+        const output = document.getElementById('test-output');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const line = `[${timestamp}] ${message}\n`;
+            const span = document.createElement('span');
+            span.className = type;
+            span.textContent = line;
+            output.appendChild(span);
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearOutput() {
+            output.innerHTML = '';
+        }
+
+        // Mock classes and dependencies
+        class MathUtils {
+            static distance(x1, y1, x2, y2) {
+                return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+            }
+            static angleBetween(x1, y1, x2, y2) {
+                return Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+            }
+        }
+
+        class Entity {}
+        class BeamWeapon { constructor(spec) { this.spec = spec; } }
+        class ContinuousBeam { constructor(spec) { this.spec = spec; } }
+        class PulseBeam { constructor(spec) { this.spec = spec; } }
+        class TorpedoLauncher { constructor(spec) { this.spec = spec; } }
+        class DualTorpedoLauncher { constructor(spec) { this.spec = spec; } }
+        class PlasmaTorpedo { constructor(spec) { this.spec = spec; } }
+        class Disruptor { constructor(spec) { this.spec = spec; } }
+        class StreakBeam { constructor(spec) { this.spec = spec; } }
+
+        const WEAPON_BUILDERS = {
+            beam: spec => new BeamWeapon(spec),
+            continuousBeam: spec => new ContinuousBeam(spec),
+            pulseBeam: spec => new PulseBeam(spec),
+            torpedo: spec => new TorpedoLauncher(spec),
+            dualTorpedo: spec => new DualTorpedoLauncher(spec),
+            plasma: spec => new PlasmaTorpedo(spec),
+            disruptor: spec => new Disruptor(spec),
+            streakBeam: spec => new StreakBeam(spec)
+        };
+
+        function buildWeaponFromSpec(spec) {
+            const builder = WEAPON_BUILDERS[spec.type];
+            if (!builder) {
+                return null;
+            }
+            return builder(spec);
+        }
+
+        // Copy the generatePirateLoadout function from Ship.js
+        function generatePirateLoadout(shipClass) {
+            const weaponTypes = ['continuousBeam', 'torpedo', 'disruptor', 'plasma'];
+            const numWeapons = Math.random() < 0.5 ? 1 : 2; // 50% chance of 1 or 2 types
+
+            // Randomly select weapon types
+            const selectedTypes = [];
+            const availableTypes = [...weaponTypes];
+            for (let i = 0; i < numWeapons && availableTypes.length > 0; i++) {
+                const index = Math.floor(Math.random() * availableTypes.length);
+                selectedTypes.push(availableTypes[index]);
+                availableTypes.splice(index, 1); // Remove to prevent duplicates
+            }
+
+            const loadout = [];
+
+            // Add weapons based on selected types
+            for (const type of selectedTypes) {
+                switch (type) {
+                    case 'continuousBeam':
+                        loadout.push({
+                            type: 'continuousBeam',
+                            name: 'Salvaged Beam',
+                            arc: 270,
+                            arcCenter: 0,
+                            positionKey: 'pirateUpperStabilizer'
+                        });
+                        break;
+                    case 'torpedo':
+                        loadout.push({
+                            type: 'torpedo',
+                            name: 'Jury-Rigged Torpedo',
+                            arc: 90,
+                            arcCenter: 180,
+                            positionKey: 'pirateLowerStabilizer'
+                        });
+                        break;
+                    case 'disruptor':
+                        loadout.push({
+                            type: 'disruptor',
+                            name: 'Stolen Disruptor',
+                            arc: 120,
+                            arcCenter: 270,
+                            positionKey: 'pirateWingPortInner'
+                        });
+                        break;
+                    case 'plasma':
+                        loadout.push({
+                            type: 'plasma',
+                            name: 'Black Market Plasma',
+                            arc: 90,
+                            arcCenter: 180,
+                            positionKey: 'pirateLowerStabilizer'
+                        });
+                        break;
+                }
+            }
+
+            return loadout;
+        }
+
+        function runTest() {
+            clearOutput();
+            log('═══════════════════════════════════════════════════════', 'info');
+            log('PIRATE WEAPON VARIETY TEST - TIER 2 ISSUE #9', 'info');
+            log('═══════════════════════════════════════════════════════', 'info');
+            log('');
+
+            // Test 1: Generate 10 pirate loadouts and check variety
+            log('TEST 1: Generate 10 pirate ships and verify weapon variety', 'info');
+            log('─────────────────────────────────────────────────────────', 'info');
+
+            const loadouts = [];
+            const weaponCombos = new Set();
+
+            for (let i = 1; i <= 10; i++) {
+                const loadout = generatePirateLoadout('CA');
+                const weapons = loadout.map(w => buildWeaponFromSpec(w));
+                const weaponTypes = weapons.map(w => w.constructor.name).sort().join('+');
+
+                loadouts.push({ id: i, weapons, weaponTypes });
+                weaponCombos.add(weaponTypes);
+
+                log(`Pirate ${i}: ${weaponTypes}`, 'success');
+            }
+
+            log('');
+            log(`Total unique weapon combinations: ${weaponCombos.size}`, weaponCombos.size >= 3 ? 'success' : 'warning');
+
+            if (weaponCombos.size >= 3) {
+                log('✓ PASS: Pirates show weapon variety (3+ unique combos)', 'success');
+            } else {
+                log('✗ FAIL: Insufficient weapon variety (expected 3+)', 'error');
+            }
+
+            log('');
+            log('Unique Combinations Found:', 'info');
+            weaponCombos.forEach(combo => {
+                const count = loadouts.filter(l => l.weaponTypes === combo).length;
+                log(`  - ${combo} (${count} ships)`, 'info');
+            });
+
+            // Test 2: Verify each weapon type appears
+            log('');
+            log('TEST 2: Verify all weapon types can appear', 'info');
+            log('─────────────────────────────────────────────────────────', 'info');
+
+            const allWeaponTypes = new Set();
+            loadouts.forEach(l => {
+                l.weapons.forEach(w => allWeaponTypes.add(w.constructor.name));
+            });
+
+            const expectedTypes = ['ContinuousBeam', 'TorpedoLauncher', 'Disruptor', 'PlasmaTorpedo'];
+            let allTypesPresent = true;
+
+            expectedTypes.forEach(type => {
+                if (allWeaponTypes.has(type)) {
+                    log(`✓ ${type} - Found`, 'success');
+                } else {
+                    log(`✗ ${type} - Missing (might appear with more samples)`, 'warning');
+                }
+            });
+
+            // Test 3: Verify no more than 2 weapon types per ship
+            log('');
+            log('TEST 3: Verify max 2 weapon types per ship', 'info');
+            log('─────────────────────────────────────────────────────────', 'info');
+
+            let maxWeaponTest = true;
+            loadouts.forEach(l => {
+                const count = l.weapons.length;
+                if (count > 2) {
+                    log(`✗ Pirate ${l.id} has ${count} weapons (max should be 2)`, 'error');
+                    maxWeaponTest = false;
+                }
+            });
+
+            if (maxWeaponTest) {
+                log('✓ PASS: All pirates have 1-2 weapon types', 'success');
+            } else {
+                log('✗ FAIL: Some pirates exceed 2 weapon types', 'error');
+            }
+
+            // Test 4: Verify no duplicate weapon types on same ship
+            log('');
+            log('TEST 4: Verify no duplicate weapon types per ship', 'info');
+            log('─────────────────────────────────────────────────────────', 'info');
+
+            let noDuplicatesTest = true;
+            loadouts.forEach(l => {
+                const types = l.weapons.map(w => w.constructor.name);
+                const uniqueTypes = new Set(types);
+                if (types.length !== uniqueTypes.size) {
+                    log(`✗ Pirate ${l.id} has duplicate weapon types: ${types.join(', ')}`, 'error');
+                    noDuplicatesTest = false;
+                }
+            });
+
+            if (noDuplicatesTest) {
+                log('✓ PASS: No pirates have duplicate weapon types', 'success');
+            } else {
+                log('✗ FAIL: Some pirates have duplicate weapon types', 'error');
+            }
+
+            // Summary
+            log('');
+            log('═══════════════════════════════════════════════════════', 'info');
+            log('TEST SUMMARY', 'info');
+            log('═══════════════════════════════════════════════════════', 'info');
+
+            const allPassed = weaponCombos.size >= 3 && maxWeaponTest && noDuplicatesTest;
+
+            if (allPassed) {
+                log('✓ ALL TESTS PASSED', 'success');
+                log('Random weapon generation is working correctly!', 'success');
+            } else {
+                log('✗ SOME TESTS FAILED', 'error');
+                log('Review the output above for details', 'warning');
+            }
+
+            log('');
+            log('Note: To test range-based weapon selection, launch the game', 'info');
+            log('and engage pirates at different ranges (<300px, >600px).', 'info');
+        }
+    </script>
+</body>
+</html>

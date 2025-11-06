@@ -1,0 +1,54 @@
+Issues to Address
+
+Remove systems from the systems list which a ship doesn't have
+Add systems to the systems list which a ship does have
+
+For example, Trigon CA, remove FWD beams, AFT beams and Torpedoes. Replace with three FWD Disruptor HP bars.
+
+Add title "Consumables" under Systems section.
+
+Only show consumable items with a current value of 1+.
+Ships with torpedoes have a torpedoes stored value. If extra torpedoes are chosen as a consumable the extra torps are added to the torpedoes stored value.
+
+Place a loadout section in the mission briefing screen.
+This consists of one button for each type of consumable.
+LMB on a button to add one of that consumable to the ship, RMB to remove one of that consumable from the ship.
+List selected consumables under the buttons, maximum number of consumables is defined by ship.
+
+Double tap A or D needs to rotate the ship much faster
+
+Add visible firing points to all ships. Federation CA and CS already have firing points for beams but not for torpedoes. Torpedo firing point should be a red circle immediately below the orange "loaded" circles. When a weapon is reduced to 0 HP delete its firing point from the ship graphic.
+
+Disruptor firing points should be blue circles. Pulse beams are hollow green circles and plasma torpedo is a filled green circle.
+
+SHIFT+Number Keys 1-6 select Drone mission and second press launches Drone on that mission.
+CTRL+Number Keys 1-6 select Fighter mission and second press launches Fighter on that mission.
+ALTL+Number Keys 1-6 select Bomber mission and second press launches Bomber on that mission.
+
+Tractor beam is not holding target ship static in relation to player ship. When tractor is engaged place a bar below the target ship which empties from full (right) to empty (left), this shows time remaining before the tractor shuts off and has to cool-down before being activateable again.
+
+When a system is on cool down fade outs its title and HP bar in the ship display.
+
+Transporter "t" key toggles transporters on and off. When on the ship will automatically execute a transport attack when an eligible target with shields down is in range. Add a Transporter status to the information panel, showing On/Off.
+
+Remove F key "lock target" from the Controls summary.
+
+Check lock-on mechanism. Reticle has reverted to rotating all the time. It should only rotate when near an eligible target and speed up as the lock progresses then stopping rotating and turning red when lock-on is achieved, typically after 2-3 seconds of keeping the mouse more or less over the target. Attacks against the locked-on target gain an auto-aim bonus (torpedoes will home in, changing course by up to 15 degrees/second. Beams and Disruptors will deviate up to 15 degrees from the centre reticle to score a hit if they would other wise miss. Also, whilst locked-on, a panel appears in the bottom left showing the enemies information, the same as the players panel in hte top left.
+
+The player panel should have a green header and the locked-on target a red header.
+
+Double Disruptor ranges and increase beam ranges by 50%.
+
+Torpedoes do not home in on a locked-on target once the target is behind them (i.e in their rear 270 arc).
+
+P key should ping sensors, doubling range for 10 seconds, and revealing cloaked ships on the mini-map when the ping radiates out past them. They fade out again after 10 seconds.
+
+Scinitilian cloaked ships needed implementing. When player controlled "f" toggles cloak on and off. THere is a 30 second cooldown after cloaking or decloaking before you can toggle the cloak again. When your cloak is Up you are invisible but have 0 shields.
+
+When you toggle the cloak off you appear and your shields recharge at normal rate. You cannot fire or lock-on when cloaked but can charge plasma torpedoes (RMB to charge, RMB release to launch), but if you release the RMB whilst cloaked the torpedo fizzles and is lost with no effect.
+
+Damage does not appear to be reducing HP bars and shield bars in the Display panel.
+
+Check rules, X key should full stop and temporarily boost forward shield (may boost above normal maximum) if moving forward, or rear shield if moving backward.
+
+Reduce all ships acceleration and decceleration rates by 30% but double maximum forward and rearward speed limits.

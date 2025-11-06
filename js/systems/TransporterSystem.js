@@ -1,268 +1,165 @@
 /**
  * Star Sea - Transporter System
- * Handles beaming objects between ships and locations
+ * T key toggles mode, auto-fires when close + target shields down
+ * Instantly transports crew, drops player's facing shield
  */
 
 class TransporterSystem {
-    constructor() {
-        this.playerShip = null;
-        this.isActive = false;
-        this.transportTarget = null;
-        this.transportProgress = 0;
-        this.transportDuration = 3.0; // 3 seconds to transport
-        this.transportRange = 200; // Transport range in pixels
+    constructor(ship) {
+        this.ship = ship;
+        this.modeActive = false; // T key toggles this
+        this.maxRange = 0; // Will be set based on ship length
         this.lastTransportTime = 0;
-        this.transportCooldown = 5.0; // 5 second cooldown between transports
+        this.transportCooldown = 5.0; // 5 second cooldown
+        this.transportEffect = 0; // Visual effect timer
     }
 
-    init(playerShip) {
-        this.playerShip = playerShip;
-        eventBus.on('keydown', this.handleKeyDown.bind(this));
+    /**
+     * Initialize system with ship reference
+     */
+    init(ship) {
+        this.ship = ship;
     }
 
-    handleKeyDown(event) {
-        if (event.key === 't' && this.playerShip) {
-            this.toggleTransporter();
+    /**
+     * Toggle transporter mode on/off
+     */
+    toggle() {
+        this.modeActive = !this.modeActive;
+        console.log(`Transporter mode: ${this.modeActive ? 'ON' : 'OFF'}`);
+    }
+
+    /**
+     * Attempt transport if conditions are met
+     */
+    attemptTransport(entities, currentTime) {
+        if (!this.modeActive) return;
+        if (!this.canUseTransporter(currentTime)) return;
+
+        // Set range based on ship length
+        this.maxRange = this.ship.length * 10;
+
+        // Find nearest enemy ship
+        const target = this.findNearestEnemyShip(entities);
+        if (!target) return;
+
+        // Calculate distance
+        const dx = target.x - this.ship.x;
+        const dy = target.y - this.ship.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        // Check conditions: within range AND target shields are down
+        if (dist <= this.maxRange && target.shields && target.shields.getTotal() === 0) {
+            this.executeTransport(target, currentTime);
         }
     }
 
-    toggleTransporter() {
-        if (this.isActive) {
-            this.deactivate();
-        } else {
-            this.activate();
-        }
-    }
+    /**
+     * Find nearest enemy ship
+     */
+    findNearestEnemyShip(entities) {
+        let nearest = null;
+        let nearestDist = Infinity;
 
-    activate() {
-        if (!this.playerShip || !this.playerShip.isOperational()) return;
+        for (const entity of entities) {
+            if (!entity.active) continue;
+            if (entity === this.ship) continue;
+            if (entity.type !== 'ship') continue;
+            if (entity.faction === this.ship.faction) continue; // Skip allies
 
-        // Find transportable target
-        this.transportTarget = this.findTransportTarget();
+            const dx = entity.x - this.ship.x;
+            const dy = entity.y - this.ship.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (this.transportTarget) {
-            this.isActive = true;
-            this.transportProgress = 0;
-            eventBus.emit('transporter-activated', { target: this.transportTarget });
-            console.log(`Transporter activated on ${this.transportTarget.name || this.transportTarget.type}`);
-        } else {
-            console.log('No valid target for transporter.');
-        }
-    }
-
-    deactivate() {
-        if (this.isActive) {
-            this.isActive = false;
-            this.transportProgress = 0;
-            eventBus.emit('transporter-deactivated', { target: this.transportTarget });
-            console.log('Transporter deactivated.');
-        }
-        this.transportTarget = null;
-    }
-
-    findTransportTarget() {
-        // Priority: mines, shuttles, torpedoes, small ships
-        const entitiesInRange = window.game.entities.filter(e =>
-            e.active &&
-            e !== this.playerShip &&
-            MathUtils.distance(this.playerShip.x, this.playerShip.y, e.x, e.y) <= this.transportRange
-        );
-
-        // Sort by priority and distance
-        entitiesInRange.sort((a, b) => {
-            const priorityA = this.getTransportPriority(a);
-            const priorityB = this.getTransportPriority(b);
-
-            if (priorityA !== priorityB) {
-                return priorityB - priorityA; // Higher priority first
-            }
-            return MathUtils.distance(this.playerShip.x, this.playerShip.y, a.x, a.y) -
-                   MathUtils.distance(this.playerShip.x, this.playerShip.y, b.x, b.y); // Closer first
-        });
-
-        for (const entity of entitiesInRange) {
-            if (this.canTransport(entity)) {
-                return entity;
+            if (dist <= this.maxRange && dist < nearestDist) {
+                nearest = entity;
+                nearestDist = dist;
             }
         }
-        return null;
+
+        return nearest;
     }
 
-    getTransportPriority(entity) {
-        switch (entity.type) {
-            case 'mine': return 4;
-            case 'shuttle': return 3;
-            case 'torpedo': return 2;
-            case 'ship': return 1;
-            default: return -1;
+    /**
+     * Execute instant transport
+     */
+    executeTransport(target, currentTime) {
+        // Drop player's facing shield
+        if (this.ship.shields) {
+            this.ship.shields.dropFacingShield();
+        }
+
+        // Transport crew (for now, just damage target)
+        if (target.hp) {
+            const transportDamage = 20; // Crew transport damage
+            target.hp -= transportDamage;
+            console.log(`Transported crew to ${target.name || target.faction}, dealt ${transportDamage} damage`);
+        }
+
+        // Play transporter sound
+        if (window.audioManager) {
+            window.audioManager.playSound('transporter');
+        }
+
+        // Visual effect
+        this.transportEffect = 1.0;
+
+        // Set cooldown
+        this.lastTransportTime = currentTime;
+    }
+
+    /**
+     * Check if transporter is off cooldown
+     */
+    canUseTransporter(currentTime) {
+        return (currentTime - this.lastTransportTime) >= this.transportCooldown;
+    }
+
+    /**
+     * Update transporter system
+     */
+    update(deltaTime, entities, currentTime) {
+        // Try to auto-fire if mode is active
+        this.attemptTransport(entities, currentTime);
+
+        // Update visual effect
+        if (this.transportEffect > 0) {
+            this.transportEffect -= deltaTime * 2;
+            if (this.transportEffect < 0) this.transportEffect = 0;
         }
     }
 
-    canTransport(entity) {
-        switch (entity.type) {
-            case 'mine':
-            case 'shuttle':
-            case 'torpedo':
-                return true;
-            case 'ship':
-                // Can only transport ships smaller than player
-                return this.playerShip.getShipSizeValue() > entity.getShipSizeValue();
-            default:
-                return false;
-        }
+    /**
+     * Render transporter effect (optional visual indicator)
+     */
+    render(ctx, camera) {
+        if (this.transportEffect <= 0) return;
+
+        const playerPos = camera.worldToScreen(this.ship.x, this.ship.y);
+
+        ctx.save();
+
+        // Draw pulsing circle around player ship
+        const radius = 30 + (1 - this.transportEffect) * 50;
+        const alpha = this.transportEffect * 0.8;
+
+        ctx.strokeStyle = `rgba(255, 255, 0, ${alpha})`;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.arc(playerPos.x, playerPos.y, radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.restore();
     }
 
-    update(deltaTime, currentTime) {
-        if (!this.isActive || !this.transportTarget || !this.playerShip || !this.playerShip.active) {
-            this.deactivate();
-            return;
-        }
-
-        // Check if target is still valid
-        if (!this.transportTarget.active ||
-            MathUtils.distance(this.playerShip.x, this.playerShip.y, this.transportTarget.x, this.transportTarget.y) > this.transportRange * 1.2) {
-            this.deactivate();
-            return;
-        }
-
-        // Update transport progress
-        this.transportProgress += deltaTime;
-
-        // Check if transport is complete
-        if (this.transportProgress >= this.transportDuration) {
-            this.completeTransport();
-        }
-    }
-
-    completeTransport() {
-        if (!this.transportTarget) return;
-
-        const target = this.transportTarget;
-        this.lastTransportTime = performance.now() / 1000;
-
-        // Handle different transport types
-        switch (target.type) {
-            case 'mine':
-                this.transportMine(target);
-                break;
-            case 'shuttle':
-                this.transportShuttle(target);
-                break;
-            case 'torpedo':
-                this.transportTorpedo(target);
-                break;
-            case 'ship':
-                this.transportShip(target);
-                break;
-        }
-
-        this.deactivate();
-    }
-
-    transportMine(mine) {
-        // Transport mine to a random location near player
-        const angle = MathUtils.random(0, 360);
-        const distance = MathUtils.random(50, 100);
-        const newX = this.playerShip.x + Math.cos(MathUtils.toRadians(angle)) * distance;
-        const newY = this.playerShip.y + Math.sin(MathUtils.toRadians(angle)) * distance;
-
-        mine.x = newX;
-        mine.y = newY;
-        mine.owner = this.playerShip; // Change ownership
-
-        eventBus.emit('mine-transported', { mine: mine, newLocation: { x: newX, y: newY } });
-        console.log('Mine transported to new location');
-    }
-
-    transportShuttle(shuttle) {
-        // Transport shuttle to player's bay
-        if (this.playerShip.baySystem) {
-            this.playerShip.baySystem.recoverShuttle(shuttle);
-            eventBus.emit('shuttle-transported', { shuttle: shuttle });
-            console.log('Shuttle transported to bay');
-        }
-    }
-
-    transportTorpedo(torpedo) {
-        // Transport torpedo to a random location (disarm it)
-        const angle = MathUtils.random(0, 360);
-        const distance = MathUtils.random(100, 200);
-        const newX = this.playerShip.x + Math.cos(MathUtils.toRadians(angle)) * distance;
-        const newY = this.playerShip.y + Math.sin(MathUtils.toRadians(angle)) * distance;
-
-        torpedo.x = newX;
-        torpedo.y = newY;
-        torpedo.lifetime = 0; // Disarm torpedo
-
-        eventBus.emit('torpedo-transported', { torpedo: torpedo });
-        console.log('Torpedo transported and disarmed');
-    }
-
-    transportShip(ship) {
-        // Transport ship to a random location
-        const angle = MathUtils.random(0, 360);
-        const distance = MathUtils.random(150, 300);
-        const newX = this.playerShip.x + Math.cos(MathUtils.toRadians(angle)) * distance;
-        const newY = this.playerShip.y + Math.sin(MathUtils.toRadians(angle)) * distance;
-
-        ship.x = newX;
-        ship.y = newY;
-
-        eventBus.emit('ship-transported', { ship: ship, newLocation: { x: newX, y: newY } });
-        console.log('Ship transported to new location');
-    }
-
-    canUseTransporter() {
-        const currentTime = performance.now() / 1000;
-        return currentTime - this.lastTransportTime >= this.transportCooldown;
-    }
-
-    getTransportStatus() {
+    /**
+     * Get system status
+     */
+    getStatus() {
         return {
-            isActive: this.isActive,
-            target: this.transportTarget,
-            progress: this.transportProgress,
-            duration: this.transportDuration,
-            canUse: this.canUseTransporter()
+            modeActive: this.modeActive,
+            range: this.maxRange,
+            cooldownReady: this.transportEffect === 0
         };
     }
-
-    render(ctx, camera) {
-        if (!this.isActive || !this.transportTarget || !this.playerShip) return;
-
-        const playerScreenPos = camera.worldToScreen(this.playerShip.x, this.playerShip.y);
-        const targetScreenPos = camera.worldToScreen(this.transportTarget.x, this.transportTarget.y);
-
-        // Draw transport beam
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(playerScreenPos.x, playerScreenPos.y);
-        ctx.lineTo(targetScreenPos.x, targetScreenPos.y);
-        ctx.strokeStyle = CONFIG.COLOR_TRANSPORTER_BEAM;
-        ctx.lineWidth = 3;
-        ctx.setLineDash([5, 5]); // Dashed line
-        ctx.stroke();
-        ctx.setLineDash([]); // Reset dash
-        ctx.restore();
-
-        // Draw progress indicator
-        const progressPercent = this.transportProgress / this.transportDuration;
-        const progressBarWidth = 100;
-        const progressBarHeight = 10;
-        const progressBarX = targetScreenPos.x - progressBarWidth / 2;
-        const progressBarY = targetScreenPos.y - 30;
-
-        ctx.save();
-        ctx.fillStyle = '#333333';
-        ctx.fillRect(progressBarX, progressBarY, progressBarWidth, progressBarHeight);
-        
-        ctx.fillStyle = CONFIG.COLOR_TRANSPORTER_BEAM;
-        ctx.fillRect(progressBarX, progressBarY, progressBarWidth * progressPercent, progressBarHeight);
-        
-        ctx.strokeStyle = '#ffffff';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(progressBarX, progressBarY, progressBarWidth, progressBarHeight);
-        ctx.restore();
-    }
 }
-

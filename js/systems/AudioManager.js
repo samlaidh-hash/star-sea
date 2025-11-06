@@ -5,6 +5,7 @@ class AudioManager {
         this.volumeMaster = (typeof AUDIO_CONFIG !== 'undefined') ? AUDIO_CONFIG.volumeMaster : 1.0;
         this.buffers = new Map();
         this.initialized = false;
+        this.loopingInstances = new Map(); // Track looping sound instances
     }
 
     initialize() {
@@ -37,5 +38,54 @@ class AudioManager {
         instance.play().catch(() => {
             // Ignore play errors (e.g., not triggered by user gesture)
         });
+    }
+
+    /**
+     * Start a looping sound (for continuous effects like beam firing)
+     * @param {string} name - Sound name
+     * @param {object} options - Playback options (volume, etc.)
+     */
+    startLoopingSound(name, options = {}) {
+        if (!this.enabled) return;
+
+        // Stop existing instance if any
+        this.stopLoopingSound(name);
+
+        const audio = this.buffers.get(name);
+        if (!audio) return;
+
+        // Create looping instance
+        const instance = audio.cloneNode();
+        instance.loop = true;
+        const volume = options.volume !== undefined ? options.volume : (AUDIO_CONFIG.sounds[name]?.volume || 1.0);
+        instance.volume = this.volumeMaster * volume;
+
+        this.loopingInstances.set(name, instance);
+
+        instance.play().catch(() => {
+            // Ignore play errors (e.g., not triggered by user gesture)
+        });
+    }
+
+    /**
+     * Stop a looping sound
+     * @param {string} name - Sound name
+     */
+    stopLoopingSound(name) {
+        const instance = this.loopingInstances.get(name);
+        if (instance) {
+            instance.pause();
+            instance.currentTime = 0;
+            this.loopingInstances.delete(name);
+        }
+    }
+
+    /**
+     * Check if a looping sound is currently playing
+     * @param {string} name - Sound name
+     * @returns {boolean}
+     */
+    isLoopingSound(name) {
+        return this.loopingInstances.has(name);
     }
 }

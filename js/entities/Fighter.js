@@ -9,7 +9,8 @@ class Fighter extends Entity {
         this.type = 'fighter';
         this.ownerShip = config.ownerShip;
         this.faction = config.faction || 'FEDERATION';
-        
+        this.mission = config.mission || 'ATTACK'; // Mission type: ATTACK, DEFENSE, PASSIVE, RECON
+
         // Fighter stats
         this.maxHp = 1;
         this.hp = 1;
@@ -18,12 +19,12 @@ class Fighter extends Entity {
         this.maxSpeed = this.ownerShip.maxSpeed * 0.8; // 80% of ship speed
         this.acceleration = this.ownerShip.acceleration * 1.2; // More responsive
         this.turnRate = this.ownerShip.turnRate * 2.0; // Much more maneuverable
-        
+
         // Visual properties
         this.radius = 6;
         this.color = this.getFighterColor();
         this.vertices = this.generateFighterVertices();
-        
+
         // AI behavior
         this.aiState = 'PATROL';
         this.target = null;
@@ -31,7 +32,10 @@ class Fighter extends Entity {
         this.weaponCooldown = 0;
         this.beamRange = this.ownerShip.getBeamRange() * 0.3; // 30% of ship beam range
         this.beamDamage = 0.5; // Half damage of ship beams
-        
+
+        // Special ability: Beam Jamming (like Drones)
+        this.jammingPower = 0.3; // Adds 0.3s to target ship beam cooldown per hit
+
         // Physics
         this.physicsWorld = config.physicsWorld;
         if (this.physicsWorld) {
@@ -91,6 +95,26 @@ class Fighter extends Entity {
     }
 
     executeAI(deltaTime, currentTime, allEntities) {
+        // Execute mission-specific behavior
+        switch(this.mission) {
+            case 'ATTACK':
+                this.executeAttackMission(deltaTime, allEntities);
+                break;
+            case 'DEFENSE':
+                this.executeDefenseMission(deltaTime, allEntities);
+                break;
+            case 'PASSIVE':
+                this.executePassiveMission(deltaTime);
+                break;
+            case 'RECON':
+                this.executeReconMission(deltaTime, allEntities);
+                break;
+            default:
+                this.executeAttackMission(deltaTime, allEntities);
+        }
+    }
+
+    executeAttackMission(deltaTime, allEntities) {
         // Find nearest enemy
         let nearestEnemy = null;
         let nearestDistance = Infinity;
@@ -111,14 +135,113 @@ class Fighter extends Entity {
             this.turnTowardsAngle(angleToEnemy, deltaTime);
             this.applyThrust(1.0, deltaTime);
 
-            // Fire at enemy if in range
+            // Fire at enemy if in range and in forward arc
             if (nearestDistance <= this.beamRange && this.weaponCooldown <= 0) {
-                this.fireBeam(nearestEnemy.x, nearestEnemy.y);
-                this.weaponCooldown = 0.5; // Fast firing rate
+                if (this.isTargetInForwardArc(nearestEnemy.x, nearestEnemy.y)) {
+                    this.fireBeam(nearestEnemy.x, nearestEnemy.y, nearestEnemy);
+                    this.weaponCooldown = 0.5; // Fast firing rate
+                }
             }
         } else {
             // Patrol around owner
             this.patrolAroundOwner(deltaTime);
+        }
+    }
+
+    executeDefenseMission(deltaTime, allEntities) {
+        // Orbit owner ship and intercept threats
+        const ownerDistance = MathUtils.distance(this.x, this.y, this.ownerShip.x, this.ownerShip.y);
+        const defenseRadius = 100;
+
+        // Find closest threat within defense radius
+        let nearestThreat = null;
+        let nearestThreatDistance = Infinity;
+
+        for (const entity of allEntities) {
+            if (!entity.active) continue;
+
+            // Check for torpedoes or enemy ships near owner
+            let isThreat = false;
+            if (entity.type === 'torpedo' && entity.sourceShip !== this.ownerShip) {
+                const threatToOwner = MathUtils.distance(entity.x, entity.y, this.ownerShip.x, this.ownerShip.y);
+                if (threatToOwner < defenseRadius * 2) isThreat = true;
+            } else if (entity.type === 'ship' && entity !== this.ownerShip) {
+                const threatToOwner = MathUtils.distance(entity.x, entity.y, this.ownerShip.x, this.ownerShip.y);
+                if (threatToOwner < defenseRadius) isThreat = true;
+            }
+
+            if (isThreat) {
+                const distance = MathUtils.distance(this.x, this.y, entity.x, entity.y);
+                if (distance < nearestThreatDistance) {
+                    nearestThreatDistance = distance;
+                    nearestThreat = entity;
+                }
+            }
+        }
+
+        if (nearestThreat) {
+            // Intercept threat
+            const angleToThreat = MathUtils.angleBetween(this.x, this.y, nearestThreat.x, nearestThreat.y);
+            this.turnTowardsAngle(angleToThreat, deltaTime);
+            this.applyThrust(1.0, deltaTime);
+
+            if (nearestThreatDistance <= this.beamRange && this.weaponCooldown <= 0) {
+                if (this.isTargetInForwardArc(nearestThreat.x, nearestThreat.y)) {
+                    this.fireBeam(nearestThreat.x, nearestThreat.y, nearestThreat);
+                    this.weaponCooldown = 0.5;
+                }
+            }
+        } else {
+            // Orbit owner ship
+            const angleToOwner = MathUtils.angleBetween(this.x, this.y, this.ownerShip.x, this.ownerShip.y);
+            const orbitAngle = angleToOwner + 90;
+            this.turnTowardsAngle(orbitAngle, deltaTime);
+
+            // Maintain orbit distance
+            if (ownerDistance < defenseRadius * 0.8) {
+                this.applyThrust(-0.3, deltaTime); // Back away
+            } else if (ownerDistance > defenseRadius * 1.2) {
+                this.applyThrust(0.8, deltaTime); // Move closer
+            } else {
+                this.applyThrust(0.4, deltaTime); // Maintain orbit
+            }
+        }
+    }
+
+    executePassiveMission(deltaTime) {
+        // Formation follow - stay near owner, avoid combat
+        const angleToOwner = MathUtils.angleBetween(this.x, this.y, this.ownerShip.x, this.ownerShip.y);
+        const distance = MathUtils.distance(this.x, this.y, this.ownerShip.x, this.ownerShip.y);
+        const formationDistance = 50;
+
+        if (distance > formationDistance) {
+            // Follow owner
+            this.turnTowardsAngle(angleToOwner, deltaTime);
+            this.applyThrust(0.7, deltaTime);
+        } else {
+            // Maintain position
+            const formationAngle = angleToOwner + 120; // Offset position
+            this.turnTowardsAngle(formationAngle, deltaTime);
+            this.applyThrust(0.3, deltaTime);
+        }
+    }
+
+    executeReconMission(deltaTime, allEntities) {
+        // Scout ahead of owner ship
+        const scoutDistance = 200;
+        const angleToOwner = MathUtils.angleBetween(this.x, this.y, this.ownerShip.x, this.ownerShip.y);
+        const scoutAngle = this.ownerShip.rotation; // Face where owner is facing
+        const distance = MathUtils.distance(this.x, this.y, this.ownerShip.x, this.ownerShip.y);
+
+        if (distance < scoutDistance) {
+            // Move ahead of owner
+            this.turnTowardsAngle(scoutAngle, deltaTime);
+            this.applyThrust(0.8, deltaTime);
+        } else {
+            // Circle and scan
+            const scanAngle = scoutAngle + (currentTime * 30) % 360; // Slow circle
+            this.turnTowardsAngle(scanAngle, deltaTime);
+            this.applyThrust(0.4, deltaTime);
         }
     }
 
@@ -157,7 +280,14 @@ class Fighter extends Entity {
         );
     }
 
-    fireBeam(targetX, targetY) {
+    isTargetInForwardArc(targetX, targetY) {
+        // Check if target is within 90° forward arc
+        const angleToTarget = MathUtils.angleBetween(this.x, this.y, targetX, targetY);
+        const angleDiff = MathUtils.normalizeAngle(angleToTarget - this.rotation);
+        return Math.abs(angleDiff) <= 45; // 90° arc total (±45°)
+    }
+
+    fireBeam(targetX, targetY, target = null) {
         // Create beam projectile
         const beam = new BeamProjectile({
             x: this.x,
@@ -171,7 +301,30 @@ class Fighter extends Entity {
             sourceShip: this
         });
 
+        // Apply beam jamming if target is a ship
+        if (target && target.type === 'ship') {
+            this.applyBeamJamming(target);
+        }
+
         eventBus.emit('fighter-fired-beam', { fighter: this, projectile: beam });
+    }
+
+    applyBeamJamming(targetShip) {
+        // Add cooldown delay to target ship's beam weapons
+        if (targetShip.weapons) {
+            for (const weapon of targetShip.weapons) {
+                if (weapon.type === 'beam' || weapon.weaponType === 'beam') {
+                    // Add jamming delay to weapon cooldown
+                    if (weapon.lastFireTime !== undefined) {
+                        weapon.lastFireTime += this.jammingPower;
+                    }
+                }
+            }
+            // Visual feedback for jammed ship (could add indicator)
+            if (targetShip.isPlayer) {
+                console.log('⚡ Ship beams jammed by Fighter! (+0.3s cooldown)');
+            }
+        }
     }
 
     updateShieldRecovery(deltaTime, currentTime) {

@@ -201,10 +201,12 @@ class Shuttle extends Entity {
             this.turnTowardsAngle(angleToEnemy, deltaTime);
             this.applyThrust(1.0, deltaTime);
 
-            // Fire at enemy if in range
+            // Fire at enemy if in range and in forward arc
             if (nearestDistance <= this.beamRange && this.weaponCooldown <= 0) {
-                this.fireBeam(nearestEnemy.x, nearestEnemy.y);
-                this.weaponCooldown = 1.0; // 1 second cooldown
+                if (this.isTargetInForwardArc(nearestEnemy.x, nearestEnemy.y)) {
+                    this.fireBeam(nearestEnemy.x, nearestEnemy.y);
+                    this.weaponCooldown = 1.0; // 1 second cooldown
+                }
             }
         } else {
             // No enemies, patrol around owner
@@ -247,10 +249,12 @@ class Shuttle extends Entity {
             this.turnTowardsAngle(angleToTarget, deltaTime);
             this.applyThrust(1.0, deltaTime);
 
-            // Fire at target if in range
+            // Fire at target if in range and in forward arc
             if (targetDistance <= this.beamRange && this.weaponCooldown <= 0) {
-                this.fireBeam(target.x, target.y);
-                this.weaponCooldown = 1.0;
+                if (this.isTargetInForwardArc(target.x, target.y)) {
+                    this.fireBeam(target.x, target.y);
+                    this.weaponCooldown = 1.0;
+                }
             }
         } else {
             // Patrol around owner
@@ -392,10 +396,17 @@ class Shuttle extends Entity {
 
         const thrust = this.acceleration * thrustPercent;
         const thrustVec = MathUtils.vectorFromAngle(this.rotation, thrust);
-        
+
         this.physicsComponent.body.applyForceToCenter(
             planck.Vec2(thrustVec.x, thrustVec.y)
         );
+    }
+
+    isTargetInForwardArc(targetX, targetY) {
+        // Check if target is within 90° forward arc
+        const angleToTarget = MathUtils.angleBetween(this.x, this.y, targetX, targetY);
+        const angleDiff = MathUtils.normalizeAngle(angleToTarget - this.rotation);
+        return Math.abs(angleDiff) <= 45; // 90° arc total (±45°)
     }
 
     fireBeam(targetX, targetY) {

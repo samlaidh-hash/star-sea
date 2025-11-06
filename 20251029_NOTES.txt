@@ -1,0 +1,9 @@
+
+enemy
+ships not moving and not firing, beams not damaging enemy shipsor shields, torpedoes are damaging shields and
+systems but do not appear to be damaging hull, lock-on is STILL not working
+ 
+the console log says that lock-on was acquired but nothing visible happened and torps not appearing to home in,
+  torps are also not originating from ship but from some distance away from hull
+
+terrain needs fixing

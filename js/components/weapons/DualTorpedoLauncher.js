@@ -49,8 +49,8 @@ class DualTorpedoLauncher extends Weapon {
             });
         }
 
-        // Start reload timer when we run out of loaded torpedoes
-        if (this.loaded === 0 && this.stored > 0 && !this.isReloading) {
+        // Start reload timer when we fire a torpedo and have stored ammo
+        if (this.stored > 0 && !this.isReloading) {
             this.reloadStartTime = currentTime;
             this.isReloading = true;
         }
@@ -92,7 +92,8 @@ class DualTorpedoLauncher extends Weapon {
                     lifetime: this.lifetime * 1.2,
                     sourceShip: ship,
                     lockOnTarget: lockOnTarget,
-                    firingArc: firingArc
+                    firingArc: firingArc,
+                    trackReticle: false // Torpedoes no longer track reticle
                 });
                 break;
 
@@ -109,7 +110,8 @@ class DualTorpedoLauncher extends Weapon {
                     lifetime: this.lifetime,
                     sourceShip: ship,
                     lockOnTarget: lockOnTarget,
-                    firingArc: firingArc
+                    firingArc: firingArc,
+                    trackReticle: false // Torpedoes no longer track reticle
                 });
                 break;
 
@@ -128,7 +130,8 @@ class DualTorpedoLauncher extends Weapon {
                     lockOnTarget: lockOnTarget,
                     firingArc: firingArc,
                     gravityWellDuration: 10.0,
-                    gravityWellStrength: 0.3
+                    gravityWellStrength: 0.3,
+                    trackReticle: false // Torpedoes no longer track reticle
                 });
                 break;
 
@@ -146,7 +149,8 @@ class DualTorpedoLauncher extends Weapon {
                     lifetime: this.lifetime,
                     sourceShip: ship,
                     lockOnTarget: lockOnTarget,
-                    firingArc: firingArc
+                    firingArc: firingArc,
+                    trackReticle: false // Torpedoes no longer track reticle
                 });
                 break;
         }
@@ -158,22 +162,27 @@ class DualTorpedoLauncher extends Weapon {
         // Call parent auto-repair
         super.update(deltaTime, currentTime);
 
-        // Handle reloading - reload all torpedoes at once after 5 seconds
-        if (this.isReloading && this.stored > 0) {
+        // Handle reloading - top-off system: reload ONE torpedo every 5 seconds until full
+        if (this.isReloading && this.stored > 0 && this.loaded < this.maxLoaded) {
             const timeSinceReloadStart = currentTime - this.reloadStartTime;
 
             if (timeSinceReloadStart >= this.reloadTime) {
-                // Reload all torpedoes at once
-                const torpsToReload = Math.min(this.maxLoaded, this.stored);
-                this.loaded = torpsToReload;
-                this.stored -= torpsToReload;
-                this.isReloading = false;
+                // Reload ONE torpedo from storage
+                this.loaded++;
+                this.stored--;
 
                 if (CONFIG.DEBUG_MODE) {
-                    console.log('Dual Torpedoes reloaded:', {
+                    console.log('Dual Torpedo reloaded:', {
                         loaded: this.loaded,
                         stored: this.stored
                     });
+                }
+
+                // If still not full and have more stored, continue reloading
+                if (this.loaded < this.maxLoaded && this.stored > 0) {
+                    this.reloadStartTime = currentTime; // Reset timer for next torpedo
+                } else {
+                    this.isReloading = false; // Stop reloading when full or out of stored
                 }
             }
         }
@@ -237,22 +246,32 @@ class DualTorpedoLauncher extends Weapon {
             const worldSin = Math.sin(worldRad);
 
             // Apply weapon mount position with additional forward offset to clear ship hull
-            const forwardOffset = shipSize * 0.6; // 60% of ship size forward
+            const forwardOffset = shipSize * 1.5; // 150% of ship size forward - prevents stuck torpedoes
             const totalX = this.position.x;
             const totalY = this.position.y - forwardOffset; // Negative Y = forward
 
-            const worldX = ship.x + (totalX * worldCos - totalY * worldSin);
-            const worldY = ship.y + (totalX * worldSin + totalY * worldCos);
+            let worldX = ship.x + (totalX * worldCos - totalY * worldSin);
+            let worldY = ship.y + (totalX * worldSin + totalY * worldCos);
+
+            // Add velocity compensation for fast-moving ships
+            worldX += (ship.vx || 0) * 0.15;
+            worldY += (ship.vy || 0) * 0.15;
+
             return { x: worldX, y: worldY };
         }
 
         // Fallback: offset forward from ship center (large offset to clear ship)
-        const offset = shipSize * 0.75; // 75% of ship size forward
+        const offset = shipSize * 1.5; // 150% of ship size forward - prevents stuck torpedoes
         const worldRad = MathUtils.toRadians(ship.rotation);
-        return {
-            x: ship.x + Math.sin(worldRad) * offset,
-            y: ship.y - Math.cos(worldRad) * offset
-        };
+
+        let x = ship.x + Math.sin(worldRad) * offset;
+        let y = ship.y - Math.cos(worldRad) * offset;
+
+        // Add velocity compensation for fast-moving ships
+        x += (ship.vx || 0) * 0.15;
+        y += (ship.vy || 0) * 0.15;
+
+        return { x, y };
     }
 }
 

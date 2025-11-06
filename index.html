@@ -94,6 +94,38 @@
                 </div>
             </div>
 
+            <!-- Consumables (Loadout) -->
+            <div class="system-group" id="consumables-group">
+                <div class="system-label">Consumables [F1-F6]</div>
+                <div id="consumables-status">
+                    <div class="consumable-item" data-consumable="extraTorpedoes">
+                        <span class="consumable-name">[F1] Torpedoes</span>
+                        <span class="consumable-count" id="consumable-torpedoes">0</span>
+                    </div>
+                    <div class="consumable-item" data-consumable="extraDecoys">
+                        <span class="consumable-name">[F2] Decoys</span>
+                        <span class="consumable-count" id="consumable-decoys">0</span>
+                    </div>
+                    <div class="consumable-item" data-consumable="extraMines">
+                        <span class="consumable-name">[F3] Mines</span>
+                        <span class="consumable-count" id="consumable-mines">0</span>
+                    </div>
+                    <div class="consumable-item" data-consumable="shieldBoost">
+                        <span class="consumable-name">[F4] Shield+</span>
+                        <span class="consumable-count" id="consumable-shield-boost">0</span>
+                    </div>
+                    <div class="consumable-item" data-consumable="hullRepairKit">
+                        <span class="consumable-name">[F5] Repair</span>
+                        <span class="consumable-count" id="consumable-repair">0</span>
+                    </div>
+                    <div class="consumable-item" data-consumable="energyCells">
+                        <span class="consumable-name">[F6] Energy</span>
+                        <span class="consumable-count" id="consumable-energy">0</span>
+                        <span class="consumable-active" id="consumable-energy-active" style="display: none;">[ACTIVE]</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Inventory -->
             <div class="system-group">
                 <div class="inventory-line">Decoys: <span id="decoy-count">6</span></div>
@@ -130,11 +162,29 @@
                     <div id="boost-fill"></div>
                 </div>
             </div>
+
+            <!-- Ping Status -->
+            <div class="system-group" id="ping-status-group" style="display: none;">
+                <div class="system-label" id="ping-label">PING</div>
+                <div id="ping-bar">
+                    <div id="ping-fill"></div>
+                </div>
+                <div id="ping-text" style="text-align: center; color: #00ffff; font-size: 12px; margin-top: 2px;"></div>
+            </div>
         </div>
 
         <!-- Minimap (Top Right) -->
         <div id="minimap-container">
             <canvas id="minimap" width="200" height="200"></canvas>
+        </div>
+
+        <!-- Target Info Panel (Below Minimap) -->
+        <div id="target-info-panel" style="display: none;">
+            <div class="panel-header">Selected Target</div>
+            <div id="target-name" class="target-field">-</div>
+            <div id="target-shields" class="target-field">Shields: -</div>
+            <div id="target-hull" class="target-field">Hull: -</div>
+            <div id="target-distance" class="target-field">Distance: -</div>
         </div>
 
         <!-- Mission Objectives Panel (Right Side) -->
@@ -207,6 +257,79 @@
                 <div class="control-line"><span class="key">ESC</span> Pause Menu</div>
             </div>
         </div>
+
+        <!-- Keyboard Summary Panel (Right Side - Slides in/out) -->
+        <div id="keyboard-panel" class="keyboard-panel">
+            <!-- Sidebar toggle button (always visible) -->
+            <div id="keyboard-panel-toggle" class="keyboard-panel-toggle" title="Show/Hide Keyboard Reference">
+                <span class="toggle-icon">?</span>
+            </div>
+
+            <!-- Panel content (slides in from right) -->
+            <div class="keyboard-panel-content">
+                <div class="panel-header">Keyboard Reference</div>
+
+                <!-- Movement -->
+                <div class="controls-section">
+                    <div class="control-category">Movement</div>
+                    <div class="control-line"><span class="key">W</span> Thrust Forward</div>
+                    <div class="control-line"><span class="key">S</span> Thrust Reverse</div>
+                    <div class="control-line"><span class="key">A</span> Turn Left</div>
+                    <div class="control-line"><span class="key">D</span> Turn Right</div>
+                    <div class="control-line"><span class="key">X</span> Full Stop</div>
+                    <div class="control-line"><span class="key">Double W/A/S/D</span> Boost</div>
+                </div>
+
+                <!-- Weapons -->
+                <div class="controls-section">
+                    <div class="control-category">Weapons</div>
+                    <div class="control-line"><span class="key">LMB Hold</span> Fire Beams</div>
+                    <div class="control-line"><span class="key">RMB Hold</span> Charge/Fire Torpedo</div>
+                    <div class="control-line"><span class="key">R</span> Cycle Torpedo Type</div>
+                    <div class="control-line"><span class="key">F</span> Toggle Lock Target</div>
+                    <div class="control-line"><span class="key">TAB</span> Cycle Target Selection</div>
+                </div>
+
+                <!-- Defenses -->
+                <div class="controls-section">
+                    <div class="control-category">Defenses</div>
+                    <div class="control-line"><span class="key">C</span> Deploy Decoy</div>
+                    <div class="control-line"><span class="key">M</span> Deploy Standard Mine</div>
+                    <div class="control-line"><span class="key">Shift+M</span> Deploy Captor Mine</div>
+                    <div class="control-line"><span class="key">Alt+M</span> Deploy Phaser Mine</div>
+                    <div class="control-line"><span class="key">Ctrl+M</span> Deploy Transporter Mine</div>
+                    <div class="control-line"><span class="key">I</span> Launch Interceptor</div>
+                </div>
+
+                <!-- Consumables -->
+                <div class="controls-section">
+                    <div class="control-category">Consumables</div>
+                    <div class="control-line"><span class="key">1</span> Extra Torpedoes (+10)</div>
+                    <div class="control-line"><span class="key">2</span> Extra Decoys (+3)</div>
+                    <div class="control-line"><span class="key">3</span> Extra Mines (+3)</div>
+                    <div class="control-line"><span class="key">4</span> Shield Boost (+20%)</div>
+                    <div class="control-line"><span class="key">5</span> Hull Repair Kit (+50 HP)</div>
+                    <div class="control-line"><span class="key">6</span> Energy Cells (+20% dmg)</div>
+                </div>
+
+                <!-- Advanced Systems -->
+                <div class="controls-section">
+                    <div class="control-category">Advanced Systems</div>
+                    <div class="control-line"><span class="key">Q</span> Tractor Beam</div>
+                    <div class="control-line"><span class="key">T</span> Transporter</div>
+                    <div class="control-line"><span class="key">7</span> Launch Fighter</div>
+                    <div class="control-line"><span class="key">8</span> Launch Bomber</div>
+                    <div class="control-line"><span class="key">Space</span> Warp Out</div>
+                </div>
+
+                <!-- System Controls -->
+                <div class="controls-section">
+                    <div class="control-category">System Controls</div>
+                    <div class="control-line"><span class="key">ESC</span> Pause Menu</div>
+                    <div class="control-line"><span class="key">Mouse Wheel</span> Zoom In/Out</div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Menu Screens -->
@@ -272,6 +395,126 @@
                 <ul id="objectives-list">
                     <!-- Objectives populated by JavaScript -->
                 </ul>
+            </div>
+
+            <!-- Consumables Loadout Selection -->
+            <div id="loadout-selection" class="briefing-section">
+                <h3>Consumables Loadout</h3>
+                <div id="bay-capacity">
+                    Bay Capacity: <span id="bay-used">0</span> / <span id="bay-max">10</span>
+                </div>
+
+                <div class="consumables-grid">
+                    <div class="consumable-item" data-type="hullRepairKit">
+                        <span class="consumable-name">Hull Repair Kit</span>
+                        <div class="consumable-controls">
+                            <button class="btn-minus">−</button>
+                            <span class="consumable-count">0</span>
+                            <button class="btn-plus">+</button>
+                        </div>
+                        <span class="consumable-cost">1 bay</span>
+                    </div>
+
+                    <div class="consumable-item" data-type="energyCells">
+                        <span class="consumable-name">Energy Cells</span>
+                        <div class="consumable-controls">
+                            <button class="btn-minus">−</button>
+                            <span class="consumable-count">0</span>
+                            <button class="btn-plus">+</button>
+                        </div>
+                        <span class="consumable-cost">1 bay</span>
+                    </div>
+
+                    <div class="consumable-item" data-type="extraTorpedoes">
+                        <span class="consumable-name">Extra Torpedoes</span>
+                        <div class="consumable-controls">
+                            <button class="btn-minus">−</button>
+                            <span class="consumable-count">0</span>
+                            <button class="btn-plus">+</button>
+                        </div>
+                        <span class="consumable-cost">1 bay</span>
+                    </div>
+
+                    <div class="consumable-item" data-type="extraDecoys">
+                        <span class="consumable-name">Extra Decoys</span>
+                        <div class="consumable-controls">
+                            <button class="btn-minus">−</button>
+                            <span class="consumable-count">0</span>
+                            <button class="btn-plus">+</button>
+                        </div>
+                        <span class="consumable-cost">1 bay</span>
+                    </div>
+
+                    <div class="consumable-item" data-type="extraMines">
+                        <span class="consumable-name">Extra Mines</span>
+                        <div class="consumable-controls">
+                            <button class="btn-minus">−</button>
+                            <span class="consumable-count">0</span>
+                            <button class="btn-plus">+</button>
+                        </div>
+                        <span class="consumable-cost">1 bay</span>
+                    </div>
+
+                    <div class="consumable-item" data-type="shieldBoost">
+                        <span class="consumable-name">Shield Boost</span>
+                        <div class="consumable-controls">
+                            <button class="btn-minus">−</button>
+                            <span class="consumable-count">0</span>
+                            <button class="btn-plus">+</button>
+                        </div>
+                        <span class="consumable-cost">1 bay</span>
+                    </div>
+
+                    <div class="consumable-item" data-type="extraShuttles">
+                        <span class="consumable-name">Extra Shuttles</span>
+                        <div class="consumable-controls">
+                            <button class="btn-minus">−</button>
+                            <span class="consumable-count">0</span>
+                            <button class="btn-plus">+</button>
+                        </div>
+                        <span class="consumable-cost">1 bay</span>
+                    </div>
+
+                    <div class="consumable-item" data-type="extraFighters">
+                        <span class="consumable-name">Extra Fighters</span>
+                        <div class="consumable-controls">
+                            <button class="btn-minus">−</button>
+                            <span class="consumable-count">0</span>
+                            <button class="btn-plus">+</button>
+                        </div>
+                        <span class="consumable-cost">1 bay</span>
+                    </div>
+
+                    <div class="consumable-item" data-type="extraBombers">
+                        <span class="consumable-name">Extra Bombers</span>
+                        <div class="consumable-controls">
+                            <button class="btn-minus">−</button>
+                            <span class="consumable-count">0</span>
+                            <button class="btn-plus">+</button>
+                        </div>
+                        <span class="consumable-cost">2 bay</span>
+                    </div>
+
+                    <div class="consumable-item" data-type="extraDrones">
+                        <span class="consumable-name">Extra Drones</span>
+                        <div class="consumable-controls">
+                            <button class="btn-minus">−</button>
+                            <span class="consumable-count">0</span>
+                            <button class="btn-plus">+</button>
+                        </div>
+                        <span class="consumable-cost">1 bay</span>
+                    </div>
+
+                    <div class="consumable-item" data-type="extraProbes">
+                        <span class="consumable-name">Extra Probes</span>
+                        <div class="consumable-controls">
+                            <button class="btn-minus">−</button>
+                            <span class="consumable-count">0</span>
+                            <button class="btn-plus">+</button>
+                        </div>
+                        <span class="consumable-cost">1 bay</span>
+                    </div>
+                </div>
             </div>
 
             <div class="briefing-footer">
@@ -352,36 +595,16 @@
     <script src="js/physics/CollisionHandler.js"></script>
     <script src="js/physics/GravityWell.js"></script>
 
-    <!-- Rendering -->
-    <script src="js/rendering/Renderer.js"></script>
-    <script src="js/rendering/ShipRenderer.js"></script>
-    <script src="js/rendering/EnvironmentRenderer.js"></script>
-    <script src="js/rendering/UIRenderer.js"></script>
-    <script src="js/rendering/ParticleSystem.js"></script>
-
-    <!-- Systems -->
-    <script src="js/systems/TargetingSystem.js"></script>
-    <script src="js/systems/AIController.js"></script>
-    <script src="js/systems/TractorBeamSystem.js"></script>
-    <script src="js/systems/PowerManagementSystem.js"></script>
-    <script src="js/systems/BaySystem.js"></script>
-    <script src="js/systems/TransporterSystem.js"></script>
-    <script src="js/systems/BalanceSystem.js"></script>
-    <script src="js/systems/TestingSystem.js"></script>
-    <script src="js/data/Missions.js"></script>
-    <script src="js/systems/MissionManager.js"></script>
-    <script src="js/systems/SaveManager.js"></script>
-    <script src="js/systems/ProgressionManager.js"></script>
-    <script src="js/systems/AudioManager.js"></script>
-
-    <!-- Components -->
+    <!-- Components (must load BEFORE rendering for instanceof checks) -->
     <script src="js/components/Transform.js"></script>
     <script src="js/components/Physics.js"></script>
 
-    <!-- Weapon Components -->
+    <!-- Weapon Components (must load BEFORE ShipRenderer for instanceof checks) -->
     <script src="js/components/weapons/Weapon.js"></script>
     <script src="js/components/weapons/BeamWeapon.js"></script>
+    <script src="js/components/weapons/ContinuousBeam.js"></script>
     <script src="js/components/weapons/PulseBeam.js"></script>
+    <script src="js/components/weapons/StreakBeam.js"></script>
     <script src="js/components/weapons/TorpedoLauncher.js"></script>
     <script src="js/components/weapons/DualTorpedoLauncher.js"></script>
     <script src="js/components/weapons/Disruptor.js"></script>
@@ -392,6 +615,31 @@
     <script src="js/components/Shield.js"></script>
     <script src="js/components/InternalSystems.js"></script>
 
+    <!-- Rendering (loads AFTER weapon components so instanceof checks work) -->
+    <script src="js/rendering/Renderer.js"></script>
+    <script src="js/rendering/ShipRenderer.js"></script>
+    <script src="js/rendering/EnvironmentRenderer.js"></script>
+    <script src="js/rendering/UIRenderer.js"></script>
+    <script src="js/rendering/ParticleSystem.js"></script>
+
+    <!-- Systems -->
+    <script src="js/systems/TargetingSystem.js"></script>
+    <script src="js/systems/CrewSkillSystem.js"></script>
+    <script src="js/systems/ConsumableSystem.js"></script>
+    <script src="js/systems/AIController.js"></script>
+    <script src="js/systems/TractorBeamSystem.js"></script>
+    <script src="js/systems/PowerManagementSystem.js"></script>
+    <script src="js/systems/BaySystem.js"></script>
+    <script src="js/systems/TransporterSystem.js"></script>
+    <script src="js/systems/PingSystem.js"></script>
+    <script src="js/systems/BalanceSystem.js"></script>
+    <script src="js/systems/TestingSystem.js"></script>
+    <script src="js/data/Missions.js"></script>
+    <script src="js/systems/MissionManager.js"></script>
+    <script src="js/systems/SaveManager.js"></script>
+    <script src="js/systems/ProgressionManager.js"></script>
+    <script src="js/systems/AudioManager.js"></script>
+
     <!-- Entities -->
     <script src="js/entities/Entity.js"></script>
     <script src="js/entities/Projectile.js"></script>
@@ -399,12 +647,19 @@
     <script src="js/entities/Mine.js"></script>
     <script src="js/entities/Ship.js"></script>
     <script src="js/entities/Asteroid.js"></script>
+    <script src="js/entities/GravelCloud.js"></script>
+    <script src="js/entities/Planet.js"></script>
+    <script src="js/entities/Star.js"></script>
+    <script src="js/entities/BlackHole.js"></script>
+    <script src="js/entities/Nebula.js"></script>
     <script src="js/entities/Environmental.js"></script>
     <script src="js/entities/LaserProjectile.js"></script>
     <script src="js/entities/BeamProjectile.js"></script>
     <script src="js/entities/Shuttle.js"></script>
     <script src="js/entities/Fighter.js"></script>
     <script src="js/entities/Bomber.js"></script>
+    <script src="js/entities/Drone.js"></script>
+    <script src="js/entities/Probe.js"></script>
     <script src="js/entities/HeavyTorpedo.js"></script>
     <script src="js/entities/InterceptorMissile.js"></script>
     <script src="js/entities/CaptorMine.js"></script>

@@ -256,6 +256,40 @@
     height: 100%;
 }
 
+/* Target Info Panel (TAB-selected target) */
+#target-info-panel {
+    position: absolute;
+    top: 240px; /* Below minimap (200px + 20px margin + 20px) */
+    right: 20px;
+    width: 200px;
+    border: 2px solid #0ff;
+    background: rgba(0, 20, 40, 0.9);
+    padding: 10px;
+    color: #0ff;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+}
+
+#target-info-panel .panel-header {
+    color: #0ff;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-align: center;
+    border-bottom: 1px solid #0ff;
+    padding-bottom: 4px;
+}
+
+#target-info-panel .target-field {
+    margin: 4px 0;
+    color: #0ff;
+}
+
+#target-name {
+    font-weight: bold;
+    color: #ff0;
+    margin-bottom: 8px;
+}
+
 /* Targeting Reticle */
 #reticle {
     position: absolute;
@@ -332,6 +366,18 @@
 #reticle.locking::after,
 #reticle.locking .reticle-line {
     background: #0f0;
+}
+
+/* Losing lock state - orange spinning reticle */
+#reticle.degrading {
+    border-color: #ff9900;
+    animation: spin 1.5s linear infinite;
+}
+
+#reticle.degrading::before,
+#reticle.degrading::after,
+#reticle.degrading .reticle-line {
+    background: #ff9900;
 }
 
 @keyframes spin {
@@ -449,6 +495,52 @@
     width: 0%;
     background: linear-gradient(90deg, #0ff, #0af);
     transition: width 0.1s;
+}
+
+/* Ping Status */
+#ping-status-group {
+    margin-top: 5px;
+}
+
+#ping-label {
+    font-size: 9px;
+    font-weight: bold;
+    margin-bottom: 3px;
+    text-align: center;
+    color: #00ffff;
+}
+
+#ping-bar {
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid #00ffff;
+    position: relative;
+    overflow: hidden;
+}
+
+#ping-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #00ffff, #0088ff);
+    transition: width 0.1s;
+}
+
+#ping-fill.active {
+    background: linear-gradient(90deg, #00ffff, #00ff88);
+    animation: ping-pulse 1s ease-in-out infinite;
+}
+
+#ping-fill.cooldown {
+    background: linear-gradient(90deg, #444444, #888888);
+}
+
+@keyframes ping-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
 }
 
 /* Mission Objectives Panel - Right Side */
@@ -616,6 +708,48 @@
     padding: 1px 3px;
 }
 
+/* Consumables Display */
+#consumables-status {
+    margin-top: 2px;
+}
+
+.consumable-item {
+    font-size: 9px;
+    color: #0f0;
+    margin: 2px 0;
+    padding: 1px 3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.consumable-name {
+    flex: 1;
+}
+
+.consumable-count {
+    font-weight: bold;
+    min-width: 20px;
+    text-align: right;
+    color: #00ff00;
+}
+
+.consumable-count.depleted {
+    color: #666666;
+}
+
+.consumable-active {
+    margin-left: 5px;
+    color: #00ffff;
+    font-weight: bold;
+    animation: consumable-pulse 1s infinite;
+}
+
+@keyframes consumable-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
 /* Ship Tooltip */
 #ship-tooltip {
     position: fixed;
@@ -660,4 +794,267 @@
 .tooltip-systems {
     font-size: 9px;
     color: #0f0;
+}
+
+/* ============================================
+   MISSION BRIEFING - LOADOUT SELECTION
+   ============================================ */
+
+#loadout-selection {
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(0, 20, 40, 0.8);
+    border: 1px solid #0ff;
+    border-radius: 5px;
+}
+
+#loadout-selection h3 {
+    color: #0ff;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+    text-transform: uppercase;
+}
+
+#bay-capacity {
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: #0ff;
+    font-size: 1em;
+}
+
+#bay-capacity span {
+    color: #ff0;
+}
+
+.consumables-grid {
+    display: grid;
+    gap: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.consumable-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: rgba(0, 40, 80, 0.6);
+    border: 1px solid #048;
+    border-radius: 3px;
+    transition: background 0.2s;
+}
+
+.consumable-item:hover {
+    background: rgba(0, 60, 100, 0.7);
+}
+
+.consumable-name {
+    color: #0ff;
+    font-weight: bold;
+    flex: 1;
+}
+
+.consumable-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.consumable-count {
+    color: #ff0;
+    font-weight: bold;
+    min-width: 20px;
+    text-align: center;
+}
+
+.btn-minus,
+.btn-plus {
+    width: 30px;
+    height: 30px;
+    background: #048;
+    color: #0ff;
+    border: 1px solid #0ff;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.btn-minus:hover,
+.btn-plus:hover {
+    background: #06a;
+    transform: scale(1.05);
+}
+
+.btn-minus:active,
+.btn-plus:active {
+    transform: scale(0.95);
+}
+
+.btn-plus:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background: #024;
+}
+
+.btn-plus:disabled:hover {
+    transform: none;
+    background: #024;
+}
+
+.consumable-cost {
+    color: #aaa;
+    font-size: 0.9em;
+    margin-left: 10px;
+}
+
+/* ============================================
+   KEYBOARD SUMMARY PANEL (RIGHT SIDE SLIDE)
+   ============================================ */
+
+/* Main panel container - positioned off-screen to the right */
+.keyboard-panel {
+    position: fixed;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    z-index: 200;
+    pointer-events: auto;
+}
+
+/* Sidebar toggle button - always visible on right edge */
+.keyboard-panel-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 80px;
+    background: rgba(0, 100, 200, 0.9);
+    border: 2px solid #0ff;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s, transform 0.2s;
+    pointer-events: auto;
+}
+
+.keyboard-panel-toggle:hover {
+    background: rgba(0, 120, 220, 0.95);
+    transform: translateY(-50%) translateX(-5px);
+}
+
+.keyboard-panel-toggle .toggle-icon {
+    color: #0ff;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+}
+
+/* Panel content - slides in from right */
+.keyboard-panel-content {
+    position: absolute;
+    top: 50%;
+    right: 40px; /* Position next to toggle button */
+    transform: translateY(-50%) translateX(100%); /* Hidden off-screen to the right */
+    width: 280px;
+    max-height: 80vh;
+    background: rgba(0, 20, 40, 0.95);
+    border: 2px solid #0ff;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    padding: 12px;
+    overflow-y: auto;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto;
+}
+
+/* Panel is shown - slide in */
+.keyboard-panel.show .keyboard-panel-content {
+    transform: translateY(-50%) translateX(0);
+}
+
+/* Rotate toggle icon when panel is open */
+.keyboard-panel.show .keyboard-panel-toggle .toggle-icon {
+    transform: rotate(180deg);
+}
+
+/* Panel header styling */
+.keyboard-panel-content .panel-header {
+    color: #0ff;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #0ff;
+    padding-bottom: 6px;
+}
+
+/* Controls section spacing */
+.keyboard-panel-content .controls-section {
+    margin-bottom: 12px;
+}
+
+/* Category headers */
+.keyboard-panel-content .control-category {
+    font-weight: bold;
+    color: #00ffaa;
+    font-size: 11px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid #048;
+    padding-bottom: 3px;
+    text-transform: uppercase;
+}
+
+/* Control lines */
+.keyboard-panel-content .control-line {
+    display: flex;
+    align-items: center;
+    margin: 4px 0;
+    font-size: 10px;
+    color: #0ff;
+    line-height: 1.4;
+}
+
+/* Key badges in keyboard panel */
+.keyboard-panel-content .control-line .key {
+    display: inline-block;
+    min-width: 60px;
+    padding: 3px 6px;
+    background: rgba(0, 100, 200, 0.3);
+    border: 1px solid #0ff;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+    margin-right: 8px;
+    font-size: 9px;
+    color: #0ff;
+    flex-shrink: 0;
+}
+
+/* Scrollbar styling for panel content */
+.keyboard-panel-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.keyboard-panel-content::-webkit-scrollbar-track {
+    background: rgba(0, 20, 40, 0.5);
+    border-radius: 4px;
+}
+
+.keyboard-panel-content::-webkit-scrollbar-thumb {
+    background: #048;
+    border-radius: 4px;
+}
+
+.keyboard-panel-content::-webkit-scrollbar-thumb:hover {
+    background: #0ff;
 }

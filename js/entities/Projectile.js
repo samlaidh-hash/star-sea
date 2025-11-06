@@ -47,6 +47,7 @@ class TorpedoProjectile extends Projectile {
         this.lockOnTarget = config.lockOnTarget; // Fire-and-forget target
         this.targetX = config.targetX;
         this.targetY = config.targetY;
+        this.trackReticle = config.trackReticle || false; // Continuously track reticle position
         this.color = CONFIG.COLOR_TORPEDO;
         this.terminalHoming = false; // True after halfway point
 
@@ -68,6 +69,7 @@ class TorpedoProjectile extends Projectile {
     }
 
     update(deltaTime) {
+        // Lock-on target mode - home towards entity
         if (this.lockOnTarget && this.lockOnTarget.active) {
             // Homing behavior
             const distanceToTarget = MathUtils.distance(this.x, this.y, this.lockOnTarget.x, this.lockOnTarget.y);
@@ -242,6 +244,7 @@ class PlasmaTorpedoProjectile extends Projectile {
         this.lockOnTarget = config.lockOnTarget; // Fire-and-forget target
         this.targetX = config.targetX;
         this.targetY = config.targetY;
+        this.trackReticle = config.trackReticle || false; // Continuously track reticle position
         this.color = CONFIG.COLOR_PLASMA; // Green
         this.terminalHoming = false;
 
@@ -267,7 +270,7 @@ class PlasmaTorpedoProjectile extends Projectile {
         // Degrade DP over time
         this.damagePotential = Math.max(10, this.damagePotential - (this.dpDecayRate * deltaTime));
 
-        // Homing behavior (same as regular torpedo)
+        // Lock-on target mode - home towards entity
         if (this.lockOnTarget && this.lockOnTarget.active) {
             const distanceToTarget = MathUtils.distance(this.x, this.y, this.lockOnTarget.x, this.lockOnTarget.y);
 

@@ -5,9 +5,9 @@
 
 class TargetingSystem {
     constructor() {
-        this.minLockTime = 3; // Minimum lock time (stable aim)
-        this.maxLockTime = 5; // Maximum lock time (unstable aim)
-        this.currentLockTime = 4; // Current adaptive lock time
+        this.minLockTime = 3.0; // Minimum lock time (stable aim)
+        this.maxLockTime = 5.0; // Maximum lock time (unstable aim)
+        this.currentLockTime = 4.0; // Current adaptive lock time
         this.currentTarget = null;
         this.lockProgress = 0;
         this.driftTolerance = CONFIG.LOCK_ON_DRIFT_TOLERANCE; // 50 pixels
@@ -100,9 +100,6 @@ class TargetingSystem {
                     // Too far or not locked - instant break
                     this.breakLock();
                 }
-            } else if (!this.isLocked) {
-                // Was locking but reticle moved away - break immediately
-                this.breakLock();
             }
         }
 

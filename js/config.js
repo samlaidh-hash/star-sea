@@ -5,8 +5,8 @@ const CONFIG = {
     CANVAS_WIDTH: 1920,  // DEPRECATED - Canvas now uses window.innerWidth
     CANVAS_HEIGHT: 1080, // DEPRECATED - Canvas now uses window.innerHeight
     TARGET_FPS: 30,
-    VELOCITY_ITERATIONS: 4,
-    POSITION_ITERATIONS: 2,
+    VELOCITY_ITERATIONS: 1,  // Reduced from 4 for performance (90ms→<20ms)
+    POSITION_ITERATIONS: 1,  // Reduced from 2 for performance
 
     // Debug
     DEBUG_MODE: false,
@@ -20,7 +20,7 @@ const CONFIG = {
 
     // Binary search debugging - disable systems to find bottleneck
     DISABLE_AI: false,        // Tested - AI is fine (0ms)
-    DISABLE_PHYSICS: true,    // *** CULPRIT FOUND! Physics takes 167ms - DISABLED PERMANENTLY ***
+    DISABLE_PHYSICS: true,    // Physics takes 90ms/frame = 11 FPS. Disabled for performance (Option A)
     DISABLE_COLLISIONS: false, // Re-enabled - test if collisions work without physics
     DISABLE_PARTICLES: false,  // Re-enabled
 
@@ -47,19 +47,19 @@ const CONFIG = {
     SHIP_HP_BC: 140,
 
     // Movement
-    MAX_SPEED_FG: 140,
-    MAX_SPEED_DD: 130,
-    MAX_SPEED_CL: 120,
-    MAX_SPEED_CS: 115,   // Strike Cruiser (between CL and CA)
-    MAX_SPEED_CA: 110,
-    MAX_SPEED_BC: 100,
+    MAX_SPEED_FG: 420,    // Increased 3x (was 140)
+    MAX_SPEED_DD: 390,    // Increased 3x (was 130)
+    MAX_SPEED_CL: 360,    // Increased 3x (was 120)
+    MAX_SPEED_CS: 346,    // Increased 3x (was 115) - Strike Cruiser
+    MAX_SPEED_CA: 330,    // Increased 3x (was 110)
+    MAX_SPEED_BC: 300,    // Increased 3x (was 100)
 
-    ACCELERATION_FG: 180,
-    ACCELERATION_DD: 170,
-    ACCELERATION_CL: 160,
-    ACCELERATION_CS: 155, // Strike Cruiser (between CL and CA)
-    ACCELERATION_CA: 150,
-    ACCELERATION_BC: 140,
+    ACCELERATION_FG: 45,  // Decreased 0.25x (was 180)
+    ACCELERATION_DD: 42.5,  // Decreased 0.25x (was 170)
+    ACCELERATION_CL: 40,  // Decreased 0.25x (was 160)
+    ACCELERATION_CS: 39,  // Decreased 0.25x (was 155) - Strike Cruiser
+    ACCELERATION_CA: 37.5,  // Decreased 0.25x (was 150)
+    ACCELERATION_BC: 35,  // Decreased 0.25x (was 140)
 
     TURN_RATE_FG: 90,   // degrees per second
     TURN_RATE_DD: 80,
@@ -110,10 +110,10 @@ const CONFIG = {
     COLOR_BEAM_SCINTILIAN: '#00ff88', // green (Scintilian faction)
 
     // Weapons - Torpedoes
-    TORPEDO_SPEED_CA: 325,        // base speed for CA-class torpedoes
+    TORPEDO_SPEED_CA: 487,        // base speed for CA-class torpedoes (increased 50% from 325)
     TORPEDO_DAMAGE: 8,            // damage per torpedo
     TORPEDO_LOADED: 4,            // torpedoes loaded in launcher
-    TORPEDO_STORED: 16,           // torpedoes in storage
+    TORPEDO_STORED: 48,           // torpedoes in storage (tripled from 16)
     TORPEDO_BLAST_RADIUS_PIXELS: 18,
     TORPEDO_LIFETIME: 10,         // seconds before expiring
     TORPEDO_RELOAD_TIME: 5,       // seconds to reload all 4 torpedoes
@@ -121,12 +121,12 @@ const CONFIG = {
     COLOR_TORPEDO: '#ffaa00',     // orange
 
     // Weapons - Disruptors (Trigon)
-    DISRUPTOR_SPEED: 650,         // 2x torpedo speed
+    DISRUPTOR_SPEED: 975,         // 2x torpedo speed (increased 50% from 650)
     DISRUPTOR_DAMAGE: 2,          // 2 damage per hit
     COLOR_DISRUPTOR: '#4488ff',   // glowing blue
 
     // Weapons - Plasma Torpedoes (Scintilian)
-    PLASMA_SPEED_CA: 217,         // 2/3 of normal torpedo speed
+    PLASMA_SPEED_CA: 326,         // 2/3 of normal torpedo speed (increased 50% from 217)
     PLASMA_DAMAGE_POTENTIAL: 30,  // starting DP
     PLASMA_DP_DECAY_PER_SECOND: 1, // DP lost per second
     COLOR_PLASMA: '#00ff88',      // green
@@ -141,6 +141,11 @@ const CONFIG = {
     // Auto-repair
     AUTO_REPAIR_RATE: 0.03, // HP per second
 
+    // Crew Skills
+    CREW_SKILL_MIN: 1,
+    CREW_SKILL_MAX: 10,
+    CREW_SKILL_XP_PER_LEVEL: 100, // XP required per level
+
     // Countermeasures
     DECOY_COUNT: 6,
     MINE_COUNT: 6,
@@ -149,12 +154,12 @@ const CONFIG = {
     // Targeting
     LOCK_ON_DRIFT_TOLERANCE: 50, // pixels
 
-    // Detection radius (pixels by class)
-    DETECTION_RADIUS_FG_PIXELS: 800,
-    DETECTION_RADIUS_DD_PIXELS: 900,
-    DETECTION_RADIUS_CL_PIXELS: 1000,
-    DETECTION_RADIUS_CA_PIXELS: 1100,
-    DETECTION_RADIUS_BC_PIXELS: 1200,
+    // Detection radius (pixels by class) - MULTIPLIED BY 10
+    DETECTION_RADIUS_FG_PIXELS: 8000,
+    DETECTION_RADIUS_DD_PIXELS: 9000,
+    DETECTION_RADIUS_CL_PIXELS: 10000,
+    DETECTION_RADIUS_CA_PIXELS: 11000,
+    DETECTION_RADIUS_BC_PIXELS: 12000,
 
     // Particles
     PARTICLE_COUNT_COLLAPSAR: 120,
@@ -183,5 +188,40 @@ const CONFIG = {
     STREAK_BEAM_DAMAGE: 1,         // 1 damage per streak
     STREAK_BEAM_COOLDOWN: 1.5,     // 1.5 seconds between firing sequences
     STREAK_BEAM_SHOT_INTERVAL: 0.2, // 0.2 seconds between the two shots
-    COLOR_STREAK_BEAM: '#ff8833'   // Orange-red
+    COLOR_STREAK_BEAM: '#ff8833',  // Orange-red
+
+    // Environmental Hazards - Planets
+    PLANET_RADIUS: 200,                    // Base radius in pixels
+    PLANET_GRAVITY_STRENGTH: 50000,        // Gravity force multiplier
+    PLANET_GRAVITY_MAX_RANGE: 1500,        // Maximum gravity range in pixels
+    PLANET_LANDING_SPEED: 50,              // Max speed for safe landing
+    PLANET_BOUNCE_DAMAGE: 20,              // Damage for hitting too fast
+    COLOR_PLANET: '#8B7355',               // Default brown/tan color
+
+    // Environmental Hazards - Stars
+    STAR_RADIUS: 150,                      // Star visual radius
+    STAR_GRAVITY_STRENGTH: 80000,          // Stronger than planets
+    STAR_GRAVITY_MAX_RANGE: 2000,          // Larger gravity range
+    STAR_DAMAGE_RANGE: 500,                // Range where heat damage starts
+    STAR_DAMAGE_PER_SECOND: 5,             // Heat damage per second
+    COLOR_STAR: '#FFFF00',                 // Yellow
+
+    // Environmental Hazards - Black Holes
+    BLACKHOLE_EVENT_HORIZON: 100,          // Instant death radius
+    BLACKHOLE_GRAVITY_STRENGTH: 150000,    // Extremely strong
+    BLACKHOLE_GRAVITY_MAX_RANGE: 3000,     // Massive gravity range
+    BLACKHOLE_ACCRETION_DISK_RADIUS: 300,  // Visual disk radius
+    COLOR_BLACKHOLE: '#000000',            // Black
+
+    // Environmental Hazards - Nebula
+    NEBULA_RADIUS: 1500,                   // Nebula radius in pixels
+    NEBULA_DRAG_COEFFICIENT: 0.3,          // Drag force multiplier
+    NEBULA_SHIELD_INTERFERENCE: 0.5,       // Shields at 50% effectiveness
+    NEBULA_SENSOR_INTERFERENCE: 0.1,       // Sensors at 10% effectiveness (90% reduction)
+    NEBULA_BEAM_INTERFERENCE: 0.7,         // Beams at 70% accuracy
+    NEBULA_TORPEDO_DRAG: 0.6,              // Torpedoes at 60% speed
+    NEBULA_ALPHA: 0.3,                     // Visual transparency
+    NEBULA_SENSOR_REDUCTION: 0.9,          // 90% sensor reduction
+    NEBULA_ACCURACY_PENALTY: 100,          // ±100 pixel deviation
+    COLOR_NEBULA: '#FF00FF'                // Magenta default
 };
