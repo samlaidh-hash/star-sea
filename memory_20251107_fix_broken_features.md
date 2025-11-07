@@ -69,13 +69,16 @@ Systematically identifying and fixing all broken features.
 
 ---
 
-## Remaining Investigation
+## User-Reported Issues (Additional Investigation Needed)
 
-Need to check for additional issues:
-- Lock-on system functionality
-- Torpedo homing
-- Energy band color changes
-- Weapon alignment
+1. ❌ **Loadout screen disappeared**
+2. ❌ **Stars and terrain disappeared**
+3. ❌ **WS movement reverted to old "hold down to move" instead of throttle system**
+4. ❌ **Boost movement disappeared**
+5. ❌ **Torpedoes fire but not visible on screen** (sound works, marked off)
+6. ❌ **Beams not visible, no sound, no charge/recharge effects**
+7. ❌ **Minimap viewport box disappeared**
+8. ❌ **No enemy ships spawning**
 
 ---
 

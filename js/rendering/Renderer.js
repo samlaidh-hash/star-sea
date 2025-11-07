@@ -49,6 +49,18 @@ class Renderer {
                 case 'environment':
                     this.environmentRenderer.render(entity);
                     break;
+                case 'planet':
+                    this.renderPlanet(entity);
+                    break;
+                case 'star':
+                    this.renderStar(entity);
+                    break;
+                case 'blackhole':
+                    this.renderBlackHole(entity);
+                    break;
+                case 'nebula':
+                    this.renderNebula(entity);
+                    break;
                 case 'projectile':
                     this.renderProjectile(entity);
                     break;
@@ -120,6 +132,98 @@ class Renderer {
         this.ctx.beginPath();
         this.ctx.arc(e.x, e.y, r, 0, Math.PI * 2);
         this.ctx.fill();
+        this.ctx.restore();
+    }
+
+    renderPlanet(planet) {
+        this.ctx.save();
+        this.ctx.fillStyle = planet.color || '#8B7355';
+        this.ctx.strokeStyle = '#999999';
+        this.ctx.lineWidth = 2;
+        this.ctx.beginPath();
+        this.ctx.arc(planet.x, planet.y, planet.radius || 200, 0, Math.PI * 2);
+        this.ctx.fill();
+        this.ctx.stroke();
+        this.ctx.restore();
+    }
+
+    renderStar(star) {
+        this.ctx.save();
+
+        // Pulsing glow effect
+        const glowIntensity = 0.8 + Math.sin(star.glowPhase || 0) * 0.2;
+
+        // Outer glow
+        const gradient = this.ctx.createRadialGradient(
+            star.x, star.y, star.radius * 0.5,
+            star.x, star.y, star.radius * 2
+        );
+        gradient.addColorStop(0, 'rgba(255, 255, 0, ' + glowIntensity + ')');
+        gradient.addColorStop(0.5, 'rgba(255, 200, 0, ' + (glowIntensity * 0.5) + ')');
+        gradient.addColorStop(1, 'rgba(255, 150, 0, 0)');
+
+        this.ctx.fillStyle = gradient;
+        this.ctx.beginPath();
+        this.ctx.arc(star.x, star.y, star.radius * 2, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // Core
+        this.ctx.fillStyle = '#FFFF00';
+        this.ctx.beginPath();
+        this.ctx.arc(star.x, star.y, star.radius || 100, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        this.ctx.restore();
+    }
+
+    renderBlackHole(blackhole) {
+        this.ctx.save();
+
+        const radius = blackhole.radius || 150;
+
+        // Accretion disk gradient
+        const gradient = this.ctx.createRadialGradient(
+            blackhole.x, blackhole.y, radius * 0.3,
+            blackhole.x, blackhole.y, radius * 2
+        );
+        gradient.addColorStop(0, 'rgba(0, 0, 0, 1)');
+        gradient.addColorStop(0.4, 'rgba(100, 0, 200, 0.8)');
+        gradient.addColorStop(0.7, 'rgba(50, 0, 150, 0.4)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+        this.ctx.fillStyle = gradient;
+        this.ctx.beginPath();
+        this.ctx.arc(blackhole.x, blackhole.y, radius * 2, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // Event horizon (black center)
+        this.ctx.fillStyle = '#000000';
+        this.ctx.beginPath();
+        this.ctx.arc(blackhole.x, blackhole.y, radius, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        this.ctx.restore();
+    }
+
+    renderNebula(nebula) {
+        this.ctx.save();
+
+        // Large, semi-transparent cloud
+        const gradient = this.ctx.createRadialGradient(
+            nebula.x, nebula.y, 0,
+            nebula.x, nebula.y, nebula.radius || 1500
+        );
+
+        const color = nebula.color || 'rgba(255, 0, 255, 0.3)';
+        gradient.addColorStop(0, color);
+        gradient.addColorStop(0.5, color.replace('0.3', '0.2'));
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+        this.ctx.fillStyle = gradient;
+        this.ctx.beginPath();
+        this.ctx.arc(nebula.x, nebula.y, nebula.radius || 1500, 0, Math.PI * 2);
+        this.ctx.fill();
+
         this.ctx.restore();
     }
 
