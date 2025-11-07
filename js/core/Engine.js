@@ -1101,11 +1101,11 @@ class Engine {
             // Spawn some test entities for immediate gameplay
             console.log('🌌 Spawning test environment...');
             this.spawnTestAsteroids();
-            // TEMPORARILY DISABLED TO FIX NaN BUG
-            // this.spawnPlanets(); // Spawn 2-3 planets
-            // this.spawnStars(1); // Spawn 1 star
-            // this.spawnBlackHoles(0.5, 1); // 50% chance of 1 black hole
-            // this.spawnNebulas(); // Spawn 1-3 nebula regions
+            // Re-enabled 2025-11-07: Code has proper NaN safety checks
+            this.spawnPlanets(); // Spawn 2-3 planets
+            this.spawnStars(1); // Spawn 1 star
+            this.spawnBlackHoles(0.5, 1); // 50% chance of 1 black hole
+            this.spawnNebulas(); // Spawn 1-3 nebula regions
             this.spawnTestEnemies();
             console.log('✅ Test environment spawned');
 
@@ -1759,10 +1759,10 @@ class Engine {
         perf.trails = Date.now() - trailsStart;
 
         // Apply environmental hazards (gravity, damage, etc.)
-        // TEMPORARILY DISABLED TO FIX NaN BUG
-        // const environmentStart = Date.now();
-        // this.applyEnvironmentalEffects(deltaTime);
-        // perf.environment = Date.now() - environmentStart;
+        // Re-enabled 2025-11-07: Code has proper NaN safety checks
+        const environmentStart = Date.now();
+        this.applyEnvironmentalEffects(deltaTime);
+        perf.environment = Date.now() - environmentStart;
 
         // Update AI controllers
         const aiStart = Date.now();
