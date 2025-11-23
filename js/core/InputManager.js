@@ -59,12 +59,31 @@ class InputManager {
 
         this.keys.set(key, true);
 
-        // Handle spacebar press timing for mine deployment
+        // Handle spacebar press timing for decoy/mine deployment
         if (e.key === ' ' && this.spacebarReleased) {
             this.spacebarPressTime = performance.now();
             this.spacebarReleased = false;
         }
 
+        // Handle 1-6 keys for shuttle launch (with modifier keys for different craft types)
+        const key = e.key;
+        if (['1', '2', '3', '4', '5', '6'].includes(key)) {
+            const missionIndex = parseInt(key) - 1;
+            const craftType = this.getCraftType(e);
+            eventBus.emit('launch-shuttle', { missionIndex, craftType });
+        }
+
+        // Handle R key for shuttle recall
+        if (e.key.toLowerCase() === 'r') {
+            eventBus.emit('recall-shuttles');
+        }
+
+        // Handle Q key for tractor beam toggle
+        if (e.key.toLowerCase() === 'q') {
+            eventBus.emit('toggle-tractor-beam');
+        }
+
+        eventBus.emit('keydown', { key: e.key.toLowerCase(), event: e });
         // Double-tap detection for boost (W, A, S, D keys)
         if (key === 'w' || key === 'a' || key === 's' || key === 'd') {
             const currentTime = performance.now();
@@ -82,6 +101,14 @@ class InputManager {
         }
 
         eventBus.emit('keydown', { key: key, event: e });
+    }
+
+    getCraftType(event) {
+        // CTRL = Drone, SHIFT = Fighter, ALT = Bomber, None = Shuttle
+        if (event.ctrlKey) return 'drone';
+        if (event.shiftKey) return 'fighter';
+        if (event.altKey) return 'bomber';
+        return 'shuttle';
     }
 
     onKeyUp(e) {

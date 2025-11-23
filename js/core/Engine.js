@@ -513,6 +513,30 @@ class Engine {
             }
         });
 
+        // Shuttle control events
+        eventBus.on('launch-shuttle', (data) => {
+            if (!this.stateManager.isPlaying() || !this.playerShip) return;
+
+            const { missionIndex, craftType } = data;
+            const shuttle = this.playerShip.launchShuttleByIndex(missionIndex, craftType);
+            if (shuttle) {
+                this.entities.push(shuttle);
+                // Audio for shuttle launch (if available)
+                // this.audioManager.playSound('shuttle-launch');
+            }
+        });
+
+        eventBus.on('recall-shuttles', () => {
+            if (!this.stateManager.isPlaying() || !this.playerShip) return;
+
+            this.playerShip.recallShuttles();
+        });
+
+        // Tractor beam control events
+        eventBus.on('toggle-tractor-beam', () => {
+            if (!this.stateManager.isPlaying() || !this.playerShip) return;
+
+            this.playerShip.tractorBeam.toggle();
         // Torpedo type cycling
         eventBus.on('cycle-torpedo-type', () => {
             if (!this.stateManager.isPlaying() || !this.playerShip) return;
@@ -1724,6 +1748,12 @@ class Engine {
         }
         perf.entities = Date.now() - entitiesStart;
 
+        // Update tractor beam (requires entities list)
+        if (this.playerShip && this.playerShip.tractorBeam) {
+            const pushMode = this.inputManager.isKeyDown('shift');
+            this.playerShip.tractorBeam.update(deltaTime, this.entities, pushMode);
+        }
+
         // Create engine trails for moving ships (throttled for performance)
         const trailsStart = Date.now();
         this.trailFrameCounter++;
@@ -1836,6 +1866,12 @@ class Engine {
             this.handleSimpleShipCollisions();
         }
 
+        // Clean up inactive shuttles
+        if (this.playerShip) {
+            this.playerShip.cleanupShuttles();
+        }
+
+        // Remove destroyed entities
         // Remove destroyed entities (measure cleanup separately)
         const cleanupStart = Date.now();
         this.cleanupEntities();
@@ -2586,6 +2622,8 @@ class Engine {
                         this.ctx.rotate(entity.rotation);
                     }
 
+        // Render game world
+        this.renderer.render(this.entities, warpProgress, this.playerShip);
                     // Color by type/faction
                     if (entity.isPlayer) {
                         this.ctx.fillStyle = '#00ff00';
