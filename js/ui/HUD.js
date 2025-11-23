@@ -59,6 +59,8 @@ class HUD {
         // Update countermeasures
         this.updateCountermeasures(playerShip);
 
+        // Update shuttles
+        this.updateShuttles(playerShip);
         // Update consumables
         this.updateConsumables(playerShip);
 
@@ -121,6 +123,34 @@ class HUD {
         this.updateBar('shield-aft', quadrants.aft.getPercentage());
     }
 
+    updateWeapons(ship) {
+        if (!ship || !ship.weapons) return;
+
+        const beamWeapons = ship.getBeamWeapons();
+        const torpedoLaunchers = ship.getTorpedoLaunchers();
+
+        // Weapon HP is now shown in systems block, not here
+        // Just update torpedo counts in the weapon info section
+
+        const forwardLauncher = this.findLauncherForArc(torpedoLaunchers, 0);
+        let aftLauncher = this.findLauncherForArc(torpedoLaunchers, 180, forwardLauncher);
+
+        if (!aftLauncher && forwardLauncher && this.weaponCoversArc(forwardLauncher, 180)) {
+            aftLauncher = forwardLauncher;
+        }
+
+        this.updateTorpedoCount(
+            'torp-forward-count',
+            forwardLauncher ? forwardLauncher.getLoadedCount() : null,
+            forwardLauncher ? forwardLauncher.getStoredCount() : null
+        );
+
+        this.updateTorpedoCount(
+            'torp-aft-count',
+            aftLauncher ? aftLauncher.getLoadedCount() : null,
+            aftLauncher ? aftLauncher.getStoredCount() : null
+        );
+    }
     // REMOVED: updateWeapons() - now integrated into updateSystems()
 
     updateSystems(ship) {
@@ -164,6 +194,80 @@ class HUD {
         this.updateSystemHP('bay', ship.systems.bay.hp, ship.systems.bay.maxHp);
         this.updateSystemHP('power', ship.systems.power.hp, ship.systems.power.maxHp);
 
+        // Update weapon HP bars (now in systems section)
+        const beamWeapons = ship.getBeamWeapons ? ship.getBeamWeapons() : [];
+        const torpedoLaunchers = ship.getTorpedoLaunchers ? ship.getTorpedoLaunchers() : [];
+
+        if (beamWeapons.length >= 1) {
+            this.updateSystemHP('beam-forward', beamWeapons[0].hp, beamWeapons[0].maxHp);
+        } else {
+            this.updateSystemHP('beam-forward', 0, 1);
+        }
+
+        if (beamWeapons.length >= 2) {
+            this.updateSystemHP('beam-aft', beamWeapons[1].hp, beamWeapons[1].maxHp);
+        } else {
+            this.updateSystemHP('beam-aft', 0, 1);
+        }
+
+        const forwardLauncher = this.findLauncherForArc(torpedoLaunchers, 0);
+        let aftLauncher = this.findLauncherForArc(torpedoLaunchers, 180, forwardLauncher);
+
+        if (!aftLauncher && forwardLauncher && this.weaponCoversArc(forwardLauncher, 180)) {
+            aftLauncher = forwardLauncher;
+        }
+
+        if (forwardLauncher) {
+            this.updateSystemHP('torp-forward', forwardLauncher.hp, forwardLauncher.maxHp);
+        } else {
+            this.updateSystemHP('torp-forward', 0, 1);
+        }
+
+        if (aftLauncher) {
+            this.updateSystemHP('torp-aft', aftLauncher.hp, aftLauncher.maxHp);
+        } else {
+            this.updateSystemHP('torp-aft', 0, 1);
+        }
+
+        // Update tractor beam status
+        this.updateTractorBeam(ship);
+    }
+
+    updateTractorBeam(ship) {
+        if (!ship || !ship.tractorBeam) return;
+
+        const statusElement = document.getElementById('tractor-status');
+        const targetElement = document.getElementById('tractor-target');
+
+        if (statusElement) {
+            const isActive = ship.tractorBeam.isActive();
+            const isLocked = ship.tractorBeam.isLocked();
+
+            if (isActive) {
+                if (isLocked) {
+                    statusElement.textContent = 'LOCKED';
+                    statusElement.style.color = '#00ffff';
+                } else {
+                    statusElement.textContent = 'LOCKING...';
+                    statusElement.style.color = '#ffff00';
+                }
+            } else {
+                statusElement.textContent = 'OFFLINE';
+                statusElement.style.color = '#666';
+            }
+        }
+
+        if (targetElement) {
+            const target = ship.tractorBeam.getTarget();
+            if (target) {
+                const targetType = target.type || 'UNKNOWN';
+                const distance = Math.round(MathUtils.distance(ship.x, ship.y, target.x, target.y));
+                targetElement.textContent = `${targetType.toUpperCase()} (${distance}m)`;
+                targetElement.style.color = '#0cf';
+            } else {
+                targetElement.textContent = 'NO TARGET';
+                targetElement.style.color = '#666';
+            }
         // Update weapon systems (now integrated with other systems)
         if (ship.weapons) {
             const beamWeapons = ship.getBeamWeapons();
@@ -198,6 +302,76 @@ class HUD {
 
         const decoyElement = document.getElementById('decoy-count');
         const mineElement = document.getElementById('mine-count');
+        const bayElement = document.getElementById('bay-status');
+
+        // Count items in bay
+        const decoyCount = ship.bayContents ? ship.bayContents.filter(item => item.type === 'decoy').length : ship.decoys || 0;
+        const mineCount = ship.bayContents ? ship.bayContents.filter(item => item.type === 'mine').length : ship.mines || 0;
+        const shuttleCount = ship.bayContents ? ship.bayContents.filter(item => item.type === 'shuttle').length : 0;
+
+        if (decoyElement) decoyElement.textContent = decoyCount;
+        if (mineElement) mineElement.textContent = mineCount;
+
+        // Update bay status (if element exists)
+        if (bayElement && ship.bayContents && ship.bayCapacity) {
+            const bayUsed = ship.bayContents.length;
+            bayElement.textContent = `${bayUsed}/${ship.bayCapacity}`;
+
+            // Add color coding based on bay fullness
+            if (bayUsed === ship.bayCapacity) {
+                bayElement.style.color = '#ff4444'; // Red when full
+            } else if (bayUsed > ship.bayCapacity * 0.7) {
+                bayElement.style.color = '#ffaa44'; // Orange when mostly full
+            } else {
+                bayElement.style.color = '#44ff44'; // Green when space available
+            }
+        }
+    }
+
+    updateShuttles(ship) {
+        if (!ship) return;
+
+        // Update selected mission
+        const missionElement = document.getElementById('shuttle-mission');
+        if (missionElement && ship.selectedShuttleMission) {
+            missionElement.textContent = ship.selectedShuttleMission.toUpperCase();
+        }
+
+        // Count shuttles in bay
+        const shuttleCount = ship.bayContents ? ship.bayContents.filter(item => item.type === 'shuttle').length : 0;
+        const activeCount = ship.activeShuttles ? ship.activeShuttles.length : 0;
+
+        const availableElement = document.getElementById('shuttle-available');
+        const activeElement = document.getElementById('shuttle-active');
+
+        if (availableElement) availableElement.textContent = shuttleCount;
+        if (activeElement) activeElement.textContent = activeCount;
+
+        // Update active shuttles display
+        const activeShuttlesDiv = document.getElementById('active-shuttles');
+        if (activeShuttlesDiv && ship.activeShuttles) {
+            activeShuttlesDiv.innerHTML = '';
+
+            for (const shuttle of ship.activeShuttles) {
+                if (!shuttle || !shuttle.active) continue;
+
+                const shuttleDiv = document.createElement('div');
+                shuttleDiv.className = 'active-shuttle';
+                shuttleDiv.style.fontSize = '10px';
+                shuttleDiv.style.padding = '2px 0';
+
+                const missionLabel = shuttle.missionType.toUpperCase();
+                const hpPercent = (shuttle.hp / shuttle.maxHp * 100).toFixed(0);
+                const shieldPercent = (shuttle.shields / shuttle.maxShields * 100).toFixed(0);
+
+                shuttleDiv.innerHTML = `
+                    <span style="color: #0cf">${missionLabel}</span> -
+                    HP: ${hpPercent}% |
+                    SHD: ${shieldPercent}%
+                `;
+
+                activeShuttlesDiv.appendChild(shuttleDiv);
+            }
         const captorMineElement = document.getElementById('captor-mine-count');
         const phaserMineElement = document.getElementById('phaser-mine-count');
         const transporterMineElement = document.getElementById('transporter-mine-count');
@@ -426,6 +600,43 @@ class HUD {
         }
     }
 
+    updateTorpedoCount(elementId, loaded, stored) {
+        const element = document.getElementById(elementId);
+        if (element) {
+            if (loaded === null || loaded === undefined || stored === null || stored === undefined) {
+                element.textContent = "--/--";
+            } else {
+                element.textContent = `${loaded}/${stored}`;
+            }
+        }
+    }
+    updateWeaponHP(weaponName, current, max) {
+        const element = document.querySelector(`[data-weapon="${weaponName}"] .hp`);
+        if (!element) return;
+
+        // Handle missing values
+        if (current === null || current === undefined || max === null || max === undefined) {
+            element.textContent = "--";
+            const parentElement = element.closest('.weapon-item');
+            if (parentElement) parentElement.classList.remove('damaged', 'warning');
+            return;
+        }
+
+        element.textContent = `${Math.round(current)}/${Math.round(max)}`;
+
+        const parentElement = element.closest('.weapon-item');
+        if (parentElement) {
+            if (current === 0) {
+                parentElement.classList.add('damaged');
+                parentElement.classList.remove('warning');
+            } else if (current <= max * 0.3) {
+                parentElement.classList.add('warning');
+                parentElement.classList.remove('damaged');
+            } else {
+                parentElement.classList.remove('damaged', 'warning');
+            }
+        }
+    }
     // REMOVED: updateTorpedoCount() - legacy method no longer used
     // REMOVED: updateWeaponHP() - legacy method no longer used
     // Weapons now use updateSystemHP() like all other systems

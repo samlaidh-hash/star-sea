@@ -151,6 +151,13 @@ const CONFIG = {
     MINE_COUNT: 6,
     DEPLOYMENT_COOLDOWN: 6.0, // seconds
 
+    // Bay System - Space capacity by ship class
+    BAY_CAPACITY_FG: 2,
+    BAY_CAPACITY_DD: 3,
+    BAY_CAPACITY_CL: 4,
+    BAY_CAPACITY_CA: 6,
+    BAY_CAPACITY_BC: 8,
+
     // Targeting
     LOCK_ON_DRIFT_TOLERANCE: 50, // pixels
 

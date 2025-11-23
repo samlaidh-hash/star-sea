@@ -42,6 +42,21 @@
                 </div>
             </div>
 
+            <!-- Weapons (Simplified - charge status shown on ship graphics) -->
+            <div class="system-group">
+                <div class="system-label">Weapons Info</div>
+                <div id="weapon-status">
+                    <div class="weapon-info" data-weapon="torp-forward">
+                        <span class="weapon-label">FWD TORP:</span>
+                        <span class="torp-count" id="torp-forward-count">4/20</span>
+                    </div>
+                    <div class="weapon-info" data-weapon="torp-aft">
+                        <span class="weapon-label">AFT TORP:</span>
+                        <span class="torp-count" id="torp-aft-count">4/20</span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Hull Integrity -->
             <div class="system-group">
                 <div class="system-label">Hull Integrity</div>
@@ -78,6 +93,21 @@
                         <span class="system-name">Power</span>
                         <div class="system-hp-bar"><div class="hp-fill"></div></div>
                     </div>
+                    <!-- Weapon HP Bars -->
+                    <div class="system-item" data-system="beam-forward">
+                        <span class="system-name">Fwd Beam</span>
+                        <div class="system-hp-bar"><div class="hp-fill"></div></div>
+                    </div>
+                    <div class="system-item" data-system="beam-aft">
+                        <span class="system-name">Aft Beam</span>
+                        <div class="system-hp-bar"><div class="hp-fill"></div></div>
+                    </div>
+                    <div class="system-item" data-system="torp-forward">
+                        <span class="system-name">Fwd Torp</span>
+                        <div class="system-hp-bar"><div class="hp-fill"></div></div>
+                    </div>
+                    <div class="system-item" data-system="torp-aft">
+                        <span class="system-name">Aft Torp</span>
                     <!-- Weapons -->
                     <div class="system-item" data-system="beam-forward">
                         <span class="system-name">FWD Beam</span>
@@ -94,6 +124,39 @@
                 </div>
             </div>
 
+            <!-- Decoys/Mines -->
+            <div class="system-group">
+                <div class="system-label">Countermeasures</div>
+                <div id="countermeasures">
+                    <div>Bay: <span id="bay-status">-/-</span></div>
+                    <div>Decoys: <span id="decoy-count">6</span></div>
+                    <div>Mines: <span id="mine-count">6</span></div>
+                </div>
+            </div>
+
+            <!-- Tractor Beam -->
+            <div class="system-group">
+                <div class="system-label">Tractor Beam</div>
+                <div id="tractor-beam-controls">
+                    <div>Status: <span id="tractor-status">OFFLINE</span></div>
+                    <div>Target: <span id="tractor-target">NO TARGET</span></div>
+                    <div style="font-size: 10px; color: #888;">Q: Toggle | Shift: Push</div>
+                    <div style="font-size: 10px; color: #ff8800;">-20% Speed/Shields/Beams</div>
+                </div>
+            </div>
+
+            <!-- Shuttles -->
+            <div class="system-group">
+                <div class="system-label">Shuttles</div>
+                <div id="shuttle-controls">
+                    <div style="font-size: 10px; color: #888;">1:Attack 2:Defense 3:Weasel</div>
+                    <div style="font-size: 10px; color: #888;">4:Suicide 5:Transport 6:Patrol</div>
+                    <div style="font-size: 10px; color: #888;">R: Recall | CTRL/SHIFT/ALT: Drone/Fighter/Bomber</div>
+                    <div id="shuttle-count">Shuttles: <span id="shuttle-available">0</span> / <span id="shuttle-active">0</span></div>
+                </div>
+                <div id="active-shuttles">
+                    <!-- Populated by JavaScript -->
+                </div>
             <!-- Consumables (Loadout) -->
             <div class="system-group" id="consumables-group">
                 <div class="system-label">Consumables [F1-F6]</div>
@@ -627,6 +690,7 @@
     <script src="js/systems/CrewSkillSystem.js"></script>
     <script src="js/systems/ConsumableSystem.js"></script>
     <script src="js/systems/AIController.js"></script>
+    <script src="js/ai/ShuttleAI.js"></script>
     <script src="js/systems/TractorBeamSystem.js"></script>
     <script src="js/systems/PowerManagementSystem.js"></script>
     <script src="js/systems/BaySystem.js"></script>
@@ -640,11 +704,29 @@
     <script src="js/systems/ProgressionManager.js"></script>
     <script src="js/systems/AudioManager.js"></script>
 
+    <!-- Components -->
+    <script src="js/components/Transform.js"></script>
+    <script src="js/components/Physics.js"></script>
+
+    <!-- Weapon Components -->
+    <script src="js/components/weapons/Weapon.js"></script>
+    <script src="js/components/weapons/BeamWeapon.js"></script>
+    <script src="js/components/weapons/PulseBeam.js"></script>
+    <script src="js/components/weapons/TorpedoLauncher.js"></script>
+    <script src="js/components/weapons/Disruptor.js"></script>
+    <script src="js/components/weapons/PlasmaTorpedo.js"></script>
+
+    <!-- Shield & Systems Components -->
+    <script src="js/components/Shield.js"></script>
+    <script src="js/components/InternalSystems.js"></script>
+    <script src="js/components/systems/TractorBeam.js"></script>
+
     <!-- Entities -->
     <script src="js/entities/Entity.js"></script>
     <script src="js/entities/Projectile.js"></script>
     <script src="js/entities/Decoy.js"></script>
     <script src="js/entities/Mine.js"></script>
+    <script src="js/entities/Shuttle.js"></script>
     <script src="js/entities/Ship.js"></script>
     <script src="js/entities/Asteroid.js"></script>
     <script src="js/entities/GravelCloud.js"></script>

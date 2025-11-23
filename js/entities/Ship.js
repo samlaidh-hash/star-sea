@@ -396,7 +396,7 @@ class Ship extends Entity {
         // this.maxHp = this.getShipHp();  // DEPRECATED - Use this.systems.hull.maxHp
         // this.hp = this.maxHp;           // DEPRECATED - Use this.systems.hull.hp
 
-        // Countermeasures
+        // Countermeasures (legacy - replaced by bay system)
         this.decoys = CONFIG.DECOY_COUNT;
         this.mines = CONFIG.MINE_COUNT;
         this.captorMines = CONFIG.CAPTOR_MINE_COUNT || 2;  // Variant mine: captures ships
@@ -405,6 +405,14 @@ class Ship extends Entity {
         this.interceptors = CONFIG.INTERCEPTOR_COUNT || 6;  // Anti-torpedo missiles
         this.lastDeploymentTime = 0;
 
+        // Bay System
+        this.bayCapacity = this.getBayCapacity();
+        this.bayContents = this.initializeBayContents();
+
+        // Shuttle System
+        this.selectedShuttleMission = 'attack'; // Current selected mission type
+        this.activeShuttles = []; // Tracking launched shuttles
+        this.shuttleMissionTypes = ['attack', 'defense', 'weasel', 'suicide', 'transport'];
         // Torpedo type selection
         this.selectedTorpedoType = 'standard'; // 'standard', 'heavy', 'quantum', 'gravity'
         this.torpedoTypes = ['standard', 'heavy', 'quantum', 'gravity'];
@@ -434,6 +442,9 @@ class Ship extends Entity {
 
         // Internal Systems (create before weapons so we can link them)
         this.systems = this.createSystems();
+
+        // Tractor Beam System
+        this.tractorBeam = new TractorBeam(this);
 
         // Weapons (created after systems so we can link them)
         this.weapons = this.createWeapons();
@@ -673,6 +684,75 @@ class Ship extends Entity {
         }
 
         return rate;
+    }
+
+    getBayCapacity() {
+        switch (this.shipClass) {
+            case 'FG': return CONFIG.BAY_CAPACITY_FG;
+            case 'DD': return CONFIG.BAY_CAPACITY_DD;
+            case 'CL': return CONFIG.BAY_CAPACITY_CL;
+            case 'CA': return CONFIG.BAY_CAPACITY_CA;
+            case 'BC': return CONFIG.BAY_CAPACITY_BC;
+            default: return CONFIG.BAY_CAPACITY_CA;
+        }
+    }
+
+    initializeBayContents() {
+        // Default loadouts based on ship class
+        // Each item takes 1 space: shuttle, decoy, or mine
+        // For now, shuttles not implemented, so use decoys and mines
+        const contents = [];
+
+        switch (this.shipClass) {
+            case 'FG':
+                // 2 spaces: 1 Decoy + 1 Mine
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'mine' });
+                break;
+            case 'DD':
+                // 3 spaces: 2 Decoys + 1 Mine
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'mine' });
+                break;
+            case 'CL':
+                // 4 spaces: 2 Decoys + 2 Mines
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'mine' });
+                contents.push({ type: 'mine' });
+                break;
+            case 'CA':
+                // 6 spaces: 3 Decoys + 3 Mines
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'mine' });
+                contents.push({ type: 'mine' });
+                contents.push({ type: 'mine' });
+                break;
+            case 'BC':
+                // 8 spaces: 4 Decoys + 4 Mines
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'mine' });
+                contents.push({ type: 'mine' });
+                contents.push({ type: 'mine' });
+                contents.push({ type: 'mine' });
+                break;
+            default:
+                // Default CA loadout
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'decoy' });
+                contents.push({ type: 'mine' });
+                contents.push({ type: 'mine' });
+                contents.push({ type: 'mine' });
+        }
+
+        return contents;
     }
 
     getColor() {
@@ -1311,6 +1391,14 @@ class Ship extends Entity {
             this.maxSpeed = this.getMaxSpeed() * this.systems.getSpeedMultiplier();
             this.turnRate = this.getTurnRate() * this.systems.getTurnRateMultiplier();
         }
+
+        // Update tractor beam (requires entities from Engine)
+        // Note: tractor beam is updated from Engine.js where entities list is available
+
+        // Apply tractor beam penalties to ship stats
+        if (this.tractorBeam && this.tractorBeam.isActive()) {
+            this.maxSpeed *= this.tractorBeam.getSpeedMultiplier();
+        }
     }
 
     /**
@@ -1371,6 +1459,9 @@ class Ship extends Entity {
                 if (weapon.isInArc(targetAngle, this.rotation)) {
                     const projectile = weapon.fire(this, targetX, targetY, currentTime);
                     if (projectile) {
+                        // Apply tractor beam penalty to beam damage
+                        if (this.tractorBeam && this.tractorBeam.isActive()) {
+                            projectile.damage *= this.tractorBeam.getBeamMultiplier();
                         // Apply consumable damage multiplier (energy cells)
                         if (this.consumables) {
                             projectile.damage *= this.consumables.getDamageMultiplier();
@@ -1532,10 +1623,18 @@ class Ship extends Entity {
     deployDecoy() {
         const currentTime = performance.now() / 1000;
 
-        if (this.decoys <= 0) return null;
+        // Check bay contents for decoy
+        const decoyIndex = this.bayContents.findIndex(item => item.type === 'decoy');
+        if (decoyIndex === -1) return null; // No decoys in bay
+
         if (currentTime - this.lastDeploymentTime < CONFIG.DEPLOYMENT_COOLDOWN) return null;
 
-        this.decoys--;
+        // Remove decoy from bay
+        this.bayContents.splice(decoyIndex, 1);
+
+        // Update legacy counter for backward compatibility
+        this.decoys = this.bayContents.filter(item => item.type === 'decoy').length;
+
         this.lastDeploymentTime = currentTime;
 
         // Create decoy at ship position
@@ -1552,6 +1651,19 @@ class Ship extends Entity {
     deployMine(mineType = 'standard') {
         const currentTime = performance.now() / 1000;
 
+        // Check bay contents for mine
+        const mineIndex = this.bayContents.findIndex(item => item.type === 'mine');
+        if (mineIndex === -1) return null; // No mines in bay
+
+        if (currentTime - this.lastDeploymentTime < CONFIG.DEPLOYMENT_COOLDOWN) return null;
+
+        // Remove mine from bay
+        this.bayContents.splice(mineIndex, 1);
+
+        // Update legacy counter for backward compatibility
+        this.mines = this.bayContents.filter(item => item.type === 'mine').length;
+
+        this.lastDeploymentTime = currentTime;
         if (currentTime - this.lastDeploymentTime < CONFIG.DEPLOYMENT_COOLDOWN) return null;
 
         let mine = null;
@@ -1611,6 +1723,115 @@ class Ship extends Entity {
         }
 
         return mine;
+    }
+
+    /**
+     * Cycle through shuttle mission types
+     */
+    cycleShuttleMission() {
+        const currentIndex = this.shuttleMissionTypes.indexOf(this.selectedShuttleMission);
+        const nextIndex = (currentIndex + 1) % this.shuttleMissionTypes.length;
+        this.selectedShuttleMission = this.shuttleMissionTypes[nextIndex];
+
+        // Emit event for HUD update
+        eventBus.emit('shuttle-mission-changed', { ship: this, missionType: this.selectedShuttleMission });
+    }
+
+    /**
+     * Launch a shuttle from the bay by mission index
+     * @param {number} missionIndex - Mission index (0-5)
+     * @param {string} craftType - 'shuttle', 'drone', 'fighter', or 'bomber'
+     */
+    launchShuttleByIndex(missionIndex, craftType = 'shuttle') {
+        // Map mission index to mission type
+        const missionTypes = ['attack', 'defense', 'weasel', 'suicide', 'transport', 'patrol'];
+        const missionType = missionTypes[missionIndex] || 'attack';
+
+        // Check if bay has a shuttle (for now, all craft types use shuttle entity)
+        const shuttleIndex = this.bayContents.findIndex(item => item.type === 'shuttle');
+        if (shuttleIndex === -1) {
+            // No shuttles in bay
+            if (CONFIG.DEBUG_MODE && this.isPlayer) {
+                console.log('No shuttles available in bay');
+            }
+            return null;
+        }
+
+        // Remove shuttle from bay
+        this.bayContents.splice(shuttleIndex, 1);
+
+        // Create shuttle entity
+        const shuttle = new Shuttle({
+            x: this.x,
+            y: this.y,
+            parentShip: this,
+            missionType: missionType,
+            missionData: this.getShuttleMissionDataFor(missionType),
+            faction: this.faction,
+            craftType: craftType // Store craft type for future differentiation
+        });
+
+        // Track active shuttle
+        this.activeShuttles.push(shuttle);
+
+        // Emit event
+        eventBus.emit('shuttle-launched', { ship: this, shuttle: shuttle, missionType: missionType, craftType: craftType });
+
+        return shuttle;
+    }
+
+    /**
+     * Launch shuttle on selected mission (legacy method)
+     */
+    launchShuttle() {
+        // Use first mission type as default
+        return this.launchShuttleByIndex(0, 'shuttle');
+    }
+
+    /**
+     * Get mission data for transport missions
+     */
+    getShuttleMissionDataFor(missionType) {
+        if (missionType === 'transport' || missionType === 'patrol') {
+            // Default transport mission: fly 500 units forward, pause 5 seconds, return
+            const forwardX = this.x + Math.cos(this.rotation) * 500;
+            const forwardY = this.y + Math.sin(this.rotation) * 500;
+
+            return {
+                targetLocation: { x: forwardX, y: forwardY },
+                pauseDuration: 5
+            };
+        }
+
+        return {};
+    }
+
+    /**
+     * Get mission data for transport missions (legacy method)
+     */
+    getShuttleMissionData() {
+        return this.getShuttleMissionDataFor(this.selectedShuttleMission);
+    }
+
+    /**
+     * Recall all active shuttles
+     */
+    recallShuttles() {
+        for (const shuttle of this.activeShuttles) {
+            if (shuttle && shuttle.active) {
+                shuttle.recall();
+            }
+        }
+
+        // Emit event
+        eventBus.emit('shuttles-recalled', { ship: this, count: this.activeShuttles.length });
+    }
+
+    /**
+     * Clean up inactive shuttles from tracking
+     */
+    cleanupShuttles() {
+        this.activeShuttles = this.activeShuttles.filter(shuttle => shuttle && shuttle.active);
     }
 
     /**
