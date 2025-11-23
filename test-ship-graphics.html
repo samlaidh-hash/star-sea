@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ship Graphics Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+        }
+        canvas {
+            border: 1px solid #0f0;
+            display: block;
+            margin: 20px auto;
+            background: #000;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #0ff;
+        }
+        .info {
+            text-align: center;
+            margin: 10px;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Star Sea - Ship Graphics Test</h1>
+    <p class="info">SVG vector graphics converted to Canvas 2D rendering</p>
+
+    <h2>Federation Ship (FED CS)</h2>
+    <canvas id="canvas1" width="400" height="300"></canvas>
+
+    <h2>Trigon Ship</h2>
+    <canvas id="canvas2" width="400" height="300"></canvas>
+
+    <h2>Scintilian Ship</h2>
+    <canvas id="canvas3" width="400" height="300"></canvas>
+
+    <h2>Pirate Ship</h2>
+    <canvas id="canvas4" width="400" height="300"></canvas>
+
+    <h2>All Ships Comparison (with rotation)</h2>
+    <canvas id="canvas5" width="800" height="400"></canvas>
+
+    <script src="js/utils/MathUtils.js"></script>
+    <script src="js/rendering/ShipGraphics.js"></script>
+    <script>
+        // Test Federation ship
+        const ctx1 = document.getElementById('canvas1').getContext('2d');
+        ctx1.fillStyle = '#000';
+        ctx1.fillRect(0, 0, 400, 300);
+        ShipGraphics.drawShip(ctx1, 'federation', 200, 150, 60, 0, '#00ff00');
+
+        // Test Trigon ship
+        const ctx2 = document.getElementById('canvas2').getContext('2d');
+        ctx2.fillStyle = '#000';
+        ctx2.fillRect(0, 0, 400, 300);
+        ShipGraphics.drawShip(ctx2, 'trigon', 200, 150, 60, 0, '#ff0000');
+
+        // Test Scintilian ship
+        const ctx3 = document.getElementById('canvas3').getContext('2d');
+        ctx3.fillStyle = '#000';
+        ctx3.fillRect(0, 0, 400, 300);
+        ShipGraphics.drawShip(ctx3, 'scintilian', 200, 150, 60, 0, '#ffff00');
+
+        // Test Pirate ship
+        const ctx4 = document.getElementById('canvas4').getContext('2d');
+        ctx4.fillStyle = '#000';
+        ctx4.fillRect(0, 0, 400, 300);
+        ShipGraphics.drawShip(ctx4, 'pirate', 200, 150, 60, 0, '#ff00ff');
+
+        // Comparison canvas with rotating ships
+        const ctx5 = document.getElementById('canvas5').getContext('2d');
+        let rotation = 0;
+
+        function animate() {
+            ctx5.fillStyle = '#000';
+            ctx5.fillRect(0, 0, 800, 400);
+
+            // Draw grid lines
+            ctx5.strokeStyle = '#333';
+            ctx5.lineWidth = 1;
+            ctx5.beginPath();
+            ctx5.moveTo(400, 0);
+            ctx5.lineTo(400, 400);
+            ctx5.moveTo(0, 200);
+            ctx5.lineTo(800, 200);
+            ctx5.stroke();
+
+            // Draw all ships at different positions with rotation
+            ShipGraphics.drawShip(ctx5, 'federation', 200, 100, 40, rotation, '#00ff00');
+            ShipGraphics.drawShip(ctx5, 'trigon', 600, 100, 40, rotation, '#ff0000');
+            ShipGraphics.drawShip(ctx5, 'scintilian', 200, 300, 40, rotation, '#ffff00');
+            ShipGraphics.drawShip(ctx5, 'pirate', 600, 300, 40, rotation, '#ff00ff');
+
+            // Draw labels
+            ctx5.font = '14px monospace';
+            ctx5.fillStyle = '#0ff';
+            ctx5.textAlign = 'center';
+            ctx5.fillText('Federation', 200, 180);
+            ctx5.fillText('Trigon', 600, 180);
+            ctx5.fillText('Scintilian', 200, 380);
+            ctx5.fillText('Pirate', 600, 380);
+
+            rotation += 0.5;
+            if (rotation >= 360) rotation = 0;
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>

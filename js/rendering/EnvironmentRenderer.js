@@ -5,6 +5,8 @@ class EnvironmentRenderer {
     }
 
     render(entity) {
+        if (!entity || !entity.active) return; // Safety check
+        
         if (entity.type === 'asteroid') {
             this.renderAsteroid(entity);
         } else if (entity instanceof EnvironmentalHazard || entity.type === 'environment') {

@@ -21,13 +21,13 @@ class Derelict extends Entity {
     }
 
     render(ctx, camera) {
-        const screen = camera.worldToScreen(this.x, this.y);
+        // Note: Camera transform already applied, use world coords directly
         ctx.save();
         ctx.fillStyle = '#555555';
         ctx.strokeStyle = '#aaaaaa';
         ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.arc(screen.x, screen.y, this.radius * camera.zoom, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
         ctx.stroke();
         ctx.restore();

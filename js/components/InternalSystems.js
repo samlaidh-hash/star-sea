@@ -30,11 +30,20 @@ class InternalSystem {
 
     /**
      * Auto-repair system (0.03 HP/sec until system reaches 0 HP, then stops)
+     * Enhanced by Engineering crew skill
      */
-    update(deltaTime) {
-        // Auto-repair at 0.03 HP/sec if HP > 0
+    update(deltaTime, currentTime, ship) {
+        // Auto-repair at 0.03 HP/sec if HP > 0 (enhanced by engineering skill)
         if (this.hp > 0 && this.hp < this.maxHp) {
-            this.repair(CONFIG.AUTO_REPAIR_RATE * deltaTime);
+            let repairRate = CONFIG.AUTO_REPAIR_RATE;
+
+            // Apply engineering crew skill bonus
+            if (ship && ship.crewSkills) {
+                const bonuses = ship.crewSkills.getEngineeringBonuses();
+                repairRate *= bonuses.repairMult;
+            }
+
+            this.repair(repairRate * deltaTime);
         }
     }
 
@@ -281,6 +290,41 @@ class MainPower extends InternalSystem {
     }
 }
 
+class Hull extends InternalSystem {
+    constructor(hp) {
+        super({
+            name: 'Hull',
+            hp: hp,
+            position: { x: 0, y: 0 }, // Center of ship
+            critical: true // Ship destroyed if hull is destroyed
+        });
+    }
+
+    /**
+     * Hull integrity check
+     * Returns structural integrity percentage
+     */
+    getIntegrity() {
+        return this.getEfficiency();
+    }
+
+    /**
+     * Check if hull breach occurs when taking damage
+     */
+    checkHullBreach() {
+        if (this.destroyed) {
+            return true;
+        }
+
+        // Small chance of breach when critically damaged
+        if (this.damaged && Math.random() < 0.03) {
+            return true;
+        }
+
+        return false;
+    }
+}
+
 class CloakingDevice extends InternalSystem {
     constructor(hp = CONFIG.SYSTEM_HP_SENSORS) {
         super({
@@ -364,6 +408,7 @@ class SystemManager {
         this.cnc = new CommandAndControl(config.cncHP);
         this.bay = new WeaponsBay(config.bayHP);
         this.power = new MainPower(config.powerHP);
+        this.hull = new Hull(config.hullHP); // Hull system (replaces ship.hp)
 
         // Cloaking device (Scintilian only)
         this.cloak = config.hasCloak ? new CloakingDevice(config.cloakHP) : null;
@@ -381,9 +426,30 @@ class SystemManager {
     }
 
     /**
-     * Get all systems as array (including weapons and cloak)
+     * Get all systems as array (including weapons, cloak, and hull)
      */
     getAllSystems() {
+        const systems = [
+            this.impulse,
+            this.warp,
+            this.sensors,
+            this.cnc,
+            this.bay,
+            this.power,
+            this.hull
+        ];
+
+        if (this.cloak) systems.push(this.cloak);
+
+        systems.push(...this.weapons); // Include weapon systems
+
+        return systems;
+    }
+
+    /**
+     * Get targetable systems (all EXCEPT hull - hull only damaged by overflow)
+     */
+    getTargetableSystems() {
         const systems = [
             this.impulse,
             this.warp,
@@ -403,11 +469,11 @@ class SystemManager {
     /**
      * Update all systems (including auto-repair)
      */
-    update(deltaTime, currentTime) {
-        // Auto-repair all systems
+    update(deltaTime, currentTime, ship) {
+        // Auto-repair all systems (with crew skill bonus if ship provided)
         for (const system of this.getAllSystems()) {
             if (system.update) {
-                system.update(deltaTime, currentTime);
+                system.update(deltaTime, currentTime, ship);
             }
         }
 
@@ -425,13 +491,16 @@ class SystemManager {
     }
 
     /**
-     * Apply damage to nearest system based on hit location
+     * Apply damage to nearest system based on hit location (BEAMS)
+     * New flow: All damage to single nearest system
+     * If system destroyed, overflow goes to HULL
      */
     applyDamageToNearestSystem(hitX, hitY, damage) {
         let nearestSystem = null;
         let minDistance = Infinity;
 
-        for (const system of this.getAllSystems()) {
+        // Only target non-hull systems
+        for (const system of this.getTargetableSystems()) {
             const distance = Math.sqrt(
                 Math.pow(hitX - system.position.x, 2) +
                 Math.pow(hitY - system.position.y, 2)
@@ -445,18 +514,81 @@ class SystemManager {
 
         if (nearestSystem) {
             const overflow = nearestSystem.takeDamage(damage);
+
+            // Overflow from destroyed system goes to HULL
+            if (overflow > 0) {
+                this.hull.takeDamage(overflow);
+            }
+
             return {
                 system: nearestSystem,
-                overflow: overflow
+                damage: damage - overflow,
+                overflow: 0 // No overflow past hull (hull absorbs it)
             };
         }
 
-        return { system: null, overflow: damage };
+        // No targetable systems - damage hull directly
+        this.hull.takeDamage(damage);
+        return { system: this.hull, damage: damage, overflow: 0 };
     }
 
     /**
-     * Apply torpedo damage to 4 random systems (biased toward impact point)
-     * Used when shields are down - torpedoes hit 4 random systems
+     * Apply torpedo damage to 2-3 nearest systems (TORPEDOES)
+     * New flow: Spread damage across 2-3 systems based on distance
+     * Any overflow from destroyed systems goes to HULL
+     */
+    applyTorpedoToMultipleSystems(hitX, hitY, damage) {
+        const systems = this.getTargetableSystems();
+
+        // Calculate distances to all systems
+        const systemDistances = systems.map(system => ({
+            system,
+            distance: Math.sqrt(
+                Math.pow(hitX - system.position.x, 2) +
+                Math.pow(hitY - system.position.y, 2)
+            )
+        }));
+
+        // Sort by distance (nearest first)
+        systemDistances.sort((a, b) => a.distance - b.distance);
+
+        // Target 2-3 nearest systems
+        const targetCount = Math.min(3, Math.max(2, systemDistances.length));
+        const targetsToHit = systemDistances.slice(0, targetCount);
+
+        // Distribute damage: nearest gets more damage
+        // Pattern: 50%, 30%, 20% for 3 systems OR 60%, 40% for 2 systems
+        const damageDistribution = targetCount === 3 ? [0.5, 0.3, 0.2] : [0.6, 0.4];
+
+        const damagedSystems = [];
+        let totalOverflow = 0;
+
+        for (let i = 0; i < targetsToHit.length; i++) {
+            const systemDamage = damage * damageDistribution[i];
+            const overflow = targetsToHit[i].system.takeDamage(systemDamage);
+            totalOverflow += overflow;
+
+            damagedSystems.push({
+                system: targetsToHit[i].system,
+                damage: systemDamage - overflow
+            });
+        }
+
+        // All overflow goes to HULL
+        if (totalOverflow > 0) {
+            this.hull.takeDamage(totalOverflow);
+            damagedSystems.push({
+                system: this.hull,
+                damage: totalOverflow
+            });
+        }
+
+        return damagedSystems;
+    }
+
+    /**
+     * OLD METHOD - Apply torpedo damage to 4 random systems (biased toward impact point)
+     * DEPRECATED - Kept for backwards compatibility
      */
     applyTorpedoDamageToSystems(hitX, hitY, damage) {
         const systems = this.getAllSystems();

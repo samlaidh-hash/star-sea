@@ -49,7 +49,7 @@ class AIController {
     }
 
     update(deltaTime, currentTime, playerShip, allEntities) {
-        if (!this.ship.active || this.ship.hp <= 0) return;
+        if (!this.ship.active || (this.ship.systems && this.ship.systems.hull && this.ship.systems.hull.hp <= 0)) return;
 
         // Apply system effects to accuracy
         const systemAccuracy = this.ship.systems ? this.ship.systems.sensors.getTargetingAccuracy() : 1.0;
@@ -119,7 +119,8 @@ class AIController {
 
             case 'ATTACK':
                 // Check if should evade (low HP or shields)
-                const hpPercent = this.ship.hp / this.ship.maxHp;
+                const hpPercent = this.ship.systems && this.ship.systems.hull ?
+                    (this.ship.systems.hull.hp / this.ship.systems.hull.maxHp) : 1.0;
                 const shouldEvade = hpPercent < 0.3 && this.aggressiveness < 0.8;
 
                 if (shouldEvade) {
@@ -133,7 +134,8 @@ class AIController {
                 this.evadeTimer -= 0.016; // Roughly deltaTime
                 if (this.evadeTimer <= 0) {
                     // Check HP again
-                    const newHpPercent = this.ship.hp / this.ship.maxHp;
+                    const newHpPercent = this.ship.systems && this.ship.systems.hull ?
+                        (this.ship.systems.hull.hp / this.ship.systems.hull.maxHp) : 1.0;
                     if (newHpPercent > 0.5 || this.aggressiveness > 0.8) {
                         this.changeState('ATTACK', currentTime);
                     } else {
@@ -153,11 +155,23 @@ class AIController {
     }
 
     changeState(newState, currentTime) {
+        const oldState = this.state;
         this.state = newState;
         this.lastStateChange = currentTime;
 
         if (newState === 'EVADE') {
             this.evadeTimer = 3 + Math.random() * 2; // Evade for 3-5 seconds
+        }
+
+        // Stop continuous beam firing when leaving ATTACK state
+        if (oldState === 'ATTACK' && newState !== 'ATTACK') {
+            if (this.ship.weapons) {
+                for (const weapon of this.ship.weapons) {
+                    if (weapon.constructor.name === 'ContinuousBeam' && weapon.isFiring) {
+                        weapon.stopFiring(currentTime);
+                    }
+                }
+            }
         }
     }
 
@@ -280,15 +294,41 @@ class AIController {
     }
 
     applyThrust(thrustPercent) {
-        if (!this.ship.physicsComponent) return;
+        // Physics-based movement (if physics is enabled)
+        if (this.ship.physicsComponent && !CONFIG.DISABLE_PHYSICS) {
+            const thrust = this.ship.acceleration * thrustPercent;
+            const thrustVec = MathUtils.vectorFromAngle(this.ship.rotation, thrust);
 
-        const thrust = this.ship.acceleration * thrustPercent;
-        const thrustVec = MathUtils.vectorFromAngle(this.ship.rotation, thrust);
+            // Apply force
+            this.ship.physicsComponent.body.applyForceToCenter(
+                planck.Vec2(thrustVec.x, thrustVec.y)
+            );
+        } else {
+            // Direct movement fallback (when physics is disabled)
+            // Use the ship's thrust method if available
+            if (this.ship.thrust) {
+                this.ship.thrust(thrustPercent, 0.033); // Assume ~30fps deltaTime
+            } else {
+                // Manual velocity update as last resort
+                const thrustAmount = this.ship.acceleration * thrustPercent * 0.033;
+                const angleRad = MathUtils.toRadians(this.ship.rotation);
 
-        // Apply force
-        this.ship.physicsComponent.body.applyForceToCenter(
-            planck.Vec2(thrustVec.x, thrustVec.y)
-        );
+                this.ship.vx = (this.ship.vx || 0) + Math.cos(angleRad) * thrustAmount;
+                this.ship.vy = (this.ship.vy || 0) + Math.sin(angleRad) * thrustAmount;
+
+                // Cap at max speed
+                const speed = Math.sqrt(this.ship.vx * this.ship.vx + this.ship.vy * this.ship.vy);
+                if (speed > this.ship.maxSpeed) {
+                    const scale = this.ship.maxSpeed / speed;
+                    this.ship.vx *= scale;
+                    this.ship.vy *= scale;
+                }
+
+                // Update position
+                this.ship.x += this.ship.vx * 0.033;
+                this.ship.y += this.ship.vy * 0.033;
+            }
+        }
     }
 
     fireWeapons(currentTime, accuracy) {
@@ -305,17 +345,81 @@ class AIController {
         const targetX = leadTarget.x + (Math.random() - 0.5) * spread;
         const targetY = leadTarget.y + (Math.random() - 0.5) * spread;
 
-        // Fire beams - pass currentTime explicitly
-        if (this.ship.fireBeams) {
-            const beamProjectiles = this.ship.fireBeams(targetX, targetY, currentTime);
-            if (beamProjectiles && beamProjectiles.length > 0) {
-                eventBus.emit('ai-fired-beams', { ship: this.ship, projectiles: beamProjectiles });
-                this.lastFireTime = currentTime;
+        // Calculate distance to target for range-based weapon selection
+        const distance = MathUtils.distance(this.ship.x, this.ship.y, this.target.x, this.target.y);
+        const closeRange = 300; // Pixels - prefer beams/disruptors
+        const longRange = 600; // Pixels - prefer torpedoes/plasma
+
+        // Check available weapon types
+        let hasBeamWeapons = false;
+        let hasTorpedoWeapons = false;
+
+        if (this.ship.weapons) {
+            for (const weapon of this.ship.weapons) {
+                const weaponType = weapon.constructor.name;
+                if (weaponType === 'ContinuousBeam' || weaponType === 'BeamWeapon' ||
+                    weaponType === 'PulseBeam' || weaponType === 'Disruptor') {
+                    hasBeamWeapons = true;
+                }
+                if (weaponType === 'TorpedoLauncher' || weaponType === 'DualTorpedoLauncher' ||
+                    weaponType === 'PlasmaTorpedo') {
+                    hasTorpedoWeapons = true;
+                }
             }
         }
 
-        // Fire torpedoes (less frequently) - pass currentTime explicitly
-        if (Math.random() < 0.2 && this.ship.fireTorpedoes) { // Increased from 0.1 to 0.2
+        // Range-based weapon selection logic
+        let shouldFireBeams = false;
+        let shouldFireTorpedoes = false;
+
+        if (distance < closeRange) {
+            // Close range: prefer beams (80% beams, 20% torpedoes)
+            shouldFireBeams = hasBeamWeapons;
+            shouldFireTorpedoes = hasTorpedoWeapons && Math.random() < 0.2;
+        } else if (distance > longRange) {
+            // Long range: prefer torpedoes (80% torpedoes, 20% beams)
+            shouldFireBeams = hasBeamWeapons && Math.random() < 0.2;
+            shouldFireTorpedoes = hasTorpedoWeapons;
+        } else {
+            // Medium range: balanced mix (50/50)
+            shouldFireBeams = hasBeamWeapons && Math.random() < 0.5;
+            shouldFireTorpedoes = hasTorpedoWeapons && Math.random() < 0.5;
+        }
+
+        // Fire beams if selected
+        if (shouldFireBeams) {
+            // Check if ship has continuous beams that need to be started
+            let hasContinuousBeams = false;
+            if (this.ship.weapons) {
+                for (const weapon of this.ship.weapons) {
+                    if (weapon.constructor.name === 'ContinuousBeam') {
+                        hasContinuousBeams = true;
+                        // Start firing if not already firing
+                        if (!weapon.isFiring) {
+                            weapon.startFiring(currentTime, targetX, targetY);
+                        }
+                    }
+                }
+            }
+
+            // Fire continuous beams or regular beams
+            if (hasContinuousBeams && this.ship.fireContinuousBeams) {
+                const beamProjectiles = this.ship.fireContinuousBeams(targetX, targetY, currentTime);
+                if (beamProjectiles && beamProjectiles.length > 0) {
+                    eventBus.emit('ai-fired-beams', { ship: this.ship, projectiles: beamProjectiles });
+                    this.lastFireTime = currentTime;
+                }
+            } else if (this.ship.fireBeams) {
+                const beamProjectiles = this.ship.fireBeams(targetX, targetY, currentTime);
+                if (beamProjectiles && beamProjectiles.length > 0) {
+                    eventBus.emit('ai-fired-beams', { ship: this.ship, projectiles: beamProjectiles });
+                    this.lastFireTime = currentTime;
+                }
+            }
+        }
+
+        // Fire torpedoes if selected
+        if (shouldFireTorpedoes && this.ship.fireTorpedoes) {
             const torpProjectiles = this.ship.fireTorpedoes(targetX, targetY, null, currentTime); // No lock-on for AI
             if (torpProjectiles && torpProjectiles.length > 0) {
                 eventBus.emit('ai-fired-torpedoes', { ship: this.ship, projectiles: torpProjectiles });
@@ -330,7 +434,7 @@ class AIController {
         // Simple lead calculation
         const targetVX = this.target.vx || 0;
         const targetVY = this.target.vy || 0;
-        const projectileSpeed = CONFIG.BEAM_SPEED_PIXELS;
+        const projectileSpeed = CONFIG.BEAM_SPEED || 5000; // Use BEAM_SPEED from config
         const distance = MathUtils.distance(this.ship.x, this.ship.y, this.target.x, this.target.y);
         const timeToImpact = distance / projectileSpeed;
 

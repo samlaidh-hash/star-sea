@@ -34,10 +34,13 @@ class PlasmaTorpedo extends Weapon {
         // Use charged damage if provided, otherwise use default
         const damagePotential = chargeDamage > 0 ? chargeDamage : CONFIG.PLASMA_DAMAGE_POTENTIAL;
 
+        // Calculate firing point offset from ship center
+        const firingPoint = this.calculateFiringPoint(ship);
+
         // Create plasma torpedo projectile
         const plasmaTorp = new PlasmaTorpedoProjectile({
-            x: ship.x,
-            y: ship.y,
+            x: firingPoint.x,
+            y: firingPoint.y,
             rotation: ship.rotation,
             targetX: targetX,
             targetY: targetY,
@@ -45,7 +48,8 @@ class PlasmaTorpedo extends Weapon {
             speed: this.speed,
             lifetime: this.lifetime,
             sourceShip: ship,
-            lockOnTarget: lockOnTarget // Auto-home to nearest target
+            lockOnTarget: lockOnTarget, // Auto-home to nearest target
+            trackReticle: false // Torpedoes no longer track reticle
         });
 
         return plasmaTorp;
@@ -81,5 +85,47 @@ class PlasmaTorpedo extends Weapon {
 
     getStoredCount() {
         return 0; // No stored plasma torps
+    }
+
+    /**
+     * Calculate plasma torpedo firing point from weapon mount position
+     */
+    calculateFiringPoint(ship) {
+        // Get ship size for proper offset calculation
+        const shipSize = ship.getShipSize ? ship.getShipSize() : 40;
+
+        // Use weapon position if available
+        if (this.position) {
+            const worldRad = MathUtils.toRadians(ship.rotation);
+            const worldCos = Math.cos(worldRad);
+            const worldSin = Math.sin(worldRad);
+
+            // Apply weapon mount position with additional forward offset to clear ship hull
+            const forwardOffset = shipSize * 1.5; // 150% of ship size forward - prevents stuck torpedoes
+            const totalX = this.position.x;
+            const totalY = this.position.y - forwardOffset; // Negative Y = forward
+
+            let worldX = ship.x + (totalX * worldCos - totalY * worldSin);
+            let worldY = ship.y + (totalX * worldSin + totalY * worldCos);
+
+            // Add velocity compensation for fast-moving ships
+            worldX += (ship.vx || 0) * 0.15;
+            worldY += (ship.vy || 0) * 0.15;
+
+            return { x: worldX, y: worldY };
+        }
+
+        // Fallback: offset forward from ship center (large offset to clear ship)
+        const offset = shipSize * 1.5; // 150% of ship size forward - prevents stuck torpedoes
+        const worldRad = MathUtils.toRadians(ship.rotation);
+
+        let x = ship.x + Math.sin(worldRad) * offset;
+        let y = ship.y - Math.cos(worldRad) * offset;
+
+        // Add velocity compensation for fast-moving ships
+        x += (ship.vx || 0) * 0.15;
+        y += (ship.vy || 0) * 0.15;
+
+        return { x, y };
     }
 }

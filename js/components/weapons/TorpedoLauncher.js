@@ -9,7 +9,7 @@ class TorpedoLauncher extends Weapon {
         this.maxLoaded = config.maxLoaded || CONFIG.TORPEDO_LOADED;
         this.stored = config.stored || CONFIG.TORPEDO_STORED;
         this.blastRadius = config.blastRadius || CONFIG.TORPEDO_BLAST_RADIUS_PIXELS;
-        this.speed = config.speed || (CONFIG.TORPEDO_SPEED_MULTIPLIER * CONFIG.MAX_SPEED_CA);
+        this.speed = config.speed || CONFIG.TORPEDO_SPEED_CA;
         this.lifetime = CONFIG.TORPEDO_LIFETIME;
         this.reloadTime = CONFIG.TORPEDO_RELOAD_TIME; // 5 seconds to reload all 4
         this.reloadStartTime = 0;
@@ -45,26 +45,91 @@ class TorpedoLauncher extends Weapon {
             });
         }
 
-        // Start reload timer when we run out of loaded torpedoes
-        if (this.loaded === 0 && this.stored > 0 && !this.isReloading) {
+        // Start reload timer when we fire a torpedo and have stored ammo
+        if (this.stored > 0 && !this.isReloading) {
             this.reloadStartTime = currentTime;
             this.isReloading = true;
         }
 
-        // Create torpedo projectile
-        const torpedo = new TorpedoProjectile({
-            x: ship.x,
-            y: ship.y,
-            rotation: ship.rotation,
-            targetX: targetX,
-            targetY: targetY,
-            damage: this.damage,
-            blastRadius: this.blastRadius,
-            speed: this.speed,
-            lifetime: this.lifetime,
-            sourceShip: ship,
-            lockOnTarget: lockOnTarget // Fire-and-forget
-        });
+        // Calculate firing point offset from ship center
+        const firingPoint = this.calculateFiringPoint(ship);
+
+        // Determine torpedo type based on ship selection
+        const torpedoType = ship.selectedTorpedoType || 'standard';
+        let torpedo = null;
+
+        switch (torpedoType) {
+            case 'heavy':
+                torpedo = new HeavyTorpedo({
+                    x: firingPoint.x,
+                    y: firingPoint.y,
+                    rotation: ship.rotation,
+                    targetX: targetX,
+                    targetY: targetY,
+                    damage: 3,
+                    blastRadius: this.blastRadius * 1.5,
+                    speed: this.speed * 0.8,
+                    lifetime: this.lifetime * 1.2,
+                    sourceShip: ship,
+                    lockOnTarget: lockOnTarget,
+                    trackReticle: false // Torpedoes no longer track reticle
+                });
+                break;
+
+            case 'quantum':
+                torpedo = new QuantumTorpedo({
+                    x: firingPoint.x,
+                    y: firingPoint.y,
+                    rotation: ship.rotation,
+                    targetX: targetX,
+                    targetY: targetY,
+                    damage: this.damage,
+                    blastRadius: this.blastRadius,
+                    speed: this.speed,
+                    lifetime: this.lifetime,
+                    sourceShip: ship,
+                    lockOnTarget: lockOnTarget,
+                    trackReticle: false // Torpedoes no longer track reticle
+                });
+                break;
+
+            case 'gravity':
+                torpedo = new GravityTorpedo({
+                    x: firingPoint.x,
+                    y: firingPoint.y,
+                    rotation: ship.rotation,
+                    targetX: targetX,
+                    targetY: targetY,
+                    damage: this.damage,
+                    blastRadius: this.blastRadius,
+                    speed: this.speed,
+                    lifetime: this.lifetime,
+                    sourceShip: ship,
+                    lockOnTarget: lockOnTarget,
+                    gravityWellDuration: 10.0,
+                    gravityWellStrength: 0.3,
+                    trackReticle: false // Torpedoes no longer track reticle
+                });
+                break;
+
+            case 'standard':
+            default:
+                torpedo = new TorpedoProjectile({
+                    x: firingPoint.x,
+                    y: firingPoint.y,
+                    rotation: ship.rotation,
+                    targetX: targetX,
+                    targetY: targetY,
+                    damage: this.damage,
+                    blastRadius: this.blastRadius,
+                    speed: this.speed,
+                    lifetime: this.lifetime,
+                    sourceShip: ship,
+                    lockOnTarget: lockOnTarget,
+                    trackReticle: false // Torpedoes no longer track reticle
+                });
+                break;
+        }
 
         return torpedo;
     }
@@ -73,22 +138,27 @@ class TorpedoLauncher extends Weapon {
         // Call parent auto-repair
         super.update(deltaTime, currentTime);
 
-        // Handle reloading - reload all 4 torpedoes at once after 5 seconds
-        if (this.isReloading && this.stored > 0) {
+        // Handle reloading - top-off system: reload ONE torpedo every 5 seconds until full
+        if (this.isReloading && this.stored > 0 && this.loaded < this.maxLoaded) {
             const timeSinceReloadStart = currentTime - this.reloadStartTime;
 
             if (timeSinceReloadStart >= this.reloadTime) {
-                // Reload all torpedoes at once
-                const torpsToReload = Math.min(this.maxLoaded, this.stored);
-                this.loaded = torpsToReload;
-                this.stored -= torpsToReload;
-                this.isReloading = false;
+                // Reload ONE torpedo from storage
+                this.loaded++;
+                this.stored--;
 
                 if (CONFIG.DEBUG_MODE) {
-                    console.log('Torpedoes reloaded:', {
+                    console.log('Torpedo reloaded:', {
                         loaded: this.loaded,
                         stored: this.stored
                     });
+                }
+
+                // If still not full and have more stored, continue reloading
+                if (this.loaded < this.maxLoaded && this.stored > 0) {
+                    this.reloadStartTime = currentTime; // Reset timer for next torpedo
+                } else {
+                    this.isReloading = false; // Stop reloading when full or out of stored
                 }
             }
         }
@@ -100,5 +170,47 @@ class TorpedoLauncher extends Weapon {
 
     getStoredCount() {
         return this.stored;
+    }
+
+    /**
+     * Calculate torpedo firing point from weapon mount position
+     */
+    calculateFiringPoint(ship) {
+        // Get ship size for proper offset calculation
+        const shipSize = ship.getShipSize ? ship.getShipSize() : 40;
+
+        // Use weapon position if available
+        if (this.position) {
+            const worldRad = MathUtils.toRadians(ship.rotation);
+            const worldCos = Math.cos(worldRad);
+            const worldSin = Math.sin(worldRad);
+
+            // Apply weapon mount position with additional forward offset to clear ship hull
+            const forwardOffset = shipSize * 1.5; // 150% of ship size forward - prevents stuck torpedoes
+            const totalX = this.position.x;
+            const totalY = this.position.y - forwardOffset; // Negative Y = forward
+
+            let worldX = ship.x + (totalX * worldCos - totalY * worldSin);
+            let worldY = ship.y + (totalX * worldSin + totalY * worldCos);
+
+            // Add velocity compensation for fast-moving ships
+            worldX += (ship.vx || 0) * 0.15;
+            worldY += (ship.vy || 0) * 0.15;
+
+            return { x: worldX, y: worldY };
+        }
+
+        // Fallback: offset forward from ship center (large offset to clear ship)
+        const offset = shipSize * 1.5; // 150% of ship size forward - prevents stuck torpedoes
+        const worldRad = MathUtils.toRadians(ship.rotation);
+
+        let x = ship.x + Math.sin(worldRad) * offset;
+        let y = ship.y - Math.cos(worldRad) * offset;
+
+        // Add velocity compensation for fast-moving ships
+        x += (ship.vx || 0) * 0.15;
+        y += (ship.vy || 0) * 0.15;
+
+        return { x, y };
     }
 }

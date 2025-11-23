@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Star Sea - Minimal Test</title>
+    <style>
+        body { margin: 0; padding: 0; background: #000; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    
+    <script>
+        console.log('🚀 Minimal test starting...');
+        
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let x = 400;
+        let y = 300;
+        let vx = 0;
+        let vy = 0;
+        
+        // Simple input
+        const keys = {};
+        document.addEventListener('keydown', (e) => {
+            keys[e.key.toLowerCase()] = true;
+        });
+        document.addEventListener('keyup', (e) => {
+            keys[e.key.toLowerCase()] = false;
+        });
+        
+        // Simple game loop
+        function update() {
+            // Movement
+            if (keys['w']) vy -= 2;
+            if (keys['s']) vy += 2;
+            if (keys['a']) vx -= 2;
+            if (keys['d']) vx += 2;
+            
+            // Apply velocity
+            x += vx;
+            y += vy;
+            
+            // Friction
+            vx *= 0.9;
+            vy *= 0.9;
+            
+            // Keep in bounds
+            if (x < 0) x = 0;
+            if (x > 800) x = 800;
+            if (y < 0) y = 0;
+            if (y > 600) y = 600;
+        }
+        
+        function render() {
+            // Clear
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, 800, 600);
+            
+            // Draw player
+            ctx.fillStyle = '#00ff00';
+            ctx.fillRect(x - 10, y - 10, 20, 20);
+            
+            // Draw instructions
+            ctx.fillStyle = '#fff';
+            ctx.font = '16px Arial';
+            ctx.fillText('WASD to move', 10, 30);
+        }
+        
+        function gameLoop() {
+            update();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        console.log('✅ Starting minimal game loop...');
+        gameLoop();
+    </script>
+</body>
+</html>
+
+

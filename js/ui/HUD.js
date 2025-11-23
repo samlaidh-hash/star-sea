@@ -8,24 +8,52 @@ class HUD {
         this.uiRenderer = new UIRenderer();
         this.lastUpdate = 0;
         this.updateInterval = 100; // Update every 100ms
+
+        // Initialize keyboard panel toggle
+        this.initKeyboardPanel();
     }
 
-    update(playerShip, entities = []) {
+    /**
+     * Initialize keyboard reference panel toggle functionality
+     */
+    initKeyboardPanel() {
+        const toggleButton = document.getElementById('keyboard-panel-toggle');
+        const panel = document.getElementById('keyboard-panel');
+
+        if (!toggleButton || !panel) {
+            console.warn('Keyboard panel elements not found');
+            return;
+        }
+
+        // Toggle panel visibility on button click
+        toggleButton.addEventListener('click', () => {
+            panel.classList.toggle('show');
+        });
+
+        // Close panel when clicking outside (optional enhancement)
+        document.addEventListener('click', (e) => {
+            // If click is outside panel and toggle button, close panel
+            if (!panel.contains(e.target) && !toggleButton.contains(e.target)) {
+                panel.classList.remove('show');
+            }
+        });
+    }
+
+    update(playerShip, entities = [], selectedTarget = null) {
         const now = performance.now();
         if (now - this.lastUpdate < this.updateInterval) return;
         this.lastUpdate = now;
 
         if (!playerShip) return;
 
+        this.playerShip = playerShip; // Store reference for updateTargetInfo distance calc
+
         this.updateShipHeader(playerShip);
 
         // Update shields
         this.updateShields(playerShip);
 
-        // Update weapons
-        this.updateWeapons(playerShip);
-
-        // Update systems
+        // Update systems (now includes weapons)
         this.updateSystems(playerShip);
 
         // Update countermeasures
@@ -33,12 +61,23 @@ class HUD {
 
         // Update shuttles
         this.updateShuttles(playerShip);
+        // Update consumables
+        this.updateConsumables(playerShip);
 
         // Update warp charge
         this.updateWarpCharge(playerShip);
 
+        // Update boost status
+        this.updateBoostStatus(playerShip);
+
+        // Update ping status
+        this.updatePingStatus();
+
         // Update speed bar
         this.updateSpeedBar(playerShip);
+
+        // Update target info (TAB-selected target)
+        this.updateTargetInfo(selectedTarget);
 
         // Update minimap
         let detectionRadius = CONFIG.DETECTION_RADIUS_CA_PIXELS;
@@ -46,7 +85,8 @@ class HUD {
         if (typeof CONFIG !== 'undefined' && CONFIG[detectionKey] !== undefined) {
             detectionRadius = CONFIG[detectionKey];
         }
-        this.uiRenderer.renderMinimap(playerShip, entities, detectionRadius);
+        const camera = window.game ? window.game.camera : null;
+        this.uiRenderer.renderMinimap(playerShip, entities, detectionRadius, camera);
     }
 
     updateShipHeader(ship) {
@@ -66,6 +106,17 @@ class HUD {
         }
 
         const quadrants = ship.shields.getAllQuadrants();
+
+        // Debug logging to diagnose shield bar issues
+        if (CONFIG.DEBUG_MODE) {
+            console.log('Shield values:', {
+                fore: {current: quadrants.fore.current, max: quadrants.fore.max, pct: quadrants.fore.getPercentage()},
+                aft: {current: quadrants.aft.current, max: quadrants.aft.max, pct: quadrants.aft.getPercentage()},
+                port: {current: quadrants.port.current, max: quadrants.port.max, pct: quadrants.port.getPercentage()},
+                starboard: {current: quadrants.starboard.current, max: quadrants.starboard.max, pct: quadrants.starboard.getPercentage()}
+            });
+        }
+
         this.updateBar('shield-fore', quadrants.fore.getPercentage());
         this.updateBar('shield-port', quadrants.port.getPercentage());
         this.updateBar('shield-starboard', quadrants.starboard.getPercentage());
@@ -100,19 +151,20 @@ class HUD {
             aftLauncher ? aftLauncher.getStoredCount() : null
         );
     }
+    // REMOVED: updateWeapons() - now integrated into updateSystems()
 
     updateSystems(ship) {
-        // Update hull HP
+        // Update hull HP (now from hull system)
         const hpElement = document.getElementById('ship-hp');
-        if (hpElement && ship) {
-            hpElement.textContent = `${Math.round(ship.hp)}/${ship.maxHp}`;
+        if (hpElement && ship && ship.systems && ship.systems.hull) {
+            hpElement.textContent = `${Math.round(ship.systems.hull.hp)}/${ship.systems.hull.maxHp}`;
 
             const hullItem = hpElement.closest('.system-item');
             if (hullItem) {
-                if (ship.hp === 0) {
+                if (ship.systems.hull.hp === 0) {
                     hullItem.classList.add('damaged');
                     hullItem.classList.remove('warning');
-                } else if (ship.hp <= ship.maxHp * 0.3) {
+                } else if (ship.systems.hull.hp <= ship.systems.hull.maxHp * 0.3) {
                     hullItem.classList.add('warning');
                     hullItem.classList.remove('damaged');
                 } else {
@@ -129,6 +181,9 @@ class HUD {
             this.updateSystemHP('cnc', 0, 6);
             this.updateSystemHP('bay', 0, 6);
             this.updateSystemHP('power', 0, 12);
+            this.updateSystemHP('beam-forward', 0, 1);
+            this.updateSystemHP('beam-aft', 0, 1);
+            this.updateSystemHP('torpedo', 0, 1);
             return;
         }
 
@@ -213,6 +268,32 @@ class HUD {
                 targetElement.textContent = 'NO TARGET';
                 targetElement.style.color = '#666';
             }
+        // Update weapon systems (now integrated with other systems)
+        if (ship.weapons) {
+            const beamWeapons = ship.getBeamWeapons();
+            const torpedoLaunchers = ship.getTorpedoLaunchers();
+
+            // Forward beam
+            const forwardBeam = beamWeapons.find(w => w.arcCenter === 0);
+            this.updateSystemHP('beam-forward', forwardBeam ? forwardBeam.hp : 0, forwardBeam ? forwardBeam.maxHp : 1);
+
+            // Aft beam
+            const aftBeam = beamWeapons.find(w => w.arcCenter === 180);
+            this.updateSystemHP('beam-aft', aftBeam ? aftBeam.hp : 0, aftBeam ? aftBeam.maxHp : 1);
+
+            // Torpedo launcher
+            const torpedoLauncher = torpedoLaunchers[0];
+            this.updateSystemHP('torpedo', torpedoLauncher ? torpedoLauncher.hp : 0, torpedoLauncher ? torpedoLauncher.maxHp : 1);
+
+            // Update torpedo storage count in inventory section
+            const storageElement = document.getElementById('torpedo-storage');
+            if (storageElement && torpedoLauncher) {
+                storageElement.textContent = torpedoLauncher.getStoredCount();
+            }
+        } else {
+            this.updateSystemHP('beam-forward', 0, 1);
+            this.updateSystemHP('beam-aft', 0, 1);
+            this.updateSystemHP('torpedo', 0, 1);
         }
     }
 
@@ -291,6 +372,105 @@ class HUD {
 
                 activeShuttlesDiv.appendChild(shuttleDiv);
             }
+        const captorMineElement = document.getElementById('captor-mine-count');
+        const phaserMineElement = document.getElementById('phaser-mine-count');
+        const transporterMineElement = document.getElementById('transporter-mine-count');
+        const interceptorElement = document.getElementById('interceptor-count');
+        const torpedoTypeElement = document.getElementById('torpedo-type');
+
+        if (decoyElement) decoyElement.textContent = ship.decoys || 0;
+        if (mineElement) mineElement.textContent = ship.mines || 0;
+        if (captorMineElement) captorMineElement.textContent = ship.captorMines || 0;
+        if (phaserMineElement) phaserMineElement.textContent = ship.phaserMines || 0;
+        if (transporterMineElement) transporterMineElement.textContent = ship.transporterMines || 0;
+        if (interceptorElement) interceptorElement.textContent = ship.interceptors || 0;
+
+        // Update torpedo type indicator
+        if (torpedoTypeElement) {
+            const torpType = ship.selectedTorpedoType || 'standard';
+            const torpTypeLabels = {
+                'standard': 'STD',
+                'heavy': 'HVY',
+                'quantum': 'QTM',
+                'gravity': 'GRV'
+            };
+            torpedoTypeElement.textContent = torpTypeLabels[torpType] || 'STD';
+        }
+
+        // Update shuttle/fighter/bomber counts from BaySystem
+        if (window.game && window.game.baySystem) {
+            const baySystem = window.game.baySystem;
+
+            const shuttleCountElement = document.getElementById('shuttle-count');
+            const shuttleMaxElement = document.getElementById('shuttle-max');
+            const fighterCountElement = document.getElementById('fighter-count');
+            const fighterMaxElement = document.getElementById('fighter-max');
+            const bomberCountElement = document.getElementById('bomber-count');
+            const bomberMaxElement = document.getElementById('bomber-max');
+            const baySpaceElement = document.getElementById('bay-space');
+            const bayMaxElement = document.getElementById('bay-max');
+
+            if (shuttleCountElement) shuttleCountElement.textContent = baySystem.launchedShuttles.filter(s => s.active).length;
+            if (fighterCountElement) fighterCountElement.textContent = baySystem.launchedFighters.filter(f => f.active).length;
+            if (bomberCountElement) bomberCountElement.textContent = baySystem.launchedBombers.filter(b => b.active).length;
+            if (baySpaceElement) baySpaceElement.textContent = baySystem.baySpace;
+            if (bayMaxElement) bayMaxElement.textContent = baySystem.maxBaySpace;
+
+            // Get max counts from default loadouts
+            const faction = ship.faction || 'FEDERATION';
+            const shipClass = ship.shipClass || 'CA';
+            const loadout = baySystem.defaultLoadouts[faction]?.[shipClass] || { shuttles: 0, fighters: 0, bombers: 0 };
+
+            if (shuttleMaxElement) shuttleMaxElement.textContent = loadout.shuttles || 0;
+            if (fighterMaxElement) fighterMaxElement.textContent = loadout.fighters || 0;
+            if (bomberMaxElement) bomberMaxElement.textContent = loadout.bombers || 0;
+        }
+    }
+
+    updateConsumables(ship) {
+        if (!ship || !ship.consumables) return;
+
+        const consumables = ship.consumables.inventory;
+        const activeEffects = ship.consumables.activeEffects;
+
+        // Update consumable counts
+        const torpedoesElement = document.getElementById('consumable-torpedoes');
+        const decoysElement = document.getElementById('consumable-decoys');
+        const minesElement = document.getElementById('consumable-mines');
+        const shieldBoostElement = document.getElementById('consumable-shield-boost');
+        const repairElement = document.getElementById('consumable-repair');
+        const energyElement = document.getElementById('consumable-energy');
+        const energyActiveElement = document.getElementById('consumable-energy-active');
+
+        if (torpedoesElement) {
+            torpedoesElement.textContent = consumables.extraTorpedoes || 0;
+            torpedoesElement.classList.toggle('depleted', (consumables.extraTorpedoes || 0) === 0);
+        }
+        if (decoysElement) {
+            decoysElement.textContent = consumables.extraDecoys || 0;
+            decoysElement.classList.toggle('depleted', (consumables.extraDecoys || 0) === 0);
+        }
+        if (minesElement) {
+            minesElement.textContent = consumables.extraMines || 0;
+            minesElement.classList.toggle('depleted', (consumables.extraMines || 0) === 0);
+        }
+        if (shieldBoostElement) {
+            shieldBoostElement.textContent = consumables.shieldBoost || 0;
+            shieldBoostElement.classList.toggle('depleted', (consumables.shieldBoost || 0) === 0);
+        }
+        if (repairElement) {
+            repairElement.textContent = consumables.hullRepairKit || 0;
+            repairElement.classList.toggle('depleted', (consumables.hullRepairKit || 0) === 0);
+        }
+        if (energyElement) {
+            energyElement.textContent = consumables.energyCells || 0;
+            energyElement.classList.toggle('depleted', (consumables.energyCells || 0) === 0);
+        }
+
+        // Show/hide energy cells active indicator
+        if (energyActiveElement) {
+            const isActive = activeEffects.energyCells && activeEffects.energyCells.active;
+            energyActiveElement.style.display = isActive ? 'inline' : 'none';
         }
     }
 
@@ -300,6 +480,88 @@ class HUD {
 
         const warpCharge = ship.systems.warp.warpCharge || 0;
         fillElement.style.width = `${warpCharge}%`;
+    }
+
+    updateBoostStatus(ship) {
+        if (!ship) return;
+
+        const boostGroup = document.getElementById('boost-status-group');
+        const boostLabel = document.getElementById('boost-label');
+        const boostFill = document.getElementById('boost-fill');
+
+        if (!boostGroup || !boostLabel || !boostFill) return;
+
+        if (ship.boostActive) {
+            // Boost is active - show timer
+            boostGroup.style.display = 'block';
+            const currentTime = performance.now() / 1000;
+            const elapsed = currentTime - ship.boostStartTime;
+            const remaining = ship.boostDuration - elapsed;
+            const percentage = (remaining / ship.boostDuration) * 100;
+
+            boostLabel.textContent = 'BOOST';
+            boostLabel.style.color = '#0ff'; // Cyan when active
+            boostFill.style.width = `${Math.max(0, percentage)}%`;
+            boostFill.style.background = 'linear-gradient(90deg, #0ff, #0af)';
+        } else {
+            // Boost is on cooldown or ready
+            const cooldownRemaining = ship.getBoostCooldownRemaining();
+
+            if (cooldownRemaining > 0) {
+                // Show cooldown
+                boostGroup.style.display = 'block';
+                const cooldownPercentage = ((ship.boostCooldown - cooldownRemaining) / ship.boostCooldown) * 100;
+
+                boostLabel.textContent = `COOLDOWN ${Math.ceil(cooldownRemaining)}s`;
+                boostLabel.style.color = '#888'; // Gray when on cooldown
+                boostFill.style.width = `${cooldownPercentage}%`;
+                boostFill.style.background = 'linear-gradient(90deg, #444, #666)';
+            } else {
+                // Boost ready - hide indicator
+                boostGroup.style.display = 'none';
+            }
+        }
+    }
+
+    updatePingStatus() {
+        const pingSystem = window.game ? window.game.pingSystem : null;
+        if (!pingSystem) return;
+
+        const pingGroup = document.getElementById('ping-status-group');
+        const pingLabel = document.getElementById('ping-label');
+        const pingFill = document.getElementById('ping-fill');
+        const pingText = document.getElementById('ping-text');
+
+        if (!pingGroup || !pingLabel || !pingFill || !pingText) return;
+
+        const status = pingSystem.getStatus();
+
+        if (status.isActive) {
+            // Ping is active - show active timer
+            pingGroup.style.display = 'block';
+            const remaining = Math.ceil(status.activeTimeRemaining);
+            const percentage = (status.activeTimeRemaining / pingSystem.activeDuration) * 100;
+
+            pingLabel.textContent = 'PING ACTIVE';
+            pingLabel.style.color = '#00ffff';
+            pingFill.style.width = `${Math.max(0, percentage)}%`;
+            pingFill.className = 'active';
+            pingText.textContent = `${remaining}s - Range x2`;
+        } else if (status.isCooldown) {
+            // Ping is on cooldown
+            pingGroup.style.display = 'block';
+            const remaining = Math.ceil(status.cooldownTimeRemaining);
+            const percentage = status.cooldownProgress * 100;
+
+            pingLabel.textContent = 'PING COOLDOWN';
+            pingLabel.style.color = '#888888';
+            pingFill.style.width = `${percentage}%`;
+            pingFill.className = 'cooldown';
+            pingText.textContent = `${remaining}s until ready`;
+        } else {
+            // Ping ready - hide indicator
+            pingGroup.style.display = 'none';
+        }
     }
 
     weaponCoversArc(weapon, arcCenter) {
@@ -375,6 +637,9 @@ class HUD {
             }
         }
     }
+    // REMOVED: updateTorpedoCount() - legacy method no longer used
+    // REMOVED: updateWeaponHP() - legacy method no longer used
+    // Weapons now use updateSystemHP() like all other systems
     updateSystemHP(systemName, current, max) {
         const systemItem = document.querySelector(`[data-system="${systemName}"]`);
         if (!systemItem) return;
@@ -574,6 +839,97 @@ class HUD {
             const reversePercent = (Math.abs(ship.currentSpeed) / ship.maxReverseSpeed) * 100;
             reverseBar.style.width = `${reversePercent}%`;
             forwardBar.style.width = '0%';
+        }
+    }
+
+    updateTooltip(mouseX, mouseY, hoveredShip) {
+        const tooltip = document.getElementById('ship-tooltip');
+        if (!tooltip) return;
+
+        if (!hoveredShip || hoveredShip.isPlayer) {
+            tooltip.style.display = 'none';
+            return;
+        }
+
+        // Show tooltip near mouse
+        tooltip.style.display = 'block';
+        tooltip.style.left = (mouseX + 15) + 'px';
+        tooltip.style.top = (mouseY + 15) + 'px';
+
+        // Update header
+        const header = tooltip.querySelector('.tooltip-header');
+        const classLabel = HUD.CLASS_LABELS[hoveredShip.shipClass] || hoveredShip.shipClass;
+        const factionLabel = HUD.FACTION_LABELS[hoveredShip.faction] || hoveredShip.faction;
+        header.textContent = `${factionLabel} ${classLabel}`;
+
+        // Update shields
+        if (hoveredShip.shields) {
+            const quadrants = hoveredShip.shields.getAllQuadrants();
+            tooltip.querySelector('[data-shield="fore"]').textContent = `${Math.round(quadrants.fore.current)}/${quadrants.fore.max}`;
+            tooltip.querySelector('[data-shield="port"]').textContent = `${Math.round(quadrants.port.current)}/${quadrants.port.max}`;
+            tooltip.querySelector('[data-shield="starboard"]').textContent = `${Math.round(quadrants.starboard.current)}/${quadrants.starboard.max}`;
+            tooltip.querySelector('[data-shield="aft"]').textContent = `${Math.round(quadrants.aft.current)}/${quadrants.aft.max}`;
+        }
+
+        // Update systems
+        const systemsDiv = tooltip.querySelector('.tooltip-systems');
+        if (hoveredShip.systems) {
+            const systemsHTML = [];
+            systemsHTML.push(`HP: ${Math.round(hoveredShip.systems.hull.hp)}/${hoveredShip.systems.hull.maxHp}`);
+            systemsHTML.push(`Impulse: ${Math.round((hoveredShip.systems.impulse.hp / hoveredShip.systems.impulse.maxHp) * 100)}%`);
+            systemsHTML.push(`Weapons: ${Math.round((hoveredShip.systems.power.hp / hoveredShip.systems.power.maxHp) * 100)}%`);
+            systemsDiv.innerHTML = systemsHTML.join('<br>');
+        }
+    }
+
+    /**
+     * Update target info panel for TAB-selected target
+     */
+    updateTargetInfo(target) {
+        const targetPanel = document.getElementById('target-info-panel');
+        if (!targetPanel) return;
+
+        if (!target || !target.active) {
+            targetPanel.style.display = 'none';
+            return;
+        }
+
+        targetPanel.style.display = 'block';
+
+        // Update target name
+        const targetName = document.getElementById('target-name');
+        if (targetName) {
+            const factionLabel = HUD.FACTION_LABELS[target.faction] || target.faction;
+            const classLabel = HUD.CLASS_LABELS[target.shipClass] || target.shipClass;
+            const name = target.name || `${factionLabel} ${classLabel}`;
+            targetName.textContent = name;
+        }
+
+        // Update target shields
+        const targetShields = document.getElementById('target-shields');
+        if (targetShields && target.shields) {
+            const shields = target.shields.getAllQuadrants();
+            const totalCurrent = shields.fore.current + shields.aft.current +
+                                shields.port.current + shields.starboard.current;
+            const totalMax = shields.fore.max + shields.aft.max +
+                            shields.port.max + shields.starboard.max;
+            targetShields.textContent = `Shields: ${Math.round(totalCurrent)}/${Math.round(totalMax)}`;
+        }
+
+        // Update target hull
+        const targetHull = document.getElementById('target-hull');
+        if (targetHull && target.systems && target.systems.hull) {
+            targetHull.textContent = `Hull: ${Math.round(target.systems.hull.hp)}/${target.systems.hull.maxHp}`;
+        }
+
+        // Update target distance
+        const targetDistance = document.getElementById('target-distance');
+        if (targetDistance && this.playerShip) {
+            const dx = target.x - this.playerShip.x;
+            const dy = target.y - this.playerShip.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const shipLengths = (dist / CONFIG.SHIP_LENGTH_CA).toFixed(1);
+            targetDistance.textContent = `Distance: ${shipLengths} SL`;
         }
     }
 }

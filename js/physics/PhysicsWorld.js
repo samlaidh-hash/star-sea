@@ -157,8 +157,23 @@ class PhysicsWorld {
      * Step the physics simulation
      */
     step(deltaTime) {
-        // Use fixed timestep for stability
-        this.world.step(deltaTime, CONFIG.VELOCITY_ITERATIONS, CONFIG.POSITION_ITERATIONS);
+        // Use fixed timestep for stability with timeout protection
+        try {
+            this.world.step(deltaTime, CONFIG.VELOCITY_ITERATIONS, CONFIG.POSITION_ITERATIONS);
+        } catch (error) {
+            console.warn('Physics step failed:', error);
+            // Reset physics world if it gets stuck
+            this.resetPhysics();
+        }
+    }
+
+    resetPhysics() {
+        console.log('Resetting physics world due to timeout');
+        // Clear all bodies
+        for (const body of this.world.getBodyList()) {
+            this.world.destroyBody(body);
+        }
+        this.bodyToEntity.clear();
     }
 
     /**

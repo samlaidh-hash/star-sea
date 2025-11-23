@@ -1,9 +1,9 @@
 /**
- * Star Sea - Pulse Beam Weapon Component (Scintilian faction)
- * Rapid-fire beam variant with reduced damage per shot.
+ * Star Sea - Plasma Beam Weapon Component (Scintilian faction)
+ * Rapid-fire beam variant with tight, bright beams that diffuse as they travel
  */
 
-class PulseBeam extends BeamWeapon {
+class PlasmaBeam extends BeamWeapon {
     constructor(config = {}) {
         super(config);
 
@@ -20,7 +20,7 @@ class PulseBeam extends BeamWeapon {
         this.damage = config.damage ?? defaultDamage;
         this.cooldown = config.cooldown ?? defaultCooldown;
         this.range = config.range ?? defaultRange;
-        this.name = config.name || 'Pulse Beam';
+        this.name = config.name || 'Plasma Beam';
     }
 
     fire(ship, targetX, targetY, currentTime) {
@@ -28,8 +28,12 @@ class PulseBeam extends BeamWeapon {
         if (projectile) {
             projectile.color = (typeof CONFIG !== 'undefined' && CONFIG.COLOR_PULSE_BEAM)
                 ? CONFIG.COLOR_PULSE_BEAM
-                : '#00ffff';
+                : '#00ff88';
+            projectile.isPlasmaBeam = true; // Mark for special rendering
         }
         return projectile;
     }
 }
+
+// Alias for backwards compatibility
+const PulseBeam = PlasmaBeam;

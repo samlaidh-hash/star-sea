@@ -44,6 +44,13 @@ class CollisionHandler {
             velA.y - velB.y
         );
 
+        // Only apply damage if ships are moving fast enough (minimum threshold: 25 units/s)
+        // This prevents damage during spawn when ships are stationary or barely touching
+        const MIN_COLLISION_SPEED = 25;
+        if (relativeSpeed < MIN_COLLISION_SPEED) {
+            return; // No damage for slow/stationary collisions
+        }
+
         // Scale damage by speed (minimum 1, maximum 5)
         const damage = Math.min(5, Math.max(1, Math.floor(relativeSpeed / 50)));
 

@@ -33,67 +33,6 @@ class Projectile extends Entity {
     }
 }
 
-/**
- * Beam Projectile - Instant line from firer to target with fade
- */
-class BeamProjectile extends Projectile {
-    constructor(config) {
-        super(config);
-        this.projectileType = 'beam';
-        this.range = config.range || CONFIG.BEAM_RANGE_PIXELS;
-        this.speed = config.speed || CONFIG.BEAM_SPEED;
-        this.rotation = config.rotation || 0;
-        this.targetX = config.targetX;
-        this.targetY = config.targetY;
-        this.firingPointX = config.firingPointX || config.x; // Point on ship where beam fires from
-        this.firingPointY = config.firingPointY || config.y;
-        this.color = CONFIG.COLOR_BEAM;
-        this.lifetime = 0.5; // 0.5 second beam duration
-
-        // Beam is a static line - calculate end point based on range
-        const angle = MathUtils.angleBetween(this.firingPointX, this.firingPointY, this.targetX, this.targetY);
-        const distanceToTarget = MathUtils.distance(this.firingPointX, this.firingPointY, this.targetX, this.targetY);
-
-        // Beam extends toward target, stopping at range limit or target (whichever is closer)
-        const distance = Math.min(distanceToTarget, this.range);
-        const vec = MathUtils.vectorFromAngle(angle, distance);
-        this.endX = this.firingPointX + vec.x;
-        this.endY = this.firingPointY + vec.y;
-
-        // DEBUG
-        if (CONFIG.DEBUG_MODE) {
-            console.log('Beam Created:', {
-                firingPoint: { x: this.firingPointX.toFixed(1), y: this.firingPointY.toFixed(1) },
-                target: { x: this.targetX.toFixed(1), y: this.targetY.toFixed(1) },
-                endPoint: { x: this.endX.toFixed(1), y: this.endY.toFixed(1) },
-                angle: angle.toFixed(1),
-                distanceToTarget: distanceToTarget.toFixed(1),
-                beamLength: distance.toFixed(1),
-                maxRange: this.range.toFixed(1)
-            });
-        }
-
-        // Position is at the end point for collision detection
-        this.x = this.endX;
-        this.y = this.endY;
-
-        // No velocity - beam is static
-        this.vx = 0;
-        this.vy = 0;
-    }
-
-    update(deltaTime) {
-        // Beam doesn't move - just check lifetime
-        super.update(deltaTime);
-    }
-
-    getFadeProgress() {
-        // Returns 0-1, where 0 is fresh and 1 is fully faded
-        const currentTime = performance.now() / 1000;
-        const age = currentTime - this.creationTime;
-        return Math.min(age / this.lifetime, 1);
-    }
-}
 
 /**
  * Torpedo Projectile - Slower, homing capability
@@ -108,8 +47,13 @@ class TorpedoProjectile extends Projectile {
         this.lockOnTarget = config.lockOnTarget; // Fire-and-forget target
         this.targetX = config.targetX;
         this.targetY = config.targetY;
+        this.trackReticle = config.trackReticle || false; // Continuously track reticle position
         this.color = CONFIG.COLOR_TORPEDO;
         this.terminalHoming = false; // True after halfway point
+
+        // Anti-torpedo defense tracking
+        this.beamHitCount = 0; // Number of beam hits received
+        this.hitsToDestroy = 1; // Standard torpedoes destroyed in 1 hit
 
         // Calculate initial velocity
         const angle = MathUtils.angleBetween(this.x, this.y, this.targetX, this.targetY);
@@ -125,6 +69,7 @@ class TorpedoProjectile extends Projectile {
     }
 
     update(deltaTime) {
+        // Lock-on target mode - home towards entity
         if (this.lockOnTarget && this.lockOnTarget.active) {
             // Homing behavior
             const distanceToTarget = MathUtils.distance(this.x, this.y, this.lockOnTarget.x, this.lockOnTarget.y);
@@ -167,6 +112,47 @@ class TorpedoProjectile extends Projectile {
         }
         return entitiesHit;
     }
+
+    render(ctx, camera) {
+        if (!this.active) return;
+
+        // Note: Camera transform already applied, use world coords directly
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(MathUtils.toRadians(this.rotation));
+
+        // Draw torpedo body with glow
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = this.color;
+        ctx.beginPath();
+        ctx.arc(0, 0, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Draw torpedo trail
+        ctx.strokeStyle = this.color;
+        ctx.globalAlpha = 0.6;
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, 12);
+        ctx.stroke();
+
+        // Draw directional indicator
+        ctx.globalAlpha = 1.0;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, -8);
+        ctx.lineTo(-3, -4);
+        ctx.lineTo(3, -4);
+        ctx.closePath();
+        ctx.stroke();
+
+        ctx.restore();
+    }
 }
 
 /**
@@ -206,6 +192,43 @@ class DisruptorProjectile extends Projectile {
 
         super.update(deltaTime);
     }
+
+    render(ctx, camera) {
+        if (!this.active) return;
+
+        // Note: Camera transform already applied, use world coords directly
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(MathUtils.toRadians(this.rotation));
+
+        // Draw glowing blue bolt with strong glow
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = this.color;
+        ctx.fillStyle = this.color;
+
+        // Draw elongated bolt shape
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 8, 4, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Draw bright core
+        ctx.shadowBlur = 10;
+        ctx.fillStyle = '#aaccff';
+        ctx.beginPath();
+        ctx.ellipse(0, 0, 5, 2.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Draw energy trail
+        ctx.globalAlpha = 0.5;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.ellipse(-6, 0, 4, 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+
+        ctx.restore();
+    }
 }
 
 /**
@@ -221,12 +244,14 @@ class PlasmaTorpedoProjectile extends Projectile {
         this.lockOnTarget = config.lockOnTarget; // Fire-and-forget target
         this.targetX = config.targetX;
         this.targetY = config.targetY;
+        this.trackReticle = config.trackReticle || false; // Continuously track reticle position
         this.color = CONFIG.COLOR_PLASMA; // Green
         this.terminalHoming = false;
 
         // Damage Potential (DP) system
         this.damagePotential = config.damagePotential || CONFIG.PLASMA_DAMAGE_POTENTIAL; // Use charged damage if provided
         this.dpDecayRate = CONFIG.PLASMA_DP_DECAY_PER_SECOND; // DP lost per second of movement
+        this.dpDecayPerHit = 5; // DP lost per beam hit (anti-torpedo defense)
 
         // Calculate initial velocity
         const angle = MathUtils.angleBetween(this.x, this.y, this.targetX, this.targetY);
@@ -245,7 +270,7 @@ class PlasmaTorpedoProjectile extends Projectile {
         // Degrade DP over time
         this.damagePotential = Math.max(10, this.damagePotential - (this.dpDecayRate * deltaTime));
 
-        // Homing behavior (same as regular torpedo)
+        // Lock-on target mode - home towards entity
         if (this.lockOnTarget && this.lockOnTarget.active) {
             const distanceToTarget = MathUtils.distance(this.x, this.y, this.lockOnTarget.x, this.lockOnTarget.y);
 
@@ -306,5 +331,62 @@ class PlasmaTorpedoProjectile extends Projectile {
         }
 
         return entitiesHit;
+    }
+
+    /**
+     * Render plasma torpedo with expanding/dimming effect
+     */
+    render(ctx, camera) {
+        if (!this.active) return;
+
+        // Calculate age and expansion
+        const currentTime = performance.now() / 1000;
+        const age = currentTime - this.creationTime;
+        const agePercent = age / this.lifetime; // 0 to 1
+
+        // Size expands over lifetime (starts at 2px, grows to 12px)
+        const minSize = 2;
+        const maxSize = 12;
+        const size = minSize + (maxSize - minSize) * agePercent;
+
+        // Brightness based on damage potential (higher DP = brighter)
+        const dpPercent = (this.damagePotential - 10) / 20; // Normalize 10-30 to 0-1
+        const baseBrightness = 0.4 + (dpPercent * 0.6); // 0.4 to 1.0
+
+        // Dim as it ages (bright at start, dim at end)
+        const ageDimming = 1.0 - (agePercent * 0.6); // 1.0 to 0.4
+        const brightness = baseBrightness * ageDimming;
+
+        // Note: Camera transform already applied, use world coords directly
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // Outer glow (large, very transparent)
+        ctx.globalAlpha = brightness * 0.2;
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = size * 2;
+        ctx.shadowColor = this.color;
+        ctx.beginPath();
+        ctx.arc(0, 0, size * 1.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Middle layer
+        ctx.globalAlpha = brightness * 0.6;
+        ctx.shadowBlur = size;
+        ctx.beginPath();
+        ctx.arc(0, 0, size, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Bright core (white center, gets smaller relative to size as it expands)
+        ctx.globalAlpha = brightness;
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowBlur = size * 0.5;
+        ctx.shadowColor = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(0, 0, size * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.shadowBlur = 0;
+        ctx.restore();
     }
 }

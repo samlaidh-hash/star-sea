@@ -9,7 +9,8 @@
       "Bash(npx playwright install:*)",
       "Bash(dir:*)",
       "Bash(pip install:*)",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(time:*)"
     ],
     "deny": [],
     "ask": []

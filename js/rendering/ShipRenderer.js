@@ -9,6 +9,8 @@ class ShipRenderer {
     }
 
     render(ship) {
+        if (!ship || !ship.active) return; // Safety check
+        
         // Check if ship is cloaked
         const alpha = this.getVisibilityAlpha(ship);
         if (alpha <= 0) return; // Completely invisible, skip rendering
@@ -82,8 +84,9 @@ class ShipRenderer {
         this.ctx.fillStyle = 'rgba(50, 50, 50, 0.8)';
         this.ctx.fillRect(-barWidth / 2, barY, barWidth, barHeight);
 
-        // HP fill
-        const hpPercent = ship.hp / ship.maxHp;
+        // HP fill (from hull system)
+        const hpPercent = ship.systems && ship.systems.hull ?
+            (ship.systems.hull.hp / ship.systems.hull.maxHp) : 1.0;
         const fillWidth = barWidth * hpPercent;
 
         // Color based on HP
@@ -164,18 +167,30 @@ class ShipRenderer {
         if (wp.forwardBeamBand) {
             const band = wp.forwardBeamBand;
 
-            // Check if beam weapons are ready to fire (glow effect for player ship)
-            const beamReady = ship.isPlayer && this.isBeamWeaponReady(ship);
+            // Check continuous beam weapon state (arcCenter = 0 for forward)
+            const beamFiring = ship.isPlayer && this.isBeamWeaponFiring(ship, 0);
+            const beamReady = ship.isPlayer && this.isBeamWeaponReady(ship, 0);
+            const beamRecharging = ship.isPlayer && this.isBeamWeaponRecharging(ship, 0);
 
-            if (beamReady) {
-                // Beam ready - bright glow
+            if (beamFiring) {
+                // Firing - medium red, no glow
+                this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.7)';
+                this.ctx.lineWidth = 3;
+                this.ctx.shadowBlur = 0;
+            } else if (beamReady) {
+                // Ready - bright red with glow
                 this.ctx.strokeStyle = 'rgba(255, 50, 50, 0.9)';
                 this.ctx.lineWidth = 3;
                 this.ctx.shadowColor = 'rgba(255, 0, 0, 0.8)';
                 this.ctx.shadowBlur = 8;
+            } else if (beamRecharging) {
+                // Recharging - dull red, no glow
+                this.ctx.strokeStyle = 'rgba(128, 0, 0, 0.6)';
+                this.ctx.lineWidth = 2;
+                this.ctx.shadowBlur = 0;
             } else {
-                // Beam on cooldown - dim
-                this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.6)';
+                // Default/disabled - very dim
+                this.ctx.strokeStyle = 'rgba(100, 0, 0, 0.4)';
                 this.ctx.lineWidth = 2;
                 this.ctx.shadowBlur = 0;
             }
@@ -195,7 +210,7 @@ class ShipRenderer {
             // Reset shadow
             this.ctx.shadowBlur = 0;
 
-            // Draw forward torpedo indicators (4 dots) behind the beam band
+            // Draw forward torpedo indicators (4 dots) between beam band and hull
             this.drawTorpedoIndicators(ship, 'forward', band);
         }
 
@@ -203,8 +218,10 @@ class ShipRenderer {
         if (wp.aftBeamPoint) {
             const point = wp.aftBeamPoint;
 
-            // Check if beam weapons are ready to fire
-            const beamReady = ship.isPlayer && this.isBeamWeaponReady(ship);
+            // Check continuous beam weapon state (arcCenter = 180 for aft)
+            const beamFiring = ship.isPlayer && this.isBeamWeaponFiring(ship, 180);
+            const beamReady = ship.isPlayer && this.isBeamWeaponReady(ship, 180);
+            const beamRecharging = ship.isPlayer && this.isBeamWeaponRecharging(ship, 180);
 
             if (point.type === 'rectangle') {
                 // Draw as rounded rectangle perpendicular to ship axis
@@ -212,15 +229,29 @@ class ShipRenderer {
                 const halfHeight = point.height / 2;
                 const cornerRadius = Math.min(halfWidth, halfHeight) * 0.3; // Rounded corners
 
-                if (beamReady) {
+                if (beamFiring) {
+                    // Firing - medium red, no glow
+                    this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.7)';
+                    this.ctx.fillStyle = 'rgba(255, 0, 0, 0.4)';
+                    this.ctx.shadowBlur = 0;
+                    this.ctx.lineWidth = 3;
+                } else if (beamReady) {
+                    // Ready - bright red with glow
                     this.ctx.strokeStyle = 'rgba(255, 50, 50, 0.9)';
                     this.ctx.fillStyle = 'rgba(255, 50, 50, 0.5)';
                     this.ctx.shadowColor = 'rgba(255, 0, 0, 0.8)';
                     this.ctx.shadowBlur = 8;
                     this.ctx.lineWidth = 3;
+                } else if (beamRecharging) {
+                    // Recharging - dull red, no glow
+                    this.ctx.strokeStyle = 'rgba(128, 0, 0, 0.6)';
+                    this.ctx.fillStyle = 'rgba(128, 0, 0, 0.3)';
+                    this.ctx.shadowBlur = 0;
+                    this.ctx.lineWidth = 2;
                 } else {
-                    this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.6)';
-                    this.ctx.fillStyle = 'rgba(255, 0, 0, 0.3)';
+                    // Default/disabled - very dim
+                    this.ctx.strokeStyle = 'rgba(100, 0, 0, 0.4)';
+                    this.ctx.fillStyle = 'rgba(100, 0, 0, 0.2)';
                     this.ctx.shadowBlur = 0;
                     this.ctx.lineWidth = 2;
                 }
@@ -239,9 +270,6 @@ class ShipRenderer {
 
                 // Reset shadow
                 this.ctx.shadowBlur = 0;
-
-                // Draw aft torpedo indicators (4 dots) just below the rectangle
-                this.drawTorpedoIndicators(ship, 'aft', { centerX: point.x, centerY: point.y, radiusY: halfHeight });
             } else {
                 // Draw as point (legacy support)
                 if (beamReady) {
@@ -270,13 +298,81 @@ class ShipRenderer {
                 this.ctx.beginPath();
                 this.ctx.arc(point.x, point.y, 8, 0, Math.PI * 2);
                 this.ctx.stroke();
-
-                // Draw aft torpedo indicators (4 dots) just above the beam point
-                this.drawTorpedoIndicators(ship, 'aft', { centerX: point.x, centerY: point.y, radiusY: 8 });
             }
         }
 
-        // Large yellow torpedo origin dots removed - torpedo count shown by small dots instead
+        // Draw port beam firing point (Strike Cruiser)
+        if (wp.portBeamPoint) {
+            const point = wp.portBeamPoint;
+            const beamReady = ship.isPlayer && this.isBeamWeaponReady(ship, 270); // arcCenter 270 = port
+
+            if (beamReady) {
+                this.ctx.fillStyle = 'rgba(255, 0, 0, 0.7)';
+                this.ctx.strokeStyle = 'rgba(255, 50, 50, 0.9)';
+                this.ctx.shadowColor = 'rgba(255, 0, 0, 0.8)';
+                this.ctx.shadowBlur = 8;
+            } else {
+                this.ctx.fillStyle = 'rgba(255, 0, 0, 0.4)';
+                this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.6)';
+                this.ctx.shadowBlur = 0;
+            }
+
+            this.ctx.lineWidth = 2;
+            this.ctx.beginPath();
+            this.ctx.arc(point.x, point.y, 6, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.stroke();
+            this.ctx.shadowBlur = 0;
+        }
+
+        // Draw starboard beam firing point (Strike Cruiser)
+        if (wp.starboardBeamPoint) {
+            const point = wp.starboardBeamPoint;
+            const beamReady = ship.isPlayer && this.isBeamWeaponReady(ship, 90); // arcCenter 90 = starboard
+
+            if (beamReady) {
+                this.ctx.fillStyle = 'rgba(255, 0, 0, 0.7)';
+                this.ctx.strokeStyle = 'rgba(255, 50, 50, 0.9)';
+                this.ctx.shadowColor = 'rgba(255, 0, 0, 0.8)';
+                this.ctx.shadowBlur = 8;
+            } else {
+                this.ctx.fillStyle = 'rgba(255, 0, 0, 0.4)';
+                this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.6)';
+                this.ctx.shadowBlur = 0;
+            }
+
+            this.ctx.lineWidth = 2;
+            this.ctx.beginPath();
+            this.ctx.arc(point.x, point.y, 6, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.stroke();
+            this.ctx.shadowBlur = 0;
+        }
+
+        // Draw dual torpedo launcher firing point (orange circle)
+        // Federation ships use a single dual-mount launcher that fires both forward and aft
+        if (wp.dualTorpedoPoint) {
+            const point = wp.dualTorpedoPoint;
+            const torpReady = ship.isPlayer && this.isTorpedoReady(ship); // Check any torpedo launcher
+
+            if (torpReady) {
+                this.ctx.fillStyle = 'rgba(255, 165, 0, 0.7)';
+                this.ctx.strokeStyle = 'rgba(255, 140, 0, 1.0)';
+                this.ctx.shadowColor = 'rgba(255, 140, 0, 0.8)';
+                this.ctx.shadowBlur = 8;
+            } else {
+                this.ctx.fillStyle = 'rgba(255, 165, 0, 0.4)';
+                this.ctx.strokeStyle = 'rgba(255, 140, 0, 0.6)';
+                this.ctx.shadowBlur = 0;
+            }
+
+            this.ctx.lineWidth = 2;
+            this.ctx.beginPath();
+            this.ctx.arc(point.x, point.y, 6, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.stroke();
+            this.ctx.shadowBlur = 0;
+        }
 
         this.ctx.restore();
     }
@@ -451,16 +547,94 @@ class ShipRenderer {
 
     /**
      * Check if beam weapons are ready to fire (off cooldown)
+     * @param {Ship} ship - The ship
+     * @param {number} arcCenter - Optional arc center (0 for forward, 180 for aft). If not provided, checks any beam.
      */
-    isBeamWeaponReady(ship) {
+    isBeamWeaponReady(ship, arcCenter = null) {
         if (!ship.weapons) return false;
 
         const currentTime = performance.now() / 1000;
 
-        // Check if any beam weapon is ready
+        // Check specific arc or any beam weapon
         for (const weapon of ship.weapons) {
-            if ((weapon instanceof BeamWeapon || weapon instanceof PulseBeam) && weapon.canFire(currentTime)) {
-                return true;
+            if (weapon instanceof BeamWeapon || weapon instanceof PulseBeam) {
+                // If arcCenter specified, only check that specific beam
+                if (arcCenter !== null && weapon.arcCenter !== arcCenter) continue;
+
+                // ContinuousBeam: check if NOT recharging
+                if (weapon instanceof ContinuousBeam) {
+                    if (!weapon.isRecharging(currentTime)) {
+                        return true;
+                    }
+                } else if (weapon.canFire(currentTime)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if beam weapons are currently firing
+     * @param {Ship} ship - The ship
+     * @param {number} arcCenter - Optional arc center (0 for forward, 180 for aft)
+     */
+    isBeamWeaponFiring(ship, arcCenter = null) {
+        if (!ship.weapons) return false;
+
+        for (const weapon of ship.weapons) {
+            if (weapon instanceof ContinuousBeam) {
+                if (arcCenter !== null && weapon.arcCenter !== arcCenter) continue;
+                if (weapon.isFiring) return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if beam weapons are recharging
+     * @param {Ship} ship - The ship
+     * @param {number} arcCenter - Optional arc center (0 for forward, 180 for aft)
+     */
+    isBeamWeaponRecharging(ship, arcCenter = null) {
+        if (!ship.weapons) return false;
+
+        const currentTime = performance.now() / 1000;
+
+        for (const weapon of ship.weapons) {
+            if (weapon instanceof ContinuousBeam) {
+                if (arcCenter !== null && weapon.arcCenter !== arcCenter) continue;
+                if (weapon.isRecharging(currentTime)) return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if torpedo launchers are ready to fire
+     * @param {Ship} ship - The ship
+     * @param {number} arcCenter - Optional arc center (0 for forward, 180 for aft)
+     */
+    isTorpedoReady(ship, arcCenter = null) {
+        if (!ship.weapons) return false;
+
+        const currentTime = performance.now() / 1000;
+
+        // Check specific arc or any torpedo launcher
+        for (const weapon of ship.weapons) {
+            if (weapon instanceof TorpedoLauncher || weapon instanceof DualTorpedoLauncher || weapon instanceof PlasmaTorpedo) {
+                // If arcCenter specified, only check that specific launcher
+                if (arcCenter !== null) {
+                    const centers = weapon.arcCenters && weapon.arcCenters.length > 0 ? weapon.arcCenters : [weapon.arcCenter !== undefined ? weapon.arcCenter : 0];
+                    if (!centers.includes(arcCenter)) continue;
+                }
+
+                if (weapon.canFire(currentTime)) {
+                    return true;
+                }
             }
         }
 
@@ -481,7 +655,7 @@ class ShipRenderer {
         const normalizeFacingAngle = (angle) => MathUtils.normalizeAngle(angle);
 
         for (const weapon of ship.weapons) {
-            if (weapon instanceof TorpedoLauncher || weapon instanceof PlasmaTorpedo) {
+            if (weapon instanceof TorpedoLauncher || weapon instanceof DualTorpedoLauncher || weapon instanceof PlasmaTorpedo) {
                 const centers = weapon.arcCenters && weapon.arcCenters.length > 0 ? weapon.arcCenters : [weapon.arcCenter !== undefined ? weapon.arcCenter : 0];
                 const hasForward = centers.some(center => normalizeFacingAngle(center) === 0);
                 const hasAft = centers.some(center => normalizeFacingAngle(center) === 180);
@@ -505,8 +679,20 @@ class ShipRenderer {
         const totalWidth = (maxLoaded - 1) * dotSpacing;
         const startX = -totalWidth / 2; // Center horizontally
 
-        // Y position: at very top or bottom of ship
-        const dotY = facing === 'forward' ? -size - 10 : size + 10;
+        // Y position: between beam band and hull for forward
+        // Position further forward - halfway between band and ship nose
+        let dotY;
+        if (facing === 'forward') {
+            // For forward facing: band is around centerY -15, radiusY ~8
+            // Ship hull extends to about -size * 0.5
+            // Position dots between the band's top edge and the hull
+            const bandTopEdge = band ? (band.centerY - band.radiusY) : -15; // Top edge of beam band
+            const shipNose = -size * 0.5; // Approximate nose position
+            dotY = (bandTopEdge + shipNose) / 2; // Halfway between band and nose
+        } else {
+            // Aft position (keep original positioning for aft if needed)
+            dotY = size * 0.4;
+        }
 
         // Draw 4 dots
         for (let i = 0; i < maxLoaded; i++) {

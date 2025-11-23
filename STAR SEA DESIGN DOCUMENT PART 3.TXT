@@ -1,0 +1,48 @@
+Ship Design Document 3
+
+Please implement a new Federation ship, Strike Cruiser, CS.
+Graphic is D:\Dropbox\Free Games\2025 RPG\CLAUDE GAMES\CURSOR STAR SEA\star-sea\Ship Icons\FED CS.png
+Orange dot is standad Federation dual fore/aft launcher, 4 torpedoes, 40 stored. Left red dot is Port streak beam (PSB), Right red dot is Starboard streak beams (SSB). PSB covers 270 arc, centred on bearing 270. SSS covers 270 arc, centred on bearing 90. Both can shoot safely across the ship. Red dots change colour like normal beam firing bands. LMB fires two orange-red glowing streaks, 0.1 second duration, 0.2 seconds apart. Range is 20x ship lengths. Each streak does 1 damage. Cooldown is 1.5 seconds.
+
+I'd like to change the graphics for plasma torpedoes. Have the torpedo start small then gradually expand in size as it moves away from the firing ship. It's initial brightness depends on how charged up it is, then dims as it expands. Scintilian pulse beams can be renamed plasma beams and should be adjust in a similar way, close to the firing ship they are a very tight bright beam which diffuses a little as it moves away from the ship.
+
+Check Bay sizes are being used correctly, FG 2 DD 3 CL 4 CA 5 BC 6 BB 7 DN 8 SD 9
+Each ship gets 1 Shuttle and 1 Mine by default, randomise the other Bay slots.
+Trigons use drones rather than shuttles.
+Remove munitions items which have 0 items of that type onboard or left.
+
+change warp out to a different key
+ESC still pauses back to main screen but space bar becomes action pause, just freezing screen and allowing tool tips to still work
+To clarify, mines are removed from the map once they have activated.
+
+Can you set up a demo game showing one ship of each faction as enemies.
+
+Player ships shield bars aren't changing when hit, shields do not alway appear when the ship is hit.
+When a ship is destroyed have it explode into a particle cloud. For the player ship, let this happen before going to the mission failed screen.
+
+Sometimes a shield will flash as though hit when there is no ship or attack present.
+
+With trigon selected as player ship no disruptor fire is visible. You also need to modify the side panel for different Factions and ships (e.g. Trigons have Disruptor HP bars, no torpedoes or beams)
+When shields are down beams hit the system which the reticle is over, or nearest to but still inside the ships outline (outside the outline is always a miss).
+Change torpedoes, they still only deal 1 damage to shields, but if shields are down they deal 4pts of damage, randomly allocated between different systems. If the same system is rolled multiple times it takes multiple hits. Bias rolls based on the facing the torpedo hit. Left or Right side, no bias (equal chance to hit any system). Aft, bias towards Impulse, Bay and aft weapons; Fore, bias towards fore weapons, Command and Control, Sensors.
+
+Restore asteroids and make sure they are destructible. When they spawn they move slowly. Breaking them up speeds the child fragments up.
+Give me a list of current weapon ranges.
+Implement dust/gas clouds, slightly slow ships down but significantly reduce firing range of all weapons and reduce shields to 50% maximum strength and recharge 1pt/3 seconds after "no hit period" has elapsed.
+Implement a Star, larger than a planet, strong gravitational pull, block all attacks, contact is fatal. Star gravity is linear force/range. Ships near stars take constant damage, closer is more damage. Hits facing shield, if shield goes down hits all systems equally.
+Implement planets, large, exert a gravitational pull. Ships cannot move over them, block all attacks. Colliding with a planet is instant destruction, no effect on planet. Planet gravity is linear force/range.
+Implement black holes, a black circle with a whirling vortex effect around it. Black holes don't move. They exert an attractive force on anything getting near to them. Contact with the black centre is instant destruction. Force is geometric.
+
+X: all stop, drops speed to zero. If moving forward add half dropped speed to strength of forward shield. If moving backward add dropped speed to strength of aft shield. 
+
+Check Boost mode is working
+Double press W: doubles current forward speed, whilst engaged drains 1 from all shields per second, if shields =0 effect ends.
+Double press S: doubles current backward speed, whilst engaged drains 1 from all shields per second, if shields =0 effect ends.
+Double press A: snap turn to port at triple normal turn rate, release after second press to stop turning, whilst turning -3 to all shields values every second.
+Double press D: snap turn to starboard at triple normal turn rate, release after second press to stop turning, whilst turning -3 to all shields values every second.
+
+
+Check Lock-On is working. Allow lock-on to any ship in any direction by holding the reticle over it for the requisite time. Once locked-on introduce an "auto-aim" factor to all weapons used on that target, beams will deviate from the centre of reticle if doing so will score a hit when it would otherwse miss, torpedoes become slightly homing, changing heading by up to 15 degrees per second to hit the locked on target.
+
+Allow beams and torpedoes to be used to destroy mines. Torps will explode when they hit invisible targets (e.g. cloaked ships and mines) and damage them. Beams will only hit invisible targets if the reticle is over the target.
+Reintroduce PING mode, doubles sensor range but alerts enemy, makes hidden items (such as mines) visible. Cloaked ships become visible then graduallyfade out again over 20 seconds. Cooldown between PINGS is 1 minute.

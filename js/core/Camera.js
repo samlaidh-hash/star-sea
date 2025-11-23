@@ -11,7 +11,7 @@ class Camera {
         this.x = 0; // World position that camera is centered on
         this.y = 0;
         this.zoom = 1;
-        this.minZoom = 0.5;
+        this.minZoom = 0.2;  // Allow zooming out much further
         this.maxZoom = 2.0;
     }
 

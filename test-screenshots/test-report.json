@@ -1,0 +1,155 @@
+{
+  "phase1": {
+    "status": "completed",
+    "tests": [
+      {
+        "name": "Dynamic weapon display",
+        "passed": false,
+        "details": {
+          "error": "systems-list not found"
+        }
+      },
+      {
+        "name": "Consumables section",
+        "passed": false,
+        "details": {
+          "exists": false,
+          "visible": false,
+          "html": ""
+        }
+      },
+      {
+        "name": "Torpedo storage display",
+        "passed": true,
+        "details": {
+          "exists": true,
+          "text": "20",
+          "visible": true
+        }
+      }
+    ]
+  },
+  "phase3": {
+    "status": "completed",
+    "tests": [
+      {
+        "name": "Double-tap A turn boost",
+        "passed": true,
+        "details": "Executed double-tap, requires visual confirmation"
+      },
+      {
+        "name": "Double-tap D turn boost",
+        "passed": true,
+        "details": "Executed double-tap, requires visual confirmation"
+      },
+      {
+        "name": "X key emergency stop",
+        "passed": true,
+        "details": {
+          "shieldsBefore": {
+            "fore": 0
+          },
+          "shieldsAfter": {
+            "fore": 0
+          }
+        }
+      }
+    ]
+  },
+  "phase5": {
+    "status": "completed",
+    "tests": [
+      {
+        "name": "Reticle rotation on hover",
+        "passed": true,
+        "details": {
+          "display": "block",
+          "classes": "",
+          "hasRotating": false,
+          "hasLocked": false
+        }
+      },
+      {
+        "name": "Lock acquisition",
+        "passed": true,
+        "details": {
+          "classes": "",
+          "hasRotating": false,
+          "hasLocked": false,
+          "color": "rgb(0, 255, 0)"
+        }
+      },
+      {
+        "name": "Enemy info panel",
+        "passed": true,
+        "details": {
+          "exists": true,
+          "visible": false,
+          "html": "\n            <div class=\"panel-header enemy-header\" id=\"enemy-ship-panel-title\">Enemy Ship</div>\n\n            <!-- Shields -->\n            <div class=\"system-group\">\n                <div class=\"system-label\">Shields</div>\n                <div class=\"shield-display\">\n                    <div class=\"s"
+        }
+      },
+      {
+        "name": "Auto-aim beam fire",
+        "passed": true,
+        "details": "Beam fired, auto-aim requires visual confirmation"
+      },
+      {
+        "name": "F key removed",
+        "passed": true,
+        "details": {
+          "text": "",
+          "hasFKey": false
+        }
+      }
+    ]
+  },
+  "phase8": {
+    "status": "completed",
+    "tests": [
+      {
+        "name": "Cooldown fade effect",
+        "details": {
+          "error": "systems-list not found"
+        }
+      },
+      {
+        "name": "Cooldown fade restore",
+        "details": {
+          "error": "systems-list not found"
+        }
+      }
+    ]
+  },
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 404 (File not found)",
+    "Failed to load resource: the server responded with a status of 404 (File not found)",
+    "ERROR IN RENDER: TypeError: Failed to execute 'createLinearGradient' on 'CanvasRenderingContext2D': The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "Stack: TypeError: The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "ERROR IN RENDER: TypeError: Failed to execute 'createLinearGradient' on 'CanvasRenderingContext2D': The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "Stack: TypeError: The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "ERROR IN RENDER: TypeError: Failed to execute 'createLinearGradient' on 'CanvasRenderingContext2D': The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "Stack: TypeError: The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "ERROR IN RENDER: TypeError: Failed to execute 'createLinearGradient' on 'CanvasRenderingContext2D': The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "Stack: TypeError: The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "ERROR IN RENDER: TypeError: Failed to execute 'createLinearGradient' on 'CanvasRenderingContext2D': The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "Stack: TypeError: The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "ERROR IN RENDER: TypeError: Failed to execute 'createLinearGradient' on 'CanvasRenderingContext2D': The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "Stack: TypeError: The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "ERROR IN RENDER: TypeError: Failed to execute 'createLinearGradient' on 'CanvasRenderingContext2D': The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "Stack: TypeError: The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "ERROR IN RENDER: TypeError: Failed to execute 'createLinearGradient' on 'CanvasRenderingContext2D': The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "Stack: TypeError: The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "ERROR IN RENDER: TypeError: Failed to execute 'createLinearGradient' on 'CanvasRenderingContext2D': The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "Stack: TypeError: The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "ERROR IN RENDER: TypeError: Failed to execute 'createLinearGradient' on 'CanvasRenderingContext2D': The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "Stack: TypeError: The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "ERROR IN RENDER: TypeError: Failed to execute 'createLinearGradient' on 'CanvasRenderingContext2D': The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "Stack: TypeError: The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "ERROR IN RENDER: TypeError: Failed to execute 'createLinearGradient' on 'CanvasRenderingContext2D': The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "Stack: TypeError: The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "ERROR IN RENDER: TypeError: Failed to execute 'createLinearGradient' on 'CanvasRenderingContext2D': The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "Stack: TypeError: The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "ERROR IN RENDER: TypeError: Failed to execute 'createLinearGradient' on 'CanvasRenderingContext2D': The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46",
+    "Stack: TypeError: The provided double value is non-finite.\n    at BeamProjectile.render (http://localhost:8000/js/entities/BeamProjectile.js:77:34)\n    at Renderer.renderProjectile (http://localhost:8000/js/rendering/Renderer.js:74:15)\n    at Renderer.renderEntities (http://localhost:8000/js/rendering/Renderer.js:53:26)\n    at Renderer.render (http://localhost:8000/js/rendering/Renderer.js:21:14)\n    at Engine.render (http://localhost:8000/js/core/Engine.js:1909:31)\n    at GameLoop.renderCallback (http://localhost:8000/js/core/Engine.js:327:26)\n    at GameLoop.loop (http://localhost:8000/js/core/GameLoop.js:47:14)\n    at http://localhost:8000/js/core/GameLoop.js:62:46"
+  ]
+}

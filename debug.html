@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Sea - Debug</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #000;
+            color: #fff;
+        }
+        #debug-info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px;
+            border: 1px solid #333;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 1000;
+        }
+        #game-canvas {
+            border: 1px solid #333;
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="debug-info">
+        <div>Debug Console:</div>
+        <div id="debug-log"></div>
+    </div>
+    
+    <canvas id="game-canvas" width="1920" height="1080"></canvas>
+    
+    <script>
+        // Override console.log to show in debug panel
+        const debugLog = document.getElementById('debug-log');
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            debugLog.innerHTML += args.join(' ') + '<br>';
+            debugLog.scrollTop = debugLog.scrollHeight;
+        };
+        
+        // Override console.error to show in debug panel
+        const originalError = console.error;
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            debugLog.innerHTML += '<span style="color: red;">ERROR: ' + args.join(' ') + '</span><br>';
+            debugLog.scrollTop = debugLog.scrollHeight;
+        };
+        
+        // Catch uncaught errors
+        window.addEventListener('error', function(e) {
+            debugLog.innerHTML += '<span style="color: red;">UNCAUGHT ERROR: ' + e.message + ' at ' + e.filename + ':' + e.lineno + '</span><br>';
+            debugLog.scrollTop = debugLog.scrollHeight;
+        });
+        
+        console.log('Debug page loaded');
+    </script>
+    
+    <!-- Load all the same scripts as the main game -->
+    <script src="js/config.js"></script>
+    <script src="js/config/SystemDamageBoxes.js"></script>
+    <script src="js/config/AudioConfig.js"></script>
+    <script src="js/core/EventBus.js"></script>
+    <script src="js/core/InputManager.js"></script>
+    <script src="js/utils/MathUtils.js"></script>
+    <script src="js/core/GameLoop.js"></script>
+    <script src="js/core/Engine.js"></script>
+    <script src="js/physics/PhysicsWorld.js"></script>
+    <script src="js/physics/CollisionHandler.js"></script>
+    <script src="js/core/StateManager.js"></script>
+    <script src="js/rendering/Renderer.js"></script>
+    <script src="js/rendering/ShipRenderer.js"></script>
+    <script src="js/rendering/EnvironmentRenderer.js"></script>
+    <script src="js/rendering/UIRenderer.js"></script>
+    <script src="js/rendering/ParticleSystem.js"></script>
+    <script src="js/systems/TargetingSystem.js"></script>
+    <script src="js/systems/AIController.js"></script>
+    <script src="js/systems/TractorBeamSystem.js"></script>
+    <script src="js/systems/PowerManagementSystem.js"></script>
+    <script src="js/systems/BaySystem.js"></script>
+    <script src="js/systems/TransporterSystem.js"></script>
+    <script src="js/systems/BalanceSystem.js"></script>
+    <script src="js/systems/TestingSystem.js"></script>
+    <script src="js/data/Missions.js"></script>
+    <script src="js/systems/MissionManager.js"></script>
+    <script src="js/systems/SaveManager.js"></script>
+    <script src="js/systems/ProgressionManager.js"></script>
+    <script src="js/systems/AudioManager.js"></script>
+    <script src="js/components/Transform.js"></script>
+    <script src="js/components/Physics.js"></script>
+    <script src="js/components/weapons/Weapon.js"></script>
+    <script src="js/components/weapons/BeamWeapon.js"></script>
+    <script src="js/components/weapons/PulseBeam.js"></script>
+    <script src="js/components/weapons/TorpedoLauncher.js"></script>
+    <script src="js/components/weapons/DualTorpedoLauncher.js"></script>
+    <script src="js/components/weapons/Disruptor.js"></script>
+    <script src="js/components/weapons/PlasmaTorpedo.js"></script>
+    <script src="js/components/weapons/LaserBattery.js"></script>
+    <script src="js/components/Shield.js"></script>
+    <script src="js/components/InternalSystems.js"></script>
+    <script src="js/entities/Entity.js"></script>
+    <script src="js/entities/Projectile.js"></script>
+    <script src="js/entities/Decoy.js"></script>
+    <script src="js/entities/Mine.js"></script>
+    <script src="js/entities/Ship.js"></script>
+    <script src="js/entities/Asteroid.js"></script>
+    <script src="js/entities/Environmental.js"></script>
+    <script src="js/entities/LaserProjectile.js"></script>
+    <script src="js/entities/BeamProjectile.js"></script>
+    <script src="js/entities/Shuttle.js"></script>
+    <script src="js/entities/Fighter.js"></script>
+    <script src="js/entities/Bomber.js"></script>
+    <script src="js/entities/HeavyTorpedo.js"></script>
+    <script src="js/entities/InterceptorMissile.js"></script>
+    <script src="js/entities/CaptorMine.js"></script>
+    <script src="js/entities/PhaserMine.js"></script>
+    <script src="js/entities/TransporterMine.js"></script>
+    <script src="js/entities/DhojanShip.js"></script>
+    <script src="js/entities/AndromedanShip.js"></script>
+    <script src="js/entities/CommonwealthShip.js"></script>
+    <script src="js/entities/QuantumTorpedo.js"></script>
+    <script src="js/entities/GravityTorpedo.js"></script>
+    <script src="js/entities/MissionEntity.js"></script>
+    <script src="js/entities/CivilianTransport.js"></script>
+    <script src="js/entities/SpaceStation.js"></script>
+    <script src="js/entities/Derelict.js"></script>
+    <script src="js/ui/HUD.js"></script>
+    <script src="js/ui/MissionUI.js"></script>
+    <script src="js/physics/GravityWell.js"></script>
+    <script src="js/core/Camera.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
